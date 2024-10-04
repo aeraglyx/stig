@@ -1,0 +1,84 @@
+// Copyright 2024 Lukas Hrazky
+// Copyright 2024 Vladislav Macicek
+//
+// This file is part of the Stig VESC package.
+//
+// Stig VESC package is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by the
+// Free Software Foundation, either version 3 of the License, or (at your
+// option) any later version.
+//
+// Stig VESC package is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+// or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+// more details.
+//
+// You should have received a copy of the GNU General Public License along with
+// this program. If not, see <http://www.gnu.org/licenses/>.
+
+#pragma once
+
+#include "conf/datatypes.h"
+#include "slope_estimation.h"
+#include "imu_data.h"
+
+#include <stdbool.h>
+#include <stdint.h>
+
+typedef struct {
+    float erpm;
+    // float erpm_smooth;
+    float erpm_gyro_ratio;
+    float speed_erpm_ratio;
+
+    float speed;
+    float speed_abs;
+    int8_t speed_sign;
+    // float speed_smooth;
+    float fast_boi;
+    // float speed_sign_smooth;
+    float speed_last;
+
+    float board_speed;
+
+    float current;
+    float current_smooth;
+    bool braking;
+
+    float c_torque;
+    float torque;
+    // float torque_smooth;
+
+    float duty_cycle;
+
+    float wheel_accel;
+    float accel_smooth;
+    AccelerationSource acceleration_source;
+    // bool use_imu_accel;
+
+    SlopeData slope_data;
+    float slope;
+
+    float traction_filter_alpha;
+    float mod_filter_alpha;
+    float board_speed_alpha;
+
+    float current_min;
+    float current_max;
+    float duty_max;
+
+    float dt;
+    float debug;
+} MotorData;
+
+void motor_data_init(MotorData *m);
+
+void motor_data_configure(
+    MotorData *m,
+    const CfgTune *cfg,
+    const CfgHardware *hw,
+    const CfgRider *rider,
+    float dt
+);
+
+void motor_data_update(MotorData *m, uint16_t frequency, const IMUData *imu);
