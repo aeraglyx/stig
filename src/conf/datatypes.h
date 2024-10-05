@@ -188,7 +188,6 @@ typedef struct {
 
     bool is_dutybeep_enabled;
     // bool is_footbeep_enabled;
-    bool is_surgebeep_enabled;
 } CfgWarnings;
 
 typedef struct {
@@ -334,9 +333,6 @@ typedef struct {
     CfgLeds leds;
 
     float brake_current;
-
-    float surge_duty_start;
-    float surge_angle;
 } StigConfig;
 
 // DATATYPES_H_

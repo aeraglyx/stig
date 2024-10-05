@@ -112,12 +112,6 @@ typedef struct {
     float startup_step_size;
     float tiltback_return_step_size;
 
-    float surge_angle;
-    float surge_angle2;
-    float surge_angle3;
-    float surge_adder;
-    bool surge_enable;
-
     float setpoint;
     float setpoint_target;
     float setpoint_target_interpolated;
@@ -260,11 +254,6 @@ static void configure(data *d) {
     d->startup_step_size = d->config.startup.speed * d->loop_time;
     d->tiltback_return_step_size = d->config.warnings.tiltback_return_speed * d->loop_time;
 
-    d->surge_angle = d->config.surge_angle;
-    d->surge_angle2 = d->config.surge_angle * 2;
-    d->surge_angle3 = d->config.surge_angle * 3;
-    d->surge_enable = d->surge_angle > 0;
-
     // Feature: Dirty Landings
     d->startup_pitch_trickmargin = d->config.startup.dirtylandings_enabled ? 10 : 0;
 
@@ -309,7 +298,6 @@ static void init_vars(data *d) {
     d->brake_timeout = 0.0f;
 
     d->startup_pitch_tolerance = d->config.startup.pitch_tolerance;
-    d->surge_adder = 0.0f;
 
     // d->current_requested = 0.0f;
 }
@@ -334,7 +322,6 @@ static void reset_vars(data *d) {
     d->brake_timeout = 0.0f;
 
     d->startup_pitch_tolerance = d->config.startup.pitch_tolerance;
-    d->surge_adder = 0.0f;
 
     // state_engage(&d->state);
 }
@@ -576,37 +563,6 @@ static void calculate_setpoint_interpolated(data *d) {
     }
 }
 
-static void add_surge(data *d) {
-    if (d->surge_enable) {
-        float surge_now = 0;
-
-        if (d->motor.duty_cycle > d->config.surge_duty_start + 0.04f) {
-            surge_now = d->surge_angle3;
-            beep_alert(d, 3, 1);
-        } else if (d->motor.duty_cycle > d->config.surge_duty_start + 0.02f) {
-            surge_now = d->surge_angle2;
-            beep_alert(d, 2, 1);
-        } else if (d->motor.duty_cycle > d->config.surge_duty_start) {
-            surge_now = d->surge_angle;
-            beep_alert(d, 1, 1);
-        }
-        if (surge_now >= d->surge_adder) {
-            // kick in instantly
-            d->surge_adder = surge_now;
-        } else {
-            // release less harshly
-            d->surge_adder = d->surge_adder * 0.98 + surge_now * 0.02;
-        }
-
-        // Add surge angle to setpoint
-        if (d->motor.speed > 0) {
-            d->setpoint += d->surge_adder;
-        } else {
-            d->setpoint -= d->surge_adder;
-        }
-    }
-}
-
 static bool startup_conditions_met(data *d) {
     if (!is_sensor_engaged(d)) {
         return false;
@@ -753,8 +709,6 @@ static void stig_thd(void *arg) {
             calculate_setpoint_target(d);
             calculate_setpoint_interpolated(d);
             d->setpoint = d->setpoint_target_interpolated;
-
-            add_surge(d);
 
             const float confidence = 1.0f - d->traction.traction_soft_release;
 
