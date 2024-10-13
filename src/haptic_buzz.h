@@ -20,13 +20,15 @@
 
 #include "conf/datatypes.h"
 #include "motor_data.h"
+#include "state.h"
 #include "warnings.h"
 
 typedef struct {
-    float buzz_output;
-    float t;
-    float step;
-    float amplitude;
+    // float buzz_output;
+    // float t;
+    // float step;
+    // float amplitude;
+    bool is_playing;
 } HapticBuzz;
 
 typedef enum {
@@ -36,8 +38,14 @@ typedef enum {
     BUZZ_FULL = 3,
 } BuzzType;
 
-void haptic_buzz_configure(HapticBuzz *data, const CfgWarnings *cfg, float dt);
+void haptic_buzz_init(HapticBuzz *data);
 
-void haptic_buzz_reset(HapticBuzz *data);
+// void haptic_buzz_configure(HapticBuzz *data, const CfgWarnings *cfg);
 
-void haptic_buzz_update(HapticBuzz *data, const Warnings *warnings, const CfgWarnings *cfg, const MotorData *mot);
+void haptic_buzz_update(
+    HapticBuzz *data,
+    const CfgHaptics *cfg,
+    const MotorData *mot,
+    WarningType warning_type,
+    RunState run_state
+);

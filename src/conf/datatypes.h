@@ -170,25 +170,20 @@ typedef struct {
 } CfgRider;
 
 typedef struct {
-    float tiltback_return_speed;
-
     float duty_threshold;
-    float duty_ramp;
-    float duty_speed;
-
-    uint8_t battery_cells;
     float lv_threshold;
     float hv_threshold;
 
-    // TODO buzz struct?
-    float buzz_strength;
-    float buzz_strength_variable;  // TODO rename?
-    float buzz_frequency;
-    float buzz_speed;
-
-    bool is_dutybeep_enabled;
+    float tiltback_return_speed;
     // bool is_footbeep_enabled;
 } CfgWarnings;
+
+typedef struct {
+    float strength;
+    float strength_at_speed;
+    float frequency;
+    float speed;
+} CfgHaptics;
 
 typedef struct {
     float pitch_tolerance;
@@ -212,6 +207,8 @@ typedef struct {
     bool is_posi_enabled;
     bool moving_fault_disabled;
     bool is_reversestop_enabled;
+    float ghost_speed;
+    float ghost_delay;
 } CfgFaults;
 
 typedef struct {
@@ -330,6 +327,7 @@ typedef struct {
     CfgStartup startup;
     CfgFaults faults;
     CfgWarnings warnings;
+    CfgHaptics haptics;
     CfgLeds leds;
 
     float brake_current;

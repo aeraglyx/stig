@@ -34,43 +34,28 @@ typedef enum {
     WARNING_LOWBATT = 8,
     WARNING_IDLE = 9,
     WARNING_DEBUG = 10,
-    WARNING_ERROR = 11
-} WarningReason;
+    WARNING_ERROR = 11,
+    WARNING_GHOST = 12
+} WarningType;
 
 typedef struct {
-    float factor;
-    WarningReason reason;
+    WarningType type;
+    WarningType type_last;
 
-    float duty;
-    float hv;
-    float lv;
-    float temp_fet;
-    float temp_mot;
-    float sensor;
-    float debug;
-
-    float duty_step;
-    float hv_step;
-    float lv_step;
-    float temp_step;
-
-    float lv_threshold;
-    float hv_threshold;
-
+    float cell_to_pack_ratio;
     float mc_max_temp_fet;
     float mc_max_temp_mot;
-
-    float duty_ramp_mult;
 } Warnings;
 
-void warnings_configure(Warnings *warnings, const CfgWarnings *cfg, float dt);
+void warnings_init(Warnings *warnings);
 
-void warnings_reset(Warnings *warnings, float alpha);
+void warnings_configure(Warnings *warnings, const CfgWarnings *cfg);
 
 void warnings_update(
     Warnings *warnings,
     const CfgWarnings *cfg,
     const MotorData *mot,
     const FootpadSensor *sensor,
-    float debug
+    bool ghost,
+    bool debug
 );

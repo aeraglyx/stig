@@ -20,44 +20,35 @@
 
 #include "haptic_buzz.h"
 #include "utils.h"
-#include "state.h"
 
 #include <math.h>
 
-void haptic_buzz_configure(HapticBuzz *data, const CfgWarnings *cfg, float dt) {
-    data->step = cfg->buzz_frequency * dt;
+void haptic_buzz_init(HapticBuzz *data) {
+    data->is_playing = false;
 }
 
-void haptic_buzz_reset(HapticBuzz *data) {
-    data->buzz_output = 0.0f;
-    data->t = 0.0f;
-    data->amplitude = 0.0f;
-}
+// void haptic_buzz_configure(HapticBuzz *data, const CfgWarnings *cfg) {
+// }
 
-static float sin_scaled(float t) {
-    // based on Bhaskara I's sine approximation
-    // valid for 0 <= t <= 1, outputs -1 to 1
-    const bool second_half = t > 0.5f;
-    const float x = (second_half) ? t - 0.5f : t;
-    float sin = 20.0f / (16.0f * x * x - 8.0f * x + 5.0f) - 4.0f;
-    if (second_half) {
-        sin *= -1.0f;
+static BuzzType get_buzz_type(WarningType warning_type, RunState run_state) {
+    if (run_state != STATE_RUNNING) {
+        return BUZZ_NONE;
     }
-    return sin;
-}
 
-static BuzzType get_buzz_type(WarningReason warning_type) {
     switch (warning_type) {
-        case WARNING_NONE:
-            return BUZZ_NONE;
+        case WARNING_DUTY:
+        case WARNING_GHOST:
+            return BUZZ_FAST;
+        case WARNING_LV:
+        case WARNING_HV:
+        case WARNING_TEMP_FET:
+        case WARNING_TEMP_MOT:
+            return BUZZ_SLOW;
         case WARNING_DEBUG:
-            return BUZZ_FULL;
         case WARNING_SENSORS:
             return BUZZ_FULL;
-        case WARNING_DUTY:
-            return BUZZ_FAST;
         default:
-            return BUZZ_SLOW;
+            return BUZZ_NONE;
     }
 }
 
@@ -70,7 +61,7 @@ static bool get_beep_target(BuzzType buzz_type, float speed) {
     }
 
     if (buzz_type == BUZZ_SLOW) {
-        speed *= 0.5f;
+        speed *= 0.25f;
     }
     bool beep;
     const float current_time = VESC_IF->system_time();
@@ -81,33 +72,29 @@ static bool get_beep_target(BuzzType buzz_type, float speed) {
     return beep;
 }
 
-static float get_max_amplitude(const CfgWarnings *cfg, float fast_boi) {
-    const float strength_diff = cfg->buzz_strength_variable - cfg->buzz_strength;
-    return cfg->buzz_strength + fast_boi * strength_diff;
+static float get_amplitude(const CfgHaptics *cfg, float fast_boi) {
+    const float strength_diff = cfg->strength_at_speed - cfg->strength;
+    return cfg->strength + fast_boi * strength_diff;
 }
 
 void haptic_buzz_update(
     HapticBuzz *data,
-    const Warnings *warnings,
-    const CfgWarnings *cfg,
-    const MotorData *mot
+    const CfgHaptics *cfg,
+    const MotorData *mot,
+    WarningType warning_type,
+    RunState run_state
 ) {
-    const BuzzType buzz_type = get_buzz_type(warnings->reason);
-    const bool beep_target = get_beep_target(buzz_type, cfg->buzz_speed);
+    BuzzType buzz_type = get_buzz_type(warning_type, run_state);
+    bool beep_target = get_beep_target(buzz_type, cfg->speed);
 
-    const float max_amplitude = get_max_amplitude(cfg, mot->fast_boi);
-    const float amplitude = (float) beep_target * warnings->factor * max_amplitude;
-
-    // Limit amplitude's rate of change (just in case),
-    // we don't want to induce accidental current overshoots under load.
-    rate_limitf(&data->amplitude, amplitude, 2.5f);
-
-    if (data->amplitude == 0.0f) {
-        data->buzz_output = 0.0f;
-    } else {
-        data->t += data->step;
-        data->t = data->t - (int) data->t;
-        const float wave = sin_scaled(data->t);
-        data->buzz_output = wave * data->amplitude;
+    if (data->is_playing && !beep_target) {
+        VESC_IF->foc_play_tone(0, 1, 0.0f);
+        // VESC_IF->foc_play_tone(1, 1, 0.0f);
+        data->is_playing = false;
+    } else if (!data->is_playing && beep_target) {
+        float amplitude = get_amplitude(cfg, mot->fast_boi);
+        VESC_IF->foc_play_tone(0, cfg->frequency, amplitude);
+        // VESC_IF->foc_play_tone(1, 420, 0.420f);
+        data->is_playing = true;
     }
 }

@@ -124,6 +124,7 @@ typedef struct {
     float fault_angle_roll_timer;
     float fault_switch_full_timer;
     float fault_switch_half_timer;
+    float fault_ghost_timer;
 
     float brake_timeout;
     float wheelslip_timer;
@@ -246,8 +247,8 @@ static void configure(data *d) {
 
     pid_configure(&d->pid, &d->config.tune.pid, d->loop_time);
     traction_configure(&d->traction, &d->config.tune.traction, d->loop_time);
-    warnings_configure(&d->warnings, &d->config.warnings, d->loop_time);
-    haptic_buzz_configure(&d->haptic_buzz, &d->config.warnings, d->loop_time);
+    warnings_configure(&d->warnings, &d->config.warnings);
+    // haptic_buzz_configure(&d->haptic_buzz, &d->config.warnings);
 
     d->disengage_timer = d->current_time;
 
@@ -291,6 +292,9 @@ static void init_vars(data *d) {
     traction_init(&d->traction);
     // d->use_strong_brake = false;
 
+    warnings_init(&d->warnings);
+    haptic_buzz_init(&d->haptic_buzz);
+
     d->setpoint = d->imu.pitch_balance;
     d->setpoint_target_interpolated = d->imu.pitch_balance;
     d->setpoint_target = 0.0f;
@@ -305,15 +309,12 @@ static void init_vars(data *d) {
 static void reset_vars(data *d) {
     const float time_disengaged = d->current_time - d->disengage_timer;
     // const float alpha = half_time_to_alpha(0.1f, time_disengaged);
-    const float alpha = clamp(time_disengaged, 0.0f, 1.0f);
-
-    warnings_reset(&d->warnings, alpha);
+    float alpha = clamp(time_disengaged, 0.0f, 1.0f);
 
     modifiers_reset(&d->modifiers, alpha);
     input_tilt_reset(&d->input_tilt);
 
     pid_reset(&d->pid, &d->config.tune.pid, alpha);
-    haptic_buzz_reset(&d->haptic_buzz);
 
     filter_ema(&d->setpoint, d->imu.pitch_balance, alpha);
     filter_ema(&d->setpoint_target_interpolated, d->imu.pitch_balance, alpha);
@@ -365,52 +366,67 @@ static bool is_sensor_engaged(const data *d) {
         return true;
     }
 
-    if (d->footpad_sensor.state == FS_LEFT || d->footpad_sensor.state == FS_RIGHT) {
-        if (d->config.faults.is_posi_enabled) {
-            return true;
-        }
-
-        if (d->config.startup.simplestart_enabled) {
-            // simple start is disabled for a few seconds after disengaging
-            if (d->current_time - d->disengage_timer > 2.5f) {
-                return true;
-            }
-        }
+    if (d->footpad_sensor.state == FS_NONE) {
+        return false;
     }
 
-    return false;
+    // Half Engaged:
+
+    bool board_ghosted = d->state.stop_condition == STOP_GHOST;
+    bool after_disengage = d->current_time - d->disengage_timer < 2.0f;
+    bool after_ghost = board_ghosted && after_disengage;
+    bool riding_backwards = d->motor.board_speed < - d->config.faults.ghost_speed;
+
+    if (after_ghost || riding_backwards) {
+        return false;
+    }
+
+    return true;
+
+    // if (d->config.faults.is_posi_enabled) {
+    //     return true;
+    // }
+
+    // if (d->config.startup.simplestart_enabled) {
+    //     // simple start is disabled for a few seconds after disengaging
+    //     if (d->current_time - d->disengage_timer > 2.0f) {
+    //         return true;
+    //     }
+    // }
 }
 
 static bool check_faults(data *d) {
-    // CfgFaults faults = d->config.faults;
+    // CfgFaults cfg = d->config.faults;
 
-    const bool disable_switch_faults =
+    bool disable_switch_faults =
         d->config.faults.moving_fault_disabled &&
-        // Rolling forward (not backwards!)
-        d->motor.speed > (d->config.faults.switch_half_speed * 2) &&
+        d->motor.board_speed > 0.5f &&
         fabsf(d->imu.pitch) < 40 && fabsf(d->imu.roll) < 75;
 
     // Switch fully open
     if (d->footpad_sensor.state == FS_NONE) {
         if (!disable_switch_faults) {
-            const float switch_full_time = d->current_time - d->fault_switch_full_timer;
-            const float switch_full_delay = 0.001f * d->config.faults.switch_full_delay;
-
-            const float switch_half_delay = 0.001f * d->config.faults.switch_half_delay;
-            const bool is_slow = d->motor.speed_abs < d->config.faults.switch_half_speed * 6;
+            float switch_full_time = d->current_time - d->fault_switch_full_timer;
+            float switch_full_delay = 0.001f * d->config.faults.switch_full_delay;
 
             if (switch_full_time > switch_full_delay) {
                 state_stop(&d->state, STOP_SWITCH_FULL);
                 return true;
-            } else if (switch_full_time > switch_half_delay && is_slow) {
-                state_stop(&d->state, STOP_SWITCH_FULL);
-                return true;
             }
+
+            // float switch_half_delay = 0.001f * d->config.faults.switch_half_delay;
+            // bool is_slow = d->motor.speed_abs < d->config.faults.switch_half_speed * 6;
+
+            // } else if (switch_full_time > switch_half_delay && is_slow) {
+            //     state_stop(&d->state, STOP_SWITCH_FULL);
+            //     return true;
+            // }
         }
 
+        // Feature: Quick Stop
         // TODO only under load?
-        if (d->motor.speed_abs < 0.2f && fabsf(d->imu.pitch) > 14 &&
-            fabsf(d->input_tilt.interpolated) < 30 && sign(d->imu.pitch) == d->motor.speed_sign) {
+        if (d->motor.speed_abs < 0.2f && fabsf(d->imu.pitch) > 14.0f &&
+            sign(d->imu.pitch) == d->motor.speed_sign) {
             state_stop(&d->state, STOP_QUICKSTOP);
             return true;
         }
@@ -449,26 +465,40 @@ static bool check_faults(data *d) {
     }
 
     // Switch partially open and stopped
-    if (!d->config.faults.is_posi_enabled) {
-        const bool is_above_switch_half_speed = d->motor.speed_abs < d->config.faults.switch_half_speed;
+    // if (!d->config.faults.is_posi_enabled) {
+    //     bool is_below_switch_half_speed = d->motor.speed_abs < d->config.faults.switch_half_speed;
 
-        if (!is_sensor_engaged(d) && is_above_switch_half_speed) {
-            const float switch_half_time = d->current_time - d->fault_switch_half_timer;
-            const float switch_half_delay = 0.001f * d->config.faults.switch_half_delay;
+    //     if (!is_sensor_engaged(d) && is_below_switch_half_speed) {
+    //         float switch_half_time = d->current_time - d->fault_switch_half_timer;
+    //         float switch_half_delay = 0.001f * d->config.faults.switch_half_delay;
 
-            if (switch_half_time > switch_half_delay) {
-                state_stop(&d->state, STOP_SWITCH_HALF);
-                return true;
-            }
-        } else {
-            d->fault_switch_half_timer = d->current_time;
+    //         if (switch_half_time > switch_half_delay) {
+    //             state_stop(&d->state, STOP_SWITCH_HALF);
+    //             return true;
+    //         }
+    //     } else {
+    //         d->fault_switch_half_timer = d->current_time;
+    //     }
+    // }
+
+    // Feature: Ghost Safeguard
+    // TODO exclude wheelslip - use confidence
+    bool riding_backwards = d->motor.board_speed < - d->config.faults.ghost_speed;
+    bool sensor_half_active = d->footpad_sensor.state == FS_LEFT || d->footpad_sensor.state == FS_RIGHT;
+    if (riding_backwards && sensor_half_active) {
+        float ghost_time = d->current_time - d->fault_ghost_timer;
+        if (ghost_time > d->config.faults.ghost_delay) {
+            state_stop(&d->state, STOP_GHOST);
+            return true;
         }
+    } else {
+        d->fault_ghost_timer = d->current_time;
     }
 
     // Check roll angle
     if (fabsf(d->imu.roll) > d->config.faults.roll_threshold) {
-        const float roll_time = d->current_time - d->fault_angle_roll_timer;
-        const float roll_delay = 0.001f * d->config.faults.roll_delay;
+        float roll_time = d->current_time - d->fault_angle_roll_timer;
+        float roll_delay = 0.001f * d->config.faults.roll_delay;
 
         if (roll_time > roll_delay) {
             state_stop(&d->state, STOP_ROLL);
@@ -479,9 +509,9 @@ static bool check_faults(data *d) {
     }
 
     // Check pitch angle
-    if (fabsf(d->imu.pitch) > d->config.faults.pitch_threshold && fabsf(d->input_tilt.interpolated) < 30) {
-        const float pitch_time = d->current_time - d->fault_angle_pitch_timer;
-        const float pitch_delay = d->config.faults.pitch_delay;
+    if (fabsf(d->imu.pitch - d->input_tilt.interpolated) > d->config.faults.pitch_threshold) {
+        float pitch_time = d->current_time - d->fault_angle_pitch_timer;
+        float pitch_delay = d->config.faults.pitch_delay;
 
         if (pitch_time > pitch_delay) {
             state_stop(&d->state, STOP_PITCH);
@@ -568,14 +598,16 @@ static bool startup_conditions_met(data *d) {
         return false;
     }
 
-    const bool is_pitch_valid = fabsf(d->imu.pitch_balance) < d->startup_pitch_tolerance;
-    const bool is_roll_valid = fabsf(d->imu.roll) < d->config.startup.roll_tolerance;
+    bool is_pitch_valid = fabsf(d->imu.pitch_balance) < d->startup_pitch_tolerance;
+    bool is_roll_valid = fabsf(d->imu.roll) < d->config.startup.roll_tolerance;
 
     if (is_pitch_valid && is_roll_valid) {
         return true;
     }
 
-    const bool is_push_start = d->config.startup.pushstart_enabled && d->motor.speed_abs > 1.0f;
+    // TODO only positive speed when ghost safeguard is enabled
+    // bool is_push_start = d->config.startup.pushstart_enabled && d->motor.speed_abs > 1.0f;
+    bool is_push_start = d->config.startup.pushstart_enabled && d->motor.speed > 1.0f;
     if (is_push_start && (fabsf(d->imu.pitch_balance) < 45) && is_roll_valid) {
         return true;
     }
@@ -734,13 +766,23 @@ static void stig_thd(void *arg) {
 
             pid_update(&d->pid, &d->imu, &d->motor, &d->config.tune.pid, d->setpoint, confidence);
 
-            const float warning_debug = d->traction.slip_factor;
-            warnings_update(&d->warnings, &d->config.warnings, &d->motor, &d->footpad_sensor, warning_debug);
-            haptic_buzz_update(&d->haptic_buzz, &d->warnings, &d->config.warnings, &d->motor);
+            bool warning_ghost = d->current_time - d->fault_ghost_timer > 0.0f;
+            bool warning_debug = d->traction.slip_factor > 0.5f;
+            warnings_update(
+                &d->warnings,
+                &d->config.warnings,
+                &d->motor,
+                &d->footpad_sensor,
+                warning_ghost,
+                warning_debug
+            );
+            if (d->warnings.type != WARNING_NONE) {
+                d->warnings.type_last = d->warnings.type;
+            }
 
             float torque_requested = d->pid.pid_value * d->traction.multiplier;
             // torque_requested = clamp_sym(torque_requested, d->config.tune.torque_limit)  // XXX
-            torque_requested += d->haptic_buzz.buzz_output;
+            // torque_requested += d->haptic_buzz.buzz_output;
 
             const float current_requested = torque_requested / d->motor.c_torque;
             set_current(current_requested, &d->motor);
@@ -768,6 +810,14 @@ static void stig_thd(void *arg) {
         case (STATE_DISABLED):
             break;
         }
+
+        haptic_buzz_update(
+            &d->haptic_buzz,
+            &d->config.haptics,
+            &d->motor,
+            d->warnings.type,
+            d->state.state
+        );
 
         // d->computation_time = VESC_IF->system_time() - d->current_time;
         // const float loop_time_correction = d->computation_time + d->loop_overshoot_filtered;
@@ -963,7 +1013,7 @@ static void send_realtime_data(data *d) {
 
     buffer[ind++] = d->state.sat << 4 | d->state.stop_condition;
 
-    buffer[ind++] = d->warnings.reason;  // previously beep_reason
+    buffer[ind++] = d->warnings.type_last;  // previously beep_reason
 
     buffer_append_float32_auto(buffer, d->imu.pitch, &ind);
     buffer_append_float32_auto(buffer, d->imu.pitch_balance, &ind);

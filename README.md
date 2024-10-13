@@ -17,6 +17,7 @@ This is my personal, stripped down version of Refloat. I do not care about backw
     - Using a 2nd order IIR filter for modifiers and input tilt smoothing.
 - Traction Control
     - Option to reduce torque when a drop or wheelslip is detected.
+- Rudimentary ghost safeguard
 - Miscellaneous
     - Use torque [Nm] instead of current [A] for almost everything.
     - Use m/s instead of ERPM for most speed-based things. As a rule of thumb, 1000 ERPM ≈ 1 m/s.
@@ -47,7 +48,11 @@ Many parameters are not compatible with Refloat, so it is best to start with the
 
 ## Warnings
 
-⚠️ **There are no Safety Tiltbacks!** Instead the only warning system in place is a version of "Haptic Buzz", so make sure it's configured properly.
+⚠️ **Requires 6.05+ firmware!**
+
+⚠️ **There are no Safety Tiltbacks!** Instead the only warning system in place is a version of "Haptic Feedback", so make sure it's configured properly.
+
+Heel lift is no longer possible, posi FTW.
 
 Although some parameter names remain the same, many have been changed and can't use Refloat's equivalent values. See the section above for more details.
 
