@@ -67,7 +67,6 @@ static bool get_beep_target(BuzzType buzz_type, float speed) {
     const float current_time = VESC_IF->system_time();
     const float time = current_time * speed;
     const float x = time - (long) time;
-    // int beat = floorf(4.0f * x);
     beep = (x < 0.5f);
     return beep;
 }

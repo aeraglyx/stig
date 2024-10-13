@@ -101,8 +101,6 @@ typedef struct {
 
     float current_time;
     float last_time;
-    float loop_time_measured;
-    float loop_time_measured_filtered;
     float loop_overshoot_filtered;
     // float computation_time;
 
@@ -307,13 +305,12 @@ static void init_vars(data *d) {
 }
 
 static void reset_vars(data *d) {
-    const float time_disengaged = d->current_time - d->disengage_timer;
+    float time_disengaged = d->current_time - d->disengage_timer;
     // const float alpha = half_time_to_alpha(0.1f, time_disengaged);
     float alpha = clamp(time_disengaged, 0.0f, 1.0f);
 
     modifiers_reset(&d->modifiers, alpha);
     input_tilt_reset(&d->input_tilt);
-
     pid_reset(&d->pid, &d->config.tune.pid, alpha);
 
     filter_ema(&d->setpoint, d->imu.pitch_balance, alpha);
@@ -348,7 +345,7 @@ static void reset_vars(data *d) {
 //     }
 // }
 
-static float get_setpoint_adjustment_step_size(data *d) {
+static float get_setpoint_adjustment_step_size(const data *d) {
     switch (d->state.sat) {
     case (SAT_NONE):
         return d->tiltback_return_step_size;
@@ -357,7 +354,7 @@ static float get_setpoint_adjustment_step_size(data *d) {
     case (SAT_REVERSESTOP):
         return d->reverse_stop_step_size;
     default:
-        return 0;
+        return 0.0f;
     }
 }
 
@@ -616,7 +613,7 @@ static bool startup_conditions_met(data *d) {
 }
 
 static void brake(data *d) {
-    const float brake_timeout_length = 1.0f;  // Brake Timeout hard-coded to 1s
+    float brake_timeout_length = 1.0f;  // Brake Timeout hard-coded to 1s
     if (fabsf(d->motor.erpm) > ERPM_MOVING_THRESHOLD || d->brake_timeout == 0.0f) {
         d->brake_timeout = d->current_time + brake_timeout_length;
     }
@@ -642,7 +639,7 @@ static void brake(data *d) {
 
 static void set_current(float current, const MotorData *mot) {
     float current_limit = mot->braking ? mot->current_min : mot->current_max;
-    const float current_limited = clamp_sym(current, current_limit);
+    float current_limited = clamp_sym(current, current_limit);
 
     VESC_IF->timeout_reset();
     VESC_IF->mc_set_current_off_delay(0.025f);
@@ -664,12 +661,13 @@ static void imu_ref_callback(float *acc, float *gyro, float *mag, float dt) {
 
 static void time_vars_update(data *d) {
     d->current_time = VESC_IF->system_time();
-    d->loop_time_measured = d->current_time - d->last_time;
+    float loop_time_measured = d->current_time - d->last_time;
     d->last_time = d->current_time;
 
-    filter_ema(&d->loop_time_measured_filtered, d->loop_time_measured, 0.1f);
-    const float loop_overshoot = d->loop_time_measured - d->loop_time;
     // TODO measure loop overshoot only when running
+    float loop_overshoot = loop_time_measured - d->loop_time;
+
+    // TODO use 2nd order IIR
     filter_ema(&d->loop_overshoot_filtered, loop_overshoot, 0.002f);
 }
 
@@ -706,6 +704,7 @@ static void stig_thd(void *arg) {
                 state_engage(&d->state);
                 d->state.state = STATE_READY;
 
+                // TODO
                 // // if within 5V of LV tiltback threshold, issue 1 beep for each volt below that
                 // float bat_volts = VESC_IF->mc_get_input_voltage_filtered();
                 // float threshold = d->config.warnings.lv.threshold + 5.0f;
@@ -717,7 +716,6 @@ static void stig_thd(void *arg) {
                 //     // Let the rider know that the board is ready (one long beep)
                 //     beep_alert(d, 1, true);
                 // }
-                // TODO
             }
             break;
 
@@ -726,7 +724,7 @@ static void stig_thd(void *arg) {
             // TODO put switching into STATE_READY outside check_faults() ?
             if (check_faults(d)) {
                 if (d->state.stop_condition == STOP_SWITCH_FULL) {
-                    // dirty landings: add extra margin when rightside up
+                    // dirty landings: add extra margin
                     d->startup_pitch_tolerance =
                         d->config.startup.pitch_tolerance + d->startup_pitch_trickmargin;
                     d->fault_angle_pitch_timer = d->current_time;
@@ -742,7 +740,7 @@ static void stig_thd(void *arg) {
             calculate_setpoint_interpolated(d);
             d->setpoint = d->setpoint_target_interpolated;
 
-            const float confidence = 1.0f - d->traction.traction_soft_release;
+            float confidence = 1.0f - d->traction.traction_soft_release;
 
             modifiers_update(
                 &d->modifiers,
@@ -784,7 +782,7 @@ static void stig_thd(void *arg) {
             // torque_requested = clamp_sym(torque_requested, d->config.tune.torque_limit)  // XXX
             // torque_requested += d->haptic_buzz.buzz_output;
 
-            const float current_requested = torque_requested / d->motor.c_torque;
+            float current_requested = torque_requested / d->motor.c_torque;
             set_current(current_requested, &d->motor);
             break;
 

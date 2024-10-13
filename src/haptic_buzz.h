@@ -24,10 +24,6 @@
 #include "warnings.h"
 
 typedef struct {
-    // float buzz_output;
-    // float t;
-    // float step;
-    // float amplitude;
     bool is_playing;
 } HapticBuzz;
 
