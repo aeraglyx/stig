@@ -27,16 +27,13 @@
 
 typedef struct {
     float erpm;
-    // float erpm_smooth;
     float erpm_gyro_ratio;
     float speed_erpm_ratio;
 
     float speed;
     float speed_abs;
     int8_t speed_sign;
-    // float speed_smooth;
     float fast_boi;
-    // float speed_sign_smooth;
     float speed_last;
 
     float board_speed;
@@ -47,19 +44,18 @@ typedef struct {
 
     float c_torque;
     float torque;
-    // float torque_smooth;
 
     float duty_cycle;
 
     float wheel_accel;
     float accel_smooth;
     AccelerationSource acceleration_source;
-    // bool use_imu_accel;
+    bool use_erpm_correction;
 
     SlopeData slope_data;
     float slope;
 
-    float traction_filter_alpha;
+    float data_filter_alpha;
     float mod_filter_alpha;
     float board_speed_alpha;
 

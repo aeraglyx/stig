@@ -3635,8 +3635,8 @@ Item {
                             Spacer {}
                             FactorBar {id: debugSpeedTiltSetpoint; label: "Wheelslip"}
                             ValueBar {id: debugRemoteTiltSetpoint; label: "Road Slope"; unitString: "°"}
-                            ValueBar {id: debugTest1; label: "IMU Acc."; unitString: " g"; softLimit: 1}
-                            ValueBar {id: debugTest2; label: "Wheel Acc."; unitString: " g"; softLimit: 1}
+                            ValueBar {id: debugTest1; label: "IMU Acc."; unitString: " g"; softLimit: 0.5}
+                            ValueBar {id: debugTest2; label: "Wheel Acc."; unitString: " g"; softLimit: 0.5}
 
                         }
                     }

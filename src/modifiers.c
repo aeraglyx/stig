@@ -25,7 +25,6 @@
 
 void modifiers_configure(Modifiers *mod, const CfgTune *cfg, float dt) {
     mod->winddown_alpha = half_time_to_alpha(cfg->traction.mod_winddown, dt);
-    // mod->tilt_alpha = half_time_to_alpha(cfg->modifiers.filter, dt);
     mod->tilt_alpha = half_time_to_alpha_iir2(cfg->modifiers.filter, dt);
     mod->tilt_step = cfg->modifiers.speed_limit * dt;
     mod->fusion_alpha = half_time_to_alpha(cfg->torque_tilt.filter, dt);
@@ -42,10 +41,14 @@ static float get_boost(float boost, float fast_boi) {
 }
 
 static float atr_tilt(const CfgAtr *cfg, const MotorData *mot) {
-    const bool uphill = sign(mot->slope) == sign(mot->board_speed);
-    const float strength = uphill ? cfg->strength_up : cfg->strength_down;
-    // const float strength_boost = powf(cfg->strength_boost, mot->fast_boi);
-    const float strength_boost = get_boost(cfg->strength_boost, mot->fast_boi);
+    if (!cfg->enabled) {
+        return 0.0f;
+    }
+
+    bool uphill = sign(mot->slope) == sign(mot->board_speed);
+    float strength = uphill ? cfg->strength_up : cfg->strength_down;
+    // float strength_boost = powf(cfg->strength_boost, mot->fast_boi);
+    float strength_boost = get_boost(cfg->strength_boost, mot->fast_boi);
 
     float target = dead_zone(mot->slope, cfg->threshold);
     target *= strength * strength_boost;
@@ -55,18 +58,22 @@ static float atr_tilt(const CfgAtr *cfg, const MotorData *mot) {
 }
 
 static float torque_tilt(const CfgTorqueTilt *cfg, const MotorData *mot, float yaw_rate, Modifiers *mod) {
-    // TODO test using above/below "setpoint"
-    const float torque = mot->torque;
-    const float ratio = mot->slope_data.k_accel / mot->slope_data.k_drive;
-    const float torque_based_on_accel = mot->accel_smooth * ratio;
+    if (!cfg->enabled) {
+        return 0.0f;
+    }
 
-    const float accel_offset = torque_based_on_accel - torque;
+    // TODO test using above/below "setpoint"
+    float torque = mot->torque;
+    float ratio = mot->slope_data.k_accel / mot->slope_data.k_drive;
+    float torque_based_on_accel = mot->accel_smooth * ratio;
+
+    float accel_offset = torque_based_on_accel - torque;
     filter_ema(&mod->accel_offset_smooth, accel_offset, mod->fusion_alpha);
     
-    const float strength = mot->braking ? cfg->strength_regen : cfg->strength;
-    // const float strength_boost = powf(cfg->strength_boost, mot->fast_boi);
-    const float strength_boost = get_boost(cfg->strength_boost, mot->fast_boi);
-    const float turn_boost = 1.0f + fabsf(yaw_rate) * cfg->turn_boost * 0.00125f;
+    float strength = mot->braking ? cfg->strength_regen : cfg->strength;
+    // float strength_boost = powf(cfg->strength_boost, mot->fast_boi);
+    float strength_boost = get_boost(cfg->strength_boost, mot->fast_boi);
+    float turn_boost = 1.0f + fabsf(yaw_rate) * cfg->turn_boost * 0.00125f;
 
     // TODO feed forward resistances
     float target = torque + mod->accel_offset_smooth * cfg->method;
@@ -80,9 +87,9 @@ static float torque_tilt(const CfgTorqueTilt *cfg, const MotorData *mot, float y
 static float speed_tilt(const CfgSpeedTilt *cfg, float speed) {
     // TODO more user friendly low speed and high speed setting
 
-    const float constant_lerp = clamp_sym(speed * 2.0f, 1.0f);
-    const float constant = constant_lerp * cfg->constant;
-    const float variable = speed * cfg->variable;
+    float constant_lerp = clamp_sym(speed * 2.0f, 1.0f);
+    float constant = constant_lerp * cfg->constant;
+    float variable = speed * cfg->variable;
 
     return constant + variable;
 }
@@ -114,7 +121,7 @@ void modifiers_update(
     target += speed_tilt(&cfg->speed_tilt, motor->board_speed);
     // TODO turn tilt
 
-    target = clamp_sym(target, cfg->modifiers.angle_limit);
+    // target = clamp_sym(target, cfg->modifiers.angle_limit);
     mod->target = target;
 
     float interpolated_last = mod->interpolated;

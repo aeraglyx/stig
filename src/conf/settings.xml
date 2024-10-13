@@ -1387,7 +1387,7 @@ p, li { white-space: pre-wrap; }
             <suffix> A</suffix>
             <vTx>7</vTx>
         </brake_current>
-        <tune.modifiers.angle_limit>
+        <!-- <tune.modifiers.angle_limit>
             <longName>Angle Limit</longName>
             <type>1</type>
             <transmittable>1</transmittable>
@@ -1408,7 +1408,7 @@ p, li { white-space: pre-wrap; }
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> °</suffix>
             <vTx>7</vTx>
-        </tune.modifiers.angle_limit>
+        </tune.modifiers.angle_limit> -->
         <tune.modifiers.speed_limit>
             <longName>Speed Limit</longName>
             <type>1</type>
@@ -1439,7 +1439,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Half time of modifier filtering. This is an additional smoothing of the final modifier setpoint.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Half time of modifier filtering. This is applied after the final targets are calculated. Stronger filter will make modifiers smoother but slower.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
             <cDefine>CFG_DFLT_TUNE_MODIFIERS_FILTER</cDefine>
             <editorDecimalsDouble>2</editorDecimalsDouble>
             <editorScale>1</editorScale>
@@ -1461,7 +1461,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Half time of modifier filtering. Used for ATR's slope estimation, Torque Tilt and more.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Board speed fuses accelerometer and ERPM, this value influences how long it takes to approach the noisier (but on average correct) ERPM value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
             <cDefine>CFG_DFLT_TUNE_MODIFIERS_BOARD_SPEED_FILTER</cDefine>
             <editorDecimalsDouble>2</editorDecimalsDouble>
             <editorScale>1</editorScale>
@@ -1469,7 +1469,7 @@ p, li { white-space: pre-wrap; }
             <maxDouble>1.0</maxDouble>
             <minDouble>0.0</minDouble>
             <showDisplay>0</showDisplay>
-            <stepDouble>0.01</stepDouble>
+            <stepDouble>0.05</stepDouble>
             <valDouble>0.25</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> s</suffix>
@@ -1483,12 +1483,36 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Used for ATR and Torque Tilt. IMU will be smoother but will not adapt to road slope.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Used for ATR and Torque Tilt. IMU will be smoother but will not adapt to road slope properly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
             <cDefine>CFG_DFLT_TUNE_MODIFIERS_ACCELERATION_SOURCE</cDefine>
             <valInt>1</valInt>
             <enumNames>ERPM</enumNames>
             <enumNames>IMU</enumNames>
         </tune.modifiers.acceleration_source>
+        <tune.modifiers.use_erpm_correction>
+            <longName>Use ERPM Correction</longName>
+            <type>5</type>
+            <transmittable>1</transmittable>
+            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Subtract speed caused by pitch changes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_TUNE_MODIFIERS_USE_ERPM_CORRECTION</cDefine>
+            <valInt>1</valInt>
+        </tune.modifiers.use_erpm_correction>
+        <tune.torque_tilt.enabled>
+            <longName>Enable Torque Tilt</longName>
+            <type>5</type>
+            <transmittable>1</transmittable>
+            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Master switch for debugging purposes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_TUNE_TORQUE_TILT_ENABLED</cDefine>
+            <valInt>1</valInt>
+        </tune.torque_tilt.enabled>
         <tune.torque_tilt.strength>
             <longName>Strength Accel</longName>
             <type>1</type>
@@ -1713,6 +1737,18 @@ p, li { white-space: pre-wrap; }
             <suffix></suffix>
             <vTx>7</vTx>
         </tune.torque_tilt.turn_boost>
+        <tune.atr.enabled>
+            <longName>Enable ATR</longName>
+            <type>5</type>
+            <transmittable>1</transmittable>
+            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Master switch for debugging purposes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_TUNE_ATR_ENABLED</cDefine>
+            <valInt>1</valInt>
+        </tune.atr.enabled>
         <tune.atr.strength_up>
             <longName>Strength Uphill</longName>
             <type>1</type>
@@ -3455,11 +3491,13 @@ p, li { white-space: pre-wrap; }
         <ser>startup.dirtylandings_enabled</ser>
         <ser>tune.pid.soft_start</ser>
         <ser>brake_current</ser>
-        <ser>tune.modifiers.angle_limit</ser>
+        <!-- <ser>tune.modifiers.angle_limit</ser> -->
         <ser>tune.modifiers.speed_limit</ser>
         <ser>tune.modifiers.filter</ser>
         <ser>tune.modifiers.board_speed_filter</ser>
         <ser>tune.modifiers.acceleration_source</ser>
+        <ser>tune.modifiers.use_erpm_correction</ser>
+        <ser>tune.atr.enabled</ser>
         <ser>tune.atr.strength_up</ser>
         <ser>tune.atr.strength_down</ser>
         <ser>tune.atr.strength_boost</ser>
@@ -3468,6 +3506,7 @@ p, li { white-space: pre-wrap; }
         <ser>tune.atr.speed_max</ser> -->
         <ser>tune.atr.threshold</ser>
         <ser>tune.atr.angle_limit</ser>
+        <ser>tune.torque_tilt.enabled</ser>
         <ser>tune.torque_tilt.strength</ser>
         <ser>tune.torque_tilt.strength_regen</ser>
         <ser>tune.torque_tilt.strength_boost</ser>
@@ -3575,7 +3614,7 @@ p, li { white-space: pre-wrap; }
                 <subgroupParams>
                     <param>::sep::General</param>
                     <param>tune.modifiers.filter</param>
-                    <param>tune.modifiers.angle_limit</param>
+                    <!-- <param>tune.modifiers.angle_limit</param> -->
                     <param>tune.modifiers.speed_limit</param>
                     <param>::sep::Speed Tilt</param>
                     <param>tune.speed_tilt.constant</param>
@@ -3584,17 +3623,19 @@ p, li { white-space: pre-wrap; }
                     <param>tune.traction.filter</param>
                     <param>tune.modifiers.board_speed_filter</param>
                     <param>tune.modifiers.acceleration_source</param>
+                    <param>tune.modifiers.use_erpm_correction</param>
                 </subgroupParams>
             </subgroup>
             <subgroup>
                 <subgroupName>ATR</subgroupName>
                 <subgroupParams>
-                    <param>::sep::General</param>
+                    <!-- <param>::sep::General</param> -->
+                    <param>tune.atr.enabled</param>
                     <param>tune.atr.strength_up</param>
                     <param>tune.atr.strength_down</param>
                     <param>tune.atr.strength_boost</param>
                     <param>tune.atr.threshold</param>
-                    <param>tune.atr.tightness</param>
+                    <!-- <param>tune.atr.tightness</param> -->
                     <!-- <param>::sep::Nose Angling</param>
                     <param>tune.atr.speed</param>
                     <param>tune.atr.speed_max</param> -->
@@ -3603,12 +3644,14 @@ p, li { white-space: pre-wrap; }
                     <param>hardware.motor.rolling_resistance</param>
                     <param>rider.drag_coefficient</param>
                     <param>hardware.motor.acceleration_resistance</param>
+                    <param>tune.modifiers.acceleration_source</param>
                 </subgroupParams>
             </subgroup>
             <subgroup>
                 <subgroupName>Torque Tilt</subgroupName>
                 <subgroupParams>
-                    <param>::sep::General</param>
+                    <!-- <param>::sep::General</param> -->
+                    <param>tune.torque_tilt.enabled</param>
                     <param>tune.torque_tilt.strength</param>
                     <param>tune.torque_tilt.strength_regen</param>
                     <param>tune.torque_tilt.strength_boost</param>
@@ -3626,7 +3669,7 @@ p, li { white-space: pre-wrap; }
             <subgroup>
                 <subgroupName>Turn Tilt</subgroupName>
                 <subgroupParams>
-                    <param>::sep::General</param>
+                    <!-- <param>::sep::General</param> -->
                     <param>tune.turn_tilt.strength</param>
                     <param>tune.turn_tilt.strength_boost</param>
                     <!-- <param>::sep::Nose Angling</param> -->
@@ -3652,7 +3695,7 @@ p, li { white-space: pre-wrap; }
             <subgroup>
                 <subgroupName>Input Tilt</subgroupName>
                 <subgroupParams>
-                    <param>::sep::General</param>
+                    <!-- <param>::sep::General</param> -->
                     <param>tune.input_tilt.angle_limit</param>
                     <param>tune.input_tilt.speed_limit</param>
                     <param>tune.input_tilt.filter</param>

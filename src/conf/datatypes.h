@@ -240,6 +240,7 @@ typedef struct {
 } CfgTraction;
 
 typedef struct {
+    float enabled;
     float strength_up;
     float strength_down;
     float strength_boost;
@@ -252,6 +253,7 @@ typedef struct {
 } CfgAtr;
 
 typedef struct {
+    float enabled;
     float strength;
     float strength_regen;
     float strength_boost;
@@ -289,11 +291,12 @@ typedef enum {
 
 // TODO move modifiers here
 typedef struct {
-    float angle_limit;
+    // float angle_limit;
     float speed_limit;
     float filter;
     float board_speed_filter;
     AccelerationSource acceleration_source;
+    bool use_erpm_correction;
 } CfgModifiers;
 
 typedef struct {
