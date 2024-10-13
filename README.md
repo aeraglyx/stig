@@ -30,7 +30,7 @@ Make sure you have a backup of your configuration for reverting back. After inst
 
 - Cells in Series (e.g. ADV has a 20s2p battery, so use 20)
 - Double check ADC Voltages
-- Rider Mass, Rider Height and Board Mass
+- Rider Mass and Board Mass
 - Motor Torque Constant (see [ATR docs](docs/atr.md))
 - LED Type is set to External Module by default (changes require reboot)
 

@@ -165,7 +165,6 @@ typedef struct {
 
 typedef struct {
     float mass;
-    float height;
     float drag_coefficient;
 } CfgRider;
 

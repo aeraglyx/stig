@@ -222,7 +222,6 @@ Item {
                 "hardware.motor.rolling_resistance",
                 "hardware.motor.acceleration_resistance",
                 "rider.mass",
-                "rider.height",
                 "rider.drag_coefficient",
                 "warnings.battery_cells",
                 "warnings.hv_threshold",

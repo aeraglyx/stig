@@ -18,15 +18,23 @@
 #include "slope_estimation.h"
 #include "utils.h"
 
+#include "vesc_c_if.h"
+
 #include <math.h>
 
+static float estimate_frontal_area(float rider_mass) {
+    float rider_area = 0.02f * powf(rider_mass, 0.75f);
+    float board_area = 0.03f;  // hard-coded for now
+    return rider_area + board_area;
+}
+
 void slope_configure(SlopeData *data, const CfgHardware *hw, const CfgRider *rider) {
-    const float m = hw->mass + rider->mass;
-    const float g = 9.807f;  // earth gravity
-    const float r = 0.145f;  // TODO get wheel radius
-    const float rho = 1.225f;  // air density, should be a function of temperature
-    const float c_drag = rider->drag_coefficient;
-    const float area = 0.025f + 0.02f * powf(rider->mass, 0.75f);
+    float m = hw->mass + rider->mass;
+    float g = 9.807f;  // earth gravity
+    float r = 0.5f * VESC_IF->get_cfg_float(CFG_PARAM_si_wheel_diameter);
+    float rho = 1.2f;  // air density
+    float c_drag = rider->drag_coefficient;
+    float area = estimate_frontal_area(rider->mass);
 
     data->k_drive = 1.0f / (r * m * g);
     data->k_drag = 0.5f * rho * c_drag * area / (m * g);
@@ -38,11 +46,11 @@ float slope_estimate(SlopeData *data, float torque, float speed, float accel) {
     // torque in [Nm], speed in [m/s], accel in [g]
 
     // accelerations in [g] produced by the respective forces
-    const float a_drive = data->k_drive * torque;
-    const float a_drag = data->k_drag * speed * fabsf(speed);
-    const float a_roll = data->k_roll * clamp_sym(4.0f * speed, 1.0f);
-    const float a_accel = data->k_accel * accel;
+    float a_drive = data->k_drive * torque;
+    float a_drag = data->k_drag * speed * fabsf(speed);
+    float a_roll = data->k_roll * clamp_sym(16.0f * speed, 1.0f);
+    float a_accel = data->k_accel * accel;
 
-    const float x = a_drive - a_drag - a_roll - a_accel;
+    float x = a_drive - a_drag - a_roll - a_accel;
     return rad2deg(asin_approx(x));
 }
