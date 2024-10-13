@@ -2,12 +2,12 @@
 
 This package tries to model ATR after real world vehicle dynamics, which should make tunes more consistent for different riders and setups. To showcase its simplicity, the next section looks at how a beginner rider could tune the proposed ATR.
 
+
 ## Tuning the Easy Way
 
 - Input your weight [kg] and board weight [kg] in Specs
-- Find your motor in the table below and set Specs > Motor Torque Constant accordingly
-<!-- - Check that Wheel Diameter (MotorCfg > Additional Info) is correct (~ 280-300 mm) -->
-
+- Check that Wheel Diameter (Motor Cfg > Additional Info) is correct (~ 280-300 mm)
+- Find your motor in the following table and set Specs > Motor Torque Constant accordingly
 
 | Motor | Torque Constant |
 | ----- | --------------- |
@@ -25,6 +25,7 @@ This package tries to model ATR after real world vehicle dynamics, which should 
 *Table derived from values listed [here](https://pev.dev/t/common-motor-foc-ranges-resistance-inductance-flux-linkage/1771), original data by Dado Mista.*
 
 Assuming you have a typical setup, that's it - you should now have a usable ATR tune. Adjust strengths and speeds to your liking, strength of 1 means parallel to the ground (typical values 0.0 - 0.5).
+
 
 ## Advanced Fine Tuning
 
@@ -79,21 +80,6 @@ Here are some reference values for my setup:
 | ----------- | ----------- | ----------- | ----------- | ----------- |
 | CC v2 + B7 @ ~5 psi | 0.68 | 0.04 | 1.25 | 0.7 |
 
-<!-- Here are some expected torque constant values for common motors. Derived from values listed in [this pev.dev post](https://pev.dev/t/common-motor-foc-ranges-resistance-inductance-flux-linkage/1771).
-
-| Motor | Torque Constant |
-| ----------- | ----------- |
-| Phub188 | 0.52 |
-| SuperFlux Mk1 | 0.54 |
-| SuperFlux Mk2 (HS) | 0.57 |
-| SuperFlux Mk2 (HT) | 0.66 |
-| CannonCore V1 | 0.83 |
-| CannonCore V2 | 0.68 |
-| Hypercore | 0.61 |
-| Hypercore N42 | 0.63 |
-| Hypercore N48 | 0.64 |
-| Hypercore N52 | 0.64 | -->
-
 
 ## How Does It Work?
 
@@ -113,20 +99,8 @@ $$ F_\mathrm{drag} = \frac{1}{2} \cdot \rho \cdot C_d \cdot A \cdot v^2 $$
 
 $$ F_\mathrm{gravity} = m \cdot g \cdot sin(\theta) $$
 
-
-
-
-<!-- Which expands to:
-
-$$ C_a \cdot m \cdot a = \frac{I \cdot C_t}{r_\mathrm{eff}} - C_\mathrm{roll} \cdot m \cdot g \cdot cos(\theta) - \frac{1}{2} \cdot \rho \cdot C_d \cdot A \cdot v^2 - m \cdot g \cdot sin(\theta) $$ -->
-
-
-
-
-
 Where $m$ is the total mass, $C_a$ the acceleration resistance coefficient, $a$ the "real" acceleration, $I$ the motor current, $C_t$ the motor torque constant, $r$ the effective tire radius, $C_\mathrm{roll}$ the rolling resistance coefficient, $g$ the gravity constant, $\theta$ the road slope, $\rho$ the air density, $C_d$ the drag coefficient, $A$ the frontal area, $v$ the velocity.
 
-<!-- TODO mass only version -->
 Rider's frontal area can be estimated from mass using a power law as $a \cdot  m ^ b$. If we assume human bodies scale proportionally, then $b = 2/3$. If we relate $m$ and $h$ using the BMI formula, we would get $b = 3/4$, which more or less corresponds with [some studies](https://link.springer.com/article/10.1007/s004210100424). I also got a similar exponent by curve fitting measured frontal areas of 4 subjects (I'll try to share it soon). $a$ is just a scaling factor that takes into account some average body shape and stance. Here's the proposed relationship:
 
 $$ A = 0.02 \cdot m ^ {0.75} $$
@@ -156,12 +130,14 @@ $$ -->
 
 Where $T$ is the torque (current times torque constant), $v$ the velocity and $a_g$ the acceleration in [g].
 
+
 ## Notes
 
 - Regarding acceleration resistance:
     - For some reason, I needed ~0.7 for both my ADVs, which is somewhat unexpected. I'd love to get a larger sample size. The idealized value is 1.0, but since there is rotational inertia in the system, it should be slightly higher than that. Might be related to [this](https://pev.dev/t/subtracting-boards-angular-velocity-from-erpm-to-improve-atr/1737), not sure. To be investigated.
     - I don't know how to properly split the acceleration resistance into board and rider components. It should be mainly related to rotational inertia of the rotating parts, so probably a portion of the board's mass, but by leaning forward, the rider also has some rotational inertia (and produces extra aerodynamic drag). For simplicity, it currently uses the total mass.
 - Rolling resistance happens to represent slope offset in radians, so every 0.01 change in $C_r$ should offset the estimated slope by roughly 0.6°.
+
 
 ## Acknowledgements
 

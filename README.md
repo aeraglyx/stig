@@ -28,7 +28,6 @@ This is my personal, stripped down version of Refloat. I do not care about backw
 ## Fresh Installation
 Make sure you have a backup of your configuration for reverting back. After installing this package, configure your **Specs** in **Stig Cfg**, namely:
 
-- Cells in Series (e.g. ADV has a 20s2p battery, so use 20)
 - Double check ADC Voltages
 - Rider Mass and Board Mass
 - Motor Torque Constant (see [ATR docs](docs/atr.md))
@@ -38,7 +37,7 @@ Make sure you have a backup of your configuration for reverting back. After inst
 Many parameters are not compatible with Refloat, so it is best to start with the defaults. Here are some notable parameter changes to keep in mind:
 
 - Battery warnings are based on a single cell's voltage, so the thresholds should be around 3.0 and 4.3 and generally don't need to be changed. Instead, you must specify the number of Cells in Series (Cfg > Specs).
-- P and D terms are based on torque instead of current and in general the numbers will be lower than in Refloat.
+- P and D terms are based on torque instead of current and in general the numbers will be a bit lower than in Refloat.
 - I Term is frequency independent, the typical values are now 0-15 (instead of ~0.005).
 - Higher tune modifier tiltback speeds are now possible in combination with setpoint filtering.
 - Filters are now expressed in seconds (half time) instead of Hz.
@@ -54,7 +53,7 @@ Many parameters are not compatible with Refloat, so it is best to start with the
 
 Heel lift is no longer possible, posi FTW.
 
-Although some parameter names remain the same, many have been changed and can't use Refloat's equivalent values. See the section above for more details.
+Although many parameter names are the same, some have been changed under the hood and can't use Refloat's equivalent values. See the section above for more details.
 
 Just like Refloat, Mahony KP is configured in the package, so App Cfg > IMU > Mahony KP should be closer to 0.4, not 2. Similarly, acceleration Z filtering has been moved from App Cfg to the Package Cfg. So AppCfg > IMU > Accel Z Filter should be 0.
 
