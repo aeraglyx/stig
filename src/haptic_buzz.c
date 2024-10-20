@@ -64,15 +64,15 @@ static bool get_beep_target(BuzzType buzz_type, float speed) {
         speed *= 0.25f;
     }
     bool beep;
-    const float current_time = VESC_IF->system_time();
-    const float time = current_time * speed;
-    const float x = time - (long) time;
+    float current_time = VESC_IF->system_time();
+    float time = current_time * speed;
+    float x = time - (long) time;
     beep = (x < 0.5f);
     return beep;
 }
 
 static float get_amplitude(const CfgHaptics *cfg, float fast_boi) {
-    const float strength_diff = cfg->strength_at_speed - cfg->strength;
+    float strength_diff = cfg->strength_at_speed - cfg->strength;
     return cfg->strength + fast_boi * strength_diff;
 }
 

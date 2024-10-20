@@ -43,11 +43,11 @@ void pid_reset(PID *pid, const CfgPid *cfg, float alpha) {
     pid->soft_start_factor = 0.0f;
 }
 
-static void p_update(PID *pid, const CfgPid *cfg, float pitch_offset, int8_t direction, float brake_factor) {
+static void p_update(PID *pid, const CfgPid *cfg, float pitch_offset, int8_t direction, float speed_factor) {
     float kp = cfg->kp;
     if (sign(pitch_offset) != direction) {
         // TODO only when kp_brake_scale != 0 ?
-        const float kp_brake_scale = 1.0f + (cfg->kp_brake - 1.0f) * brake_factor;
+        float kp_brake_scale = 1.0f + (cfg->kp_brake - 1.0f) * speed_factor;
         kp *= kp_brake_scale;
     }
     filter_ema(&pid->kp_scale, kp, 0.01f);
@@ -62,57 +62,57 @@ static void i_update(PID *pid, const CfgPid *cfg, float pitch_offset, float conf
     }
 }
 
-static void d_update(PID *pid, const CfgPid *cfg, float gyro_y, int8_t direction, float brake_factor) {
+static void d_update(PID *pid, const CfgPid *cfg, float gyro_y, int8_t direction, float speed_factor) {
     filter_ema(&pid->kd_filtered, -gyro_y, pid->kd_alpha); 
-    const float kd_input = pid->kd_filtered;
+    float kd_input = pid->kd_filtered;
     float kd = cfg->kd;
     if (sign(kd_input) != direction) {
-        const float kd_brake_scale = 1.0f + (cfg->kd_brake - 1.0f) * brake_factor;
+        float kd_brake_scale = 1.0f + (cfg->kd_brake - 1.0f) * speed_factor;
         kd *= kd_brake_scale;
     }
     filter_ema(&pid->kd_scale, kd, 0.01f);
     pid->derivative = kd_input * pid->kd_scale;
 }
 
-// static void f_update(PID *pid, const CfgPid *cfg, float gyro_y, int8_t direction, float brake_factor) {
-//     const float speed = 
+// static void f_update(PID *pid, const CfgPid *cfg, float gyro_y, int8_t direction, float speed_factor) {
+//     float speed = 
 //     pid->feed_forward = speed * pid->kf_scale;
 // }
 
 void pid_update(
     PID *pid, const IMUData *imu, const MotorData *mot, const CfgPid *cfg, float setpoint, float confidence
 ) {
-    // TODO rename brake_factor
-    const float brake_factor = clamp(fabsf(mot->board_speed), 0.0f, 1.0f);
+    float speed_factor = clamp(fabsf(mot->board_speed), 0.0f, 1.0f);
+    float pitch_offset = setpoint - imu->pitch_balance;
+    int8_t direction = sign(mot->board_speed);
 
-    const float pitch_offset = setpoint - imu->pitch_balance;
-    const int8_t direction = sign(mot->board_speed);
-
-    p_update(pid, cfg, pitch_offset, direction, brake_factor);
+    p_update(pid, cfg, pitch_offset, direction, speed_factor);
     i_update(pid, cfg, pitch_offset, confidence);
-    d_update(pid, cfg, imu->gyro[1], direction, brake_factor);
+    d_update(pid, cfg, imu->gyro[1], direction, speed_factor);
     // TODO FEED FORWARD
     
-    // const float windup_input = pid->proportional
+    // float windup_input = pid->proportional
     // float current_limit = mot->braking ? mot->current_min : mot->current_max;
     // new_pid_value = clamp_sym(new_pid_value, current_limit);
 
     float pid_sum = pid->proportional + pid->integral + pid->derivative;
 
     // CURRENT LIMITING
+    // TODO remove redundant limiting
     float current_limit = mot->braking ? mot->current_min : mot->current_max;
     float new_pid_value = clamp_sym(pid_sum, current_limit);
     // TODO soft max?
 
-    // const float i_overshoot = pid_sum - pid_sum_saturated;
+    // float i_overshoot = pid_sum - pid_sum_saturated;
     // pid->integral -= i_overshoot;
 
     // TODO speed boost
 
     // SOFT START
+    // TODO move outside pid.c
     // after limiting, otherwise soft start wouldn't be effective with aggressive PIDs
     if (pid->soft_start_factor < 1.0f) {
-        const float factor_new = pid->soft_start_factor + pid->soft_start_step_size;
+        float factor_new = pid->soft_start_factor + pid->soft_start_step_size;
         pid->soft_start_factor = clamp(factor_new, 0.0f, 1.0f);
         new_pid_value *= pid->soft_start_factor;
     }
