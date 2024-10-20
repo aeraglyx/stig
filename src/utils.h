@@ -125,10 +125,12 @@ void rate_limitf(float *value, float target, float step);
 float half_time_to_alpha(float half_time, float dt);
 float half_time_to_alpha_fast(float half_time, float dt);
 float half_time_to_alpha_iir2(float half_time, float dt);
-// float half_time_to_alpha_iir3(float half_time, float dt);
+float half_time_to_alpha_iir3(float half_time, float dt);
 
 void filter_ema(float *out, float target, float alpha);
 void filter_ema_clamp(float *out, float target, float alpha, float step);
 
 void filter_iir2(float *out, float *tmp, float target, float alpha);
 void filter_iir2_clamp(float *out, float *tmp, float target, float alpha, float step);
+
+void filter_iir3(float *out, float *tmp1, float *tmp2, float target, float alpha);

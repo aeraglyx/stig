@@ -33,17 +33,23 @@ float sec_approx(float x) {
 }
 
 float bell_curve(float x) {
-    // gaussian approximation with fatter tails
+    // gaussian approximation
     // 1 at 0 and 0.5 at ± 0.5
-    return 1.0f / (1.0f + x * x);
-}
 
-// float gaussian_approx(float x) {
-//     const float x2 = x * x;
-//     const float x4 = x2 * x2;
-//     const float x8 = x4 * x4;
-//     return 1.0f / (1.0f + 0.69f * x2 + 0.28f * x4 + 0.03f * x8);
-// }
+    // sharper center, fatter tails
+    // return 1.0f / (1.0f + x * x);
+
+    // better, still not perfect
+    float x2 = x * x;
+    float x4 = x2 * x2;
+    return 1.0f / (1.0f + 0.5 * x2 + 0.5 * x4);
+    
+    // very close fit
+    // float x2 = x * x;
+    // float x4 = x2 * x2;
+    // float x8 = x4 * x4;
+    // return 1.0f / (1.0f + 0.66f * x2 + 0.31f * x4 + 0.03f * x8);
+}
 
 
 float g_to_mps2(float x) {
@@ -107,9 +113,9 @@ float half_time_to_alpha_iir2(float half_time, float dt) {
     return half_time_to_alpha(0.414f * half_time, dt);
 }
 
-// float half_time_to_alpha_iir3(float half_time, float dt) {
-//     return half_time_to_alpha(0.261f * half_time, dt)
-// }
+float half_time_to_alpha_iir3(float half_time, float dt) {
+    return half_time_to_alpha(0.261f * half_time, dt);
+}
 
 void filter_ema(float *out, float target, float alpha) {
     *out += alpha * (target - *out);
@@ -128,6 +134,51 @@ void filter_iir2_clamp(float *out, float *tmp, float target, float alpha, float 
     *tmp += alpha * (target - *tmp);
     *out += clamp_sym(alpha * (*tmp - *out), step);
 }
+
+void filter_iir3(float *out, float *tmp1, float *tmp2, float target, float alpha) {
+    *tmp1 += alpha * (target - *tmp1);
+    *tmp2 += alpha * (*tmp1 - *tmp2);
+    *out += alpha * (*tmp2 - *out);
+}
+
+
+
+
+// typedef struct {
+//     float value;
+//     float speed;
+//     float accel;
+//     float k;
+// } FilterIIR3;
+
+// void filter_iir3_configure(FilterIIR3 *filter, float half_time) {
+//     // TODO div by 0
+//     filter->k = 0.693f / half_time;
+// }
+
+// void filter_iir3_reset(FilterIIR3 *filter, float value, float speed) {
+//     filter->value = value;
+//     filter->speed = speed;
+//     filter->accel = 0.0f;
+// }
+
+// void filter_iir3_update(FilterIIR3 *filter, float target, float dt) {
+//     // Coefficients chosen to give the filter shape and preserve half time.
+
+//     // 3rd order IIR:   1.28, 3.84, 11.52
+//     // Gaussian approx: 1.33, 3.66, 10.06
+
+//     float speed = 1.33f * k * (target - filter->value);
+//     float accel = 3.66f * k * (speed - filter->speed);
+//     float jerk = 10.06f * k * (accel - filter->accel);
+
+//     filter->accel += dt * jerk;
+//     filter->speed += dt * filter->accel;
+//     filter->value += dt * filter->speed;
+// }
+
+
+
 
 // float smoothstep(float x) {
 //     return x * x * (3.0f - 2.0f * x);
