@@ -306,15 +306,15 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Half time of wheelslip and drop detection filtering. Lower values will be more responsive but twitchy, higher values should get rid of false positives at the cost of being mushier. Do not go all the way to 0.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
             <cDefine>CFG_DFLT_TUNE_TRACTION_FILTER</cDefine>
-            <editorDecimalsDouble>2</editorDecimalsDouble>
+            <editorDecimalsDouble>3</editorDecimalsDouble>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
             <maxDouble>1.0</maxDouble>
             <minDouble>0.0</minDouble>
             <showDisplay>0</showDisplay>
-            <stepDouble>0.01</stepDouble>
-            <valDouble>0.03</valDouble>
-            <vTxDoubleScale>100</vTxDoubleScale>
+            <stepDouble>0.005</stepDouble>
+            <valDouble>0.025</valDouble>
+            <vTxDoubleScale>1000</vTxDoubleScale>
             <suffix> s</suffix>
             <vTx>7</vTx>
         </tune.traction.filter>
@@ -518,10 +518,10 @@ p, li { white-space: pre-wrap; }
             <maxDouble>0.5</maxDouble>
             <minDouble>-0.5</minDouble>
             <showDisplay>0</showDisplay>
-            <stepDouble>0.01</stepDouble>
+            <stepDouble>0.02</stepDouble>
             <valDouble>0.0</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> s</suffix>
+            <suffix> m</suffix>
             <vTx>7</vTx>
         </hardware.esc.imu_x_offset>
         <faults.pitch_threshold>
@@ -3717,6 +3717,8 @@ p, li { white-space: pre-wrap; }
                     <param>::sep::Modifiers</param>
                     <param>tune.traction.soft_release_winddown</param>
                     <param>tune.traction.mod_winddown</param>
+                    <param>::sep::Advanced</param>
+                    <param>tune.traction.filter</param>
                 </subgroupParams>
             </subgroup>
             <subgroup>
