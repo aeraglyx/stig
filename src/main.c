@@ -369,12 +369,7 @@ static bool is_sensor_engaged(const data *d) {
 
     // Half Engaged:
 
-    bool board_ghosted = d->state.stop_condition == STOP_GHOST;
-    bool after_disengage = d->current_time - d->disengage_timer < 2.0f;
-    bool after_ghost = board_ghosted && after_disengage;
-    bool riding_backwards = d->motor.board_speed < - d->config.faults.ghost_speed;
-
-    if (after_ghost || riding_backwards) {
+    if (d->state.stop_condition == STOP_GHOST) {
         return false;
     }
 
