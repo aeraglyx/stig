@@ -88,13 +88,17 @@ void warnings_update(
         return;
     }
 
-    // Footpad Sensor
-    bool sensor_disengaged = sensor->state == FS_NONE;
-    bool riding = fabsf(mot->board_speed) > 1.0f;
-    if (sensor_disengaged && riding) {
-        warnings->type = WARNING_SENSORS;
-        return;
-    }
+    unused(sensor);
+
+    // // Footpad Sensor
+    // bool sensor_disengaged = sensor->state == FS_NONE;
+    // bool riding = fabsf(mot->board_speed) > 1.0f;
+    // if (sensor_disengaged && riding) {
+    //     warnings->type = WARNING_SENSORS;
+    //     return;
+    // }
+
+    // unused(debug);
 
     // Debug
     if (debug) {

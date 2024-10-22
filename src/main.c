@@ -753,8 +753,9 @@ static void stig_thd(void *arg) {
 
             pid_update(&d->pid, &d->imu, &d->motor, &d->config.tune.pid, d->setpoint, confidence);
 
-            bool warning_ghost = d->current_time - d->fault_ghost_timer > 0.0f;
-            bool warning_debug = d->traction.slip_factor > 0.5f;
+            bool warning_ghost = d->current_time - d->fault_ghost_timer > 0.2f;
+            bool warning_debug = false;
+            // bool warning_debug = d->traction.drop_factor > 0.5f;
             warnings_update(
                 &d->warnings,
                 &d->config.warnings,
