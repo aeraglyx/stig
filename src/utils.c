@@ -144,38 +144,28 @@ void filter_iir3(float *out, float *tmp1, float *tmp2, float target, float alpha
 
 
 
-// typedef struct {
-//     float value;
-//     float speed;
-//     float accel;
-//     float k;
-// } FilterIIR3;
+void gaussian_configure(GaussianFilter *filter, float half_time) {
+    // TODO div by 0
+    filter->k = 0.693f / half_time;
+}
 
-// void filter_iir3_configure(FilterIIR3 *filter, float half_time) {
-//     // TODO div by 0
-//     filter->k = 0.693f / half_time;
-// }
+void gaussian_reset(GaussianFilter *filter, float value, float speed) {
+    filter->value = value;
+    filter->speed = speed;
+    filter->accel = 0.0f;
+}
 
-// void filter_iir3_reset(FilterIIR3 *filter, float value, float speed) {
-//     filter->value = value;
-//     filter->speed = speed;
-//     filter->accel = 0.0f;
-// }
+void gaussian_update(GaussianFilter *filter, float target, float dt) {
+    // Coefficients chosen to approximate Gaussian filter and preserve half time
 
-// void filter_iir3_update(FilterIIR3 *filter, float target, float dt) {
-//     // Coefficients chosen to give the filter shape and preserve half time.
+    float speed = 1.34f * filter->k * (target - filter->value);
+    float accel = 3.62f * filter->k * (speed - filter->speed);
+    float jerk = 9.77f * filter->k * (accel - filter->accel);
 
-//     // 3rd order IIR:   1.28, 3.84, 11.52
-//     // Gaussian approx: 1.33, 3.66, 10.06
-
-//     float speed = 1.33f * k * (target - filter->value);
-//     float accel = 3.66f * k * (speed - filter->speed);
-//     float jerk = 10.06f * k * (accel - filter->accel);
-
-//     filter->accel += dt * jerk;
-//     filter->speed += dt * filter->accel;
-//     filter->value += dt * filter->speed;
-// }
+    filter->accel += dt * jerk;
+    filter->speed += dt * filter->accel;
+    filter->value += dt * filter->speed;
+}
 
 
 

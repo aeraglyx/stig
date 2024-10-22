@@ -134,3 +134,14 @@ void filter_iir2(float *out, float *tmp, float target, float alpha);
 void filter_iir2_clamp(float *out, float *tmp, float target, float alpha, float step);
 
 void filter_iir3(float *out, float *tmp1, float *tmp2, float target, float alpha);
+
+typedef struct {
+    float value;
+    float speed;
+    float accel;
+    float k;
+} GaussianFilter;
+
+void gaussian_configure(GaussianFilter *filter, float half_time);
+void gaussian_reset(GaussianFilter *filter, float value, float speed);
+void gaussian_update(GaussianFilter *filter, float target, float dt);
