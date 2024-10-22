@@ -575,16 +575,6 @@ static void calculate_setpoint_target(data *d) {
     }
 }
 
-static void calculate_setpoint_interpolated(data *d) {
-    if (d->setpoint_target_interpolated != d->setpoint_target) {
-        rate_limitf(
-            &d->setpoint_target_interpolated,
-            d->setpoint_target,
-            get_setpoint_adjustment_step_size(d)
-        );
-    }
-}
-
 static bool startup_conditions_met(data *d) {
     if (!is_sensor_engaged(d)) {
         return false;
@@ -732,7 +722,11 @@ static void stig_thd(void *arg) {
 
             // Calculate setpoint and interpolation
             calculate_setpoint_target(d);
-            calculate_setpoint_interpolated(d);
+            rate_limitf(
+                &d->setpoint_target_interpolated,
+                d->setpoint_target,
+                get_setpoint_adjustment_step_size(d)
+            );
             d->setpoint = d->setpoint_target_interpolated;
 
             float confidence = 1.0f - d->traction.traction_soft_release;
