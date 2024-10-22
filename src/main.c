@@ -417,7 +417,7 @@ static bool check_faults(data *d) {
 
         // Feature: Quick Stop
         // TODO only under load?
-        if (d->motor.speed_abs < 0.2f && fabsf(d->imu.pitch) > 14.0f &&
+        if (d->motor.speed_abs < 0.2f && d->imu.pitch > 14.0f &&
             sign(d->imu.pitch) == d->motor.speed_sign) {
             state_stop(&d->state, STOP_QUICKSTOP);
             return true;
