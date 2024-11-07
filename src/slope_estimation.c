@@ -42,7 +42,7 @@ void slope_configure(SlopeData *data, const CfgHardware *hw, const CfgRider *rid
     data->k_accel = hw->motor.acceleration_resistance;
 }
 
-float slope_estimate(SlopeData *data, float torque, float speed, float accel) {
+void slope_update(SlopeData *data, float torque, float speed, float accel) {
     // torque in [Nm], speed in [m/s], accel in [g]
 
     // accelerations in [g] produced by the respective forces
@@ -52,5 +52,5 @@ float slope_estimate(SlopeData *data, float torque, float speed, float accel) {
     float a_accel = data->k_accel * accel;
 
     float x = a_drive - a_drag - a_roll - a_accel;
-    return rad2deg(asin_approx(x));
+    data->slope = rad2deg(asin_approx(x));
 }

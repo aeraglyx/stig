@@ -45,12 +45,12 @@ static float atr_tilt(const CfgAtr *cfg, const MotorData *mot) {
         return 0.0f;
     }
 
-    bool uphill = sign(mot->slope) == sign(mot->board_speed);
+    bool uphill = sign(mot->slope_data.slope) == sign(mot->board_speed);
     float strength = uphill ? cfg->strength_up : cfg->strength_down;
     // float strength_boost = powf(cfg->strength_boost, mot->fast_boi);
     float strength_boost = get_boost(cfg->strength_boost, mot->fast_boi);
 
-    float target = dead_zone(mot->slope, cfg->threshold);
+    float target = dead_zone(mot->slope_data.slope, cfg->threshold);
     target *= strength * strength_boost;
     target = clamp_sym(target, cfg->angle_limit);
 

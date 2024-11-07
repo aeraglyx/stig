@@ -20,6 +20,8 @@
 #include "conf/datatypes.h"
 
 typedef struct {
+    float slope;
+
     float k_drive;
     float k_drag;
     float k_roll;
@@ -28,4 +30,4 @@ typedef struct {
 
 void slope_configure(SlopeData *data, const CfgHardware *hw, const CfgRider *rider);
 
-float slope_estimate(SlopeData *data, float torque, float speed, float accel);
+void slope_update(SlopeData *data, float torque, float speed, float accel);
