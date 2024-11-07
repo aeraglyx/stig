@@ -6,23 +6,22 @@ This is my personal, stripped down version of Refloat. I do not care about backw
 ## Features
 - Improved ATR
     - Rewritten to estimate true road slope using longitudinal vehicle dynamics.
-    - Independent of rider's weight and motor's characteristics
+    - Independent of rider's weight and motor's characteristics.
     - Strength of 1 should be completely parallel to the ground.
     - To learn more, see [ATR docs](docs/atr.md).
 - Improved Torque Tilt
     - TT now takes true acceleration into account, which makes it a lot more "symmetric".
     - Option to boost TT based on Yaw Rate. Similar to Turn Tilt, but for keeping corners off the ground regardless of whether you're accelerating or braking.
-
 - Modifier Smoothing
-    - Using a 2nd order IIR filter for modifiers and input tilt smoothing.
+    - Using a 3nd order IIR filter for modifiers and input tilt smoothing.
 - Traction Control
     - Option to reduce torque when a drop or wheelslip is detected.
-- Rudimentary ghost safeguard
+- Ghost Buster, a rudimentary ghost safeguard 👻
 - Miscellaneous
     - Use torque [Nm] instead of current [A] for almost everything.
     - Use m/s instead of ERPM for most speed-based things. As a rule of thumb, 1000 ERPM ≈ 1 m/s.
     - Filters use half time [s] instead of frequency [Hz].
-    - Frequency independency
+    - Frequency independency.
     - More user friendly increments in Cfg.
 
 ## Fresh Installation
