@@ -35,8 +35,8 @@ typedef struct {
 
     float az_filter;
     float az_filtered;
-    // float gy_last;
-    // bool use_bf_fix;
+    float az_filtered_tmp;
+
     float kp_mult;
 } BalanceFilterData;
 

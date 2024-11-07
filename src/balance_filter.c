@@ -59,8 +59,8 @@ void balance_filter_init(BalanceFilterData *data) {
     data->q2 = quat[2];
     data->q3 = quat[3];
     data->acc_mag = 1.0f;
-    // data->gy_last = 0.0f;
     data->az_filtered = 1.0f;
+    data->az_filtered_tmp = 1.0f;
     data->kp_mult = 1.0f;
 }
 
@@ -70,7 +70,6 @@ void balance_filter_configure(BalanceFilterData *data, const CfgBalanceFilter *c
     data->kp_roll = config->mahony_kp_roll;
     data->kp_yaw = 0.5f * (config->mahony_kp + config->mahony_kp_roll);
     data->az_filter = config->az_filter;
-    // data->use_bf_fix = config->use_bf_fix;
 }
 
 void balance_filter_update(BalanceFilterData *data, float *gyro_xyz, float *accel_xyz, float dt) {
@@ -82,12 +81,9 @@ void balance_filter_update(BalanceFilterData *data, float *gyro_xyz, float *acce
     float ay = accel_xyz[1];
     float az = accel_xyz[2];
 
-    // float az_corrected = az;
-    // if (data->use_bf_fix) {
-    //     az_corrected -= (gy - data->gy_last) * 0.22f * 0.0018f;
-    // }
-    // data->gy_last = gy;
-    filter_ema(&data->az_filtered, az, half_time_to_alpha_fast(data->az_filter, dt));
+    float alpha = half_time_to_alpha_fast(0.414f * data->az_filter, dt);
+    // filter_ema(&data->az_filtered, az, half_time_to_alpha_fast(data->az_filter, dt));
+    filter_iir2(&data->az_filtered, &data->az_filtered_tmp, az, alpha);
     az = data->az_filtered;
 
     float accel_norm = sqrtf(ax * ax + ay * ay + az * az);
