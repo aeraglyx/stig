@@ -3035,6 +3035,7 @@ Item {
         TabBar {
             Layout.fillWidth: true
             clip: true
+            currentIndex: 2
 
             TabButton {text: "Tunes"}
 
@@ -3081,6 +3082,7 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
+            currentIndex: 2
 
             Item {
                 id: tunesPage
