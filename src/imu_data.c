@@ -24,6 +24,12 @@
 #include <math.h>
 
 void imu_data_init(IMUData *data) {
+    data->pitch = 0.0f;
+    data->roll = 0.0f;
+
+    data->pitch_tmp = 0.0f;
+    data->roll_tmp = 0.0f;
+
     data->ax = 0.0f;
     data->ay = 0.0f;
     data->az = 0.0f;
@@ -31,12 +37,20 @@ void imu_data_init(IMUData *data) {
     data->gy = 0.0f;
     data->gz = 0.0f;
 
+    data->ax_tmp = 0.0f;
+    data->ay_tmp = 0.0f;
+    data->az_tmp = 0.0f;
+
+    data->gy_tmp = 0.0f;
+    data->gz_tmp = 0.0f;
+
     data->gy_last = 0.0f;
     data->gz_last = 0.0f;
 }
 
 void imu_data_configure(IMUData *data, const CfgTraction *cfg, float x_offset, float dt) {
-    data->imu_alpha = half_time_to_alpha(cfg->filter, dt);
+    // data->alpha = half_time_to_alpha(cfg->filter, dt);
+    data->alpha = half_time_to_alpha_iir2(cfg->filter, dt);
     data->x_offset = x_offset;
     data->frequency = 1.0f / dt;
 }
@@ -46,9 +60,11 @@ static float magnitude(float x, float y, float z) {
 }
 
 void imu_data_update(IMUData *data, BalanceFilterData *balance_filter) {
-    data->pitch = rad2deg(VESC_IF->imu_get_pitch());
-    data->roll = rad2deg(VESC_IF->imu_get_roll());
-    data->yaw = rad2deg(VESC_IF->imu_get_yaw());
+    // data->pitch = rad2deg(VESC_IF->imu_get_pitch());
+    // data->roll = rad2deg(VESC_IF->imu_get_roll());
+
+    filter_iir2(&data->pitch, &data->pitch_tmp, rad2deg(VESC_IF->imu_get_pitch()), data->alpha);
+    filter_iir2(&data->roll, &data->roll_tmp, rad2deg(VESC_IF->imu_get_roll()), data->alpha);
 
     VESC_IF->imu_get_gyro(data->gyro);
     VESC_IF->imu_get_accel(data->accel);
@@ -57,12 +73,17 @@ void imu_data_update(IMUData *data, BalanceFilterData *balance_filter) {
     data->pitch_balance = rad2deg(balance_filter_get_pitch(balance_filter));
 
     // pre-filter accelerometer and gyroscope
-    filter_ema(&data->ax, data->accel[0], data->imu_alpha);
-    filter_ema(&data->ay, data->accel[1], data->imu_alpha);
-    filter_ema(&data->az, data->accel[2], data->imu_alpha);
+    // filter_ema(&data->ax, data->accel[0], data->alpha);
+    // filter_ema(&data->ay, data->accel[1], data->alpha);
+    // filter_ema(&data->az, data->accel[2], data->alpha);
+    filter_iir2(&data->ax, &data->ax_tmp, data->accel[0], data->alpha);
+    filter_iir2(&data->ay, &data->ay_tmp, data->accel[1], data->alpha);
+    filter_iir2(&data->az, &data->az_tmp, data->accel[2], data->alpha);
 
-    filter_ema(&data->gy, deg2rad(data->gyro[1]), data->imu_alpha);
-    filter_ema(&data->gz, deg2rad(data->gyro[2]), data->imu_alpha);
+    // filter_ema(&data->gy, deg2rad(data->gyro[1]), data->alpha);
+    // filter_ema(&data->gz, deg2rad(data->gyro[2]), data->alpha);
+    filter_iir2(&data->gy, &data->gy_tmp, deg2rad(data->gyro[1]), data->alpha);
+    filter_iir2(&data->gz, &data->gz_tmp, deg2rad(data->gyro[2]), data->alpha);
 
     // Acceleration is affected by centripetal force and angular acceleration.
     // For reference, IMU 0.2 m away from the axle would yield:
@@ -74,20 +95,20 @@ void imu_data_update(IMUData *data, BalanceFilterData *balance_filter) {
 
     // TODO refactor imu correction to its own function
 
-    const float gy_sq = data->gy * data->gy;
-    const float gz_sq = data->gz * data->gz;
-    const float ang_vel_sq = gy_sq + gz_sq;
+    float gy_sq = data->gy * data->gy;
+    float gz_sq = data->gz * data->gz;
+    float ang_vel_sq = gy_sq + gz_sq;
 
-    const float ang_acc_y = (data->gy - data->gy_last) * data->frequency;
-    const float ang_acc_z = (data->gz - data->gz_last) * data->frequency;
+    float ang_acc_y = (data->gy - data->gy_last) * data->frequency;
+    float ang_acc_z = (data->gz - data->gz_last) * data->frequency;
 
-    const float ax_correction = data->x_offset * ang_vel_sq;
-    const float ay_correction = data->x_offset * ang_acc_z;
-    const float az_correction = data->x_offset * ang_acc_y;
+    float ax_correction = data->x_offset * ang_vel_sq;
+    float ay_correction = data->x_offset * ang_acc_z;
+    float az_correction = data->x_offset * ang_acc_y;
     
-    const float ax = data->ax - mps2_to_g(ax_correction);
-    const float ay = data->ay + mps2_to_g(ay_correction);
-    const float az = data->az - mps2_to_g(az_correction);
+    float ax = data->ax - mps2_to_g(ax_correction);
+    float ay = data->ay + mps2_to_g(ay_correction);
+    float az = data->az - mps2_to_g(az_correction);
 
     data->gy_last = data->gy;
     data->gz_last = data->gz;
@@ -96,14 +117,15 @@ void imu_data_update(IMUData *data, BalanceFilterData *balance_filter) {
     // data->accel_mag = magnitude(ax, ay, fmaxf(az, 0.0f));
     // for drop, negative Z accel is permitted (pushing down)
 
-    const float pitch_rad = VESC_IF->imu_get_pitch();
-    const float imu_accel_x = ax * cosf(pitch_rad) + az * sinf(pitch_rad);
-    // const float imu_accel_x = ax + az * pitch;  // approximation
+    // float pitch_rad = VESC_IF->imu_get_pitch();
+    float pitch_rad = deg2rad(data->pitch);
+    float imu_accel_x = ax * cosf(pitch_rad) + az * sinf(pitch_rad);
+    // float imu_accel_x = ax + az * pitch;  // approximation
 
     // TODO use smooth slope
-    // const float slope = deg2rad(mot->slope);
-    // const float imu_accel_long = imu_accel_x / cosf(slope);
-    // const float imu_accel_long = imu_accel_x * sec_approx(slope);
-    // const float imu_accel_long = imu_accel_x;  // ignoring slope
+    // float slope = deg2rad(mot->slope);
+    // float imu_accel_long = imu_accel_x / cosf(slope);
+    // float imu_accel_long = imu_accel_x * sec_approx(slope);
+    // float imu_accel_long = imu_accel_x;  // ignoring slope
     data->board_accel = - imu_accel_x;
 }

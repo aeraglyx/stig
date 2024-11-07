@@ -25,25 +25,25 @@
 #include <stdint.h>
 
 typedef struct {
-    float pitch;
-    float roll;
-    float yaw;
+    float pitch, pitch_tmp;
+    float roll, roll_tmp;
 
     float gyro[3];
     float accel[3];
 
     float pitch_balance;
 
-    float imu_alpha;
+    float alpha;
     float frequency;
     float x_offset;
 
     // filtered data
-    float ax;
-    float ay;
-    float az;
-    float gy;
-    float gz;
+    float ax, ax_tmp;
+    float ay, ay_tmp;
+    float az, az_tmp;
+
+    float gy, gy_tmp;
+    float gz, gz_tmp;
 
     // derivative data
     float gy_last;
