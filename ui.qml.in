@@ -3620,10 +3620,10 @@ Item {
                             ValueBar {id: debugPidDerivative; label: "D Term"; unitString: " Nm"; softLimit: 20}
 
                             Spacer {}
-                            ValueBar {id: debugRequestedCurrent; label: "Wheel Speed"; unitString: " m/s"; softLimit: 0.4}
-                            ValueBar {id: debugFilteredCurrent; label: "Board Speed"; unitString: " m/s"; softLimit: 0.4}
-                            FactorBar {id: debugAtrAccDiff; label: "Confidence";}
-                            Value {id: debugRemoteInput; label: "Remote input"; unit: "%";}
+                            FactorBar {id: debugTractionMultiplier; label: "Traction Mult.";}
+                            FactorBar {id: debugTractionConfidence; label: "Traction Conf."}
+                            ValueBar {id: debugWheelSpeed; label: "Wheel Speed"; unitString: " m/s"; softLimit: 0.4}
+                            ValueBar {id: debugBoardSpeed; label: "Board Speed"; unitString: " m/s"; softLimit: 0.4}
                         }
 
                         Column {
@@ -3631,15 +3631,15 @@ Item {
                             spacing: unit * 0.18
                             clip: true
 
-                            ValueBar {id: debugAtrSetpoint; label: "Target"; unitString: "°"; softLimit: 3}
-                            ValueBar {id: debugTorqueTiltSetpoint; label: "Interpolated"; unitString: "°"; softLimit: 3}
-                            ValueBar {id: debugTurnTiltSetpoint; label: "Speed"; unitString: "°"; softLimit: 15}
+                            ValueBar {id: debugModifiersTarget; label: "Target"; unitString: "°"; softLimit: 3}
+                            ValueBar {id: debugModifiersValue; label: "Interpolated"; unitString: "°"; softLimit: 3}
+                            ValueBar {id: debugModifiersSpeed; label: "Speed"; unitString: "°/s"; softLimit: 15}
 
                             Spacer {}
-                            FactorBar {id: debugSpeedTiltSetpoint; label: "Wheelslip"}
-                            ValueBar {id: debugRemoteTiltSetpoint; label: "Road Slope"; unitString: "°"}
-                            ValueBar {id: debugTest1; label: "IMU Acc."; unitString: " g"; softLimit: 0.5}
-                            ValueBar {id: debugTest2; label: "Wheel Acc."; unitString: " g"; softLimit: 0.5}
+                            ValueBar {id: debugAtrSlope; label: "Road Slope"; unitString: "°"}
+                            FactorBar {id: debugTest; label: "Test";}
+                            ValueBar {id: debugWheelAccel; label: "Wheel Acc."; unitString: " g"; softLimit: 0.5}
+                            ValueBar {id: debugBoardAccel; label: "IMU Acc."; unitString: " g"; softLimit: 0.5}
 
                         }
                     }
