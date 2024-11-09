@@ -48,11 +48,7 @@ typedef enum {
 typedef enum {
     SAT_NONE = 0,
     SAT_CENTERING = 1,
-    SAT_REVERSESTOP = 2,
-    SAT_PB_DUTY = 6,
-    SAT_PB_HIGH_VOLTAGE = 10,
-    SAT_PB_LOW_VOLTAGE = 11,
-    SAT_PB_TEMPERATURE = 12
+    SAT_REVERSESTOP = 2
 } SetpointAdjustmentType;
 
 typedef struct {
@@ -74,9 +70,3 @@ void state_engage(State *state);
  * Compatibility function for the Float State enum for the app data commands.
  */
 uint8_t state_compat(const State *state);
-
-/**
- * Compatibility function for the Float SetpointAdjustmentType enum for the app
- * data commands.
- */
-uint8_t sat_compat(const State *state);

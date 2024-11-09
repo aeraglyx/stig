@@ -215,7 +215,6 @@ typedef struct {
     float mahony_kp_roll;
     float accel_confidence_decay;
     float az_filter;
-    // bool use_bf_fix;
 } CfgBalanceFilter;
 
 typedef struct {

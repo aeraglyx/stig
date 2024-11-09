@@ -69,32 +69,11 @@ uint8_t state_compat(const State *state) {
         }
         return 11;  // FAULT_STARTUP
     case STATE_RUNNING:
-        if (state->sat > SAT_PB_DUTY) {
-            return 2;  // RUNNING_TILTBACK
-        } else if (state->wheelslip) {
+        // TODO if a warning is active, return 2
+        if (state->wheelslip) {
             return 3;  // RUNNING_WHEELSLIP
         }
         return 1;  // RUNNING
     }
     return 0;  // STARTUP
-}
-
-uint8_t sat_compat(const State *state) {
-    switch (state->sat) {
-    case SAT_CENTERING:
-        return 0;  // CENTERING
-    case SAT_REVERSESTOP:
-        return 1;  // REVERSESTOP
-    case SAT_NONE:
-        return 2;  // TILTBACK_NONE
-    case SAT_PB_DUTY:
-        return 3;  // TILTBACK_DUTY
-    case SAT_PB_HIGH_VOLTAGE:
-        return 4;  // TILTBACK_HV
-    case SAT_PB_LOW_VOLTAGE:
-        return 5;  // TILTBACK_LV
-    case SAT_PB_TEMPERATURE:
-        return 6;  // TILTBACK_TEMP
-    }
-    return 0;  // CENTERING
 }

@@ -756,9 +756,8 @@ static void stig_thd(void *arg) {
 
             pid_update(&d->pid, &d->imu, &d->motor, &d->config.tune.pid, d->setpoint);
 
-            bool warning_ghost = d->current_time - d->fault_ghost_timer > 0.2f;
+            bool warning_ghost = d->current_time - d->fault_ghost_timer > 0.1f;
             bool warning_debug = false;
-            // bool warning_debug = d->traction.drop_factor > 0.5f;
             warnings_update(
                 &d->warnings,
                 &d->config.warnings,
@@ -773,7 +772,6 @@ static void stig_thd(void *arg) {
 
             float torque_requested = d->pid.pid_value * d->motor.traction.multiplier;
             // torque_requested = clamp_sym(torque_requested, d->config.tune.torque_limit)  // XXX
-            // torque_requested += d->haptic_buzz.buzz_output;
 
             float current_requested = torque_requested / d->motor.c_torque;
             set_current(current_requested, &d->motor);
