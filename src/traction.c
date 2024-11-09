@@ -22,36 +22,24 @@
 #include <stdint.h>
 
 void traction_init(Traction *data) {
-    data->traction_soft_release = 0.0f;
+    data->confidence_soft = 0.0f;
 }
 
 void traction_configure(Traction *data, const CfgTraction *cfg, float dt) {
+    data->slip_sensitivity = cfg->slip_sensitivity;
+    data->drop_sensitivity = cfg->drop_sensitivity;
+    data->conf_sensitivity = cfg->conf_sensitivity;
     data->winddown_alpha = half_time_to_alpha(cfg->soft_release_winddown, dt);
 }
 
-void traction_update(Traction *data, const CfgTraction *cfg, const IMUData *imu, const MotorData *mot) {
-    // SLIP
-    const float accel_diff = mot->wheel_accel - imu->board_accel;
-    const float slip_thr = cfg->wheelslip_threshold;
-    data->slip_factor = remap_to_01(fabsf(accel_diff), slip_thr, 2.0f * slip_thr);
-    const float slip_mult = 1.0f - (1.0f - cfg->wheelslip_strength) * data->slip_factor;
+void traction_update(Traction *data, float accel_diff, float accel_mag) {
+    float drop_factor = bell_curve(accel_mag * data->drop_sensitivity);
+    data->multiplier = bell_curve(accel_diff * data->slip_sensitivity * drop_factor);
 
-    // DROP
-    // data->accel_mag = sqrtf(ax_sq + ay_sq + az_clamped_sq);
-    const float drop_thr = cfg->drop_threshold;
-    data->drop_factor = 1.0f - remap_to_01(imu->accel_mag, 0.5f * drop_thr, 1.5f * drop_thr);
-    const float drop_mult = 1.0f - (1.0f - cfg->drop_strength) * data->drop_factor * data->slip_factor;
-    // times wheelslip factor to get rid of false positives on steep dh
-
-    // AMP MULTIPLIER
-    data->multiplier = slip_mult * drop_mult;
-    // data->multiplier = fminf(slip_mult, drop_mult);
-
-    // MODIFIER WINDDOWN
-    if (data->slip_factor > data->traction_soft_release) {
-        data->traction_soft_release = data->slip_factor;
-        // rate_limitf(&data->traction_soft_release, data->slip_factor, data->);
+    data->confidence = bell_curve(data->conf_sensitivity * accel_diff);
+    if (data->confidence > data->confidence_soft) {
+        data->confidence_soft = data->confidence;
     } else {
-        filter_ema(&data->traction_soft_release, data->slip_factor, data->winddown_alpha);
+        filter_ema(&data->confidence_soft, data->confidence, data->winddown_alpha);
     }
 }

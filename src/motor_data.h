@@ -20,13 +20,14 @@
 
 #include "conf/datatypes.h"
 #include "slope_estimation.h"
+#include "traction.h"
 #include "imu_data.h"
 
 #include <stdbool.h>
 #include <stdint.h>
 
 typedef struct {
-    float erpm;
+    float erpm, erpm_tmp;
     float erpm_gyro_ratio;
     float speed_erpm_ratio;
 
@@ -38,7 +39,7 @@ typedef struct {
 
     float board_speed;
 
-    float current;
+    float current, current_tmp;
     float current_smooth;
     bool braking;
 
@@ -47,13 +48,13 @@ typedef struct {
 
     float duty_cycle;
 
-    float wheel_accel;
+    float wheel_accel, wheel_accel_tmp;
     float accel_smooth;
     AccelerationSource acceleration_source;
     bool use_erpm_correction;
 
+    Traction traction;
     SlopeData slope_data;
-    float slope;
 
     float data_filter_alpha;
     float mod_filter_alpha;

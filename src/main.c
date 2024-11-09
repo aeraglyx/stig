@@ -32,7 +32,7 @@
 
 #include "pid.h"
 #include "haptic_buzz.h"
-#include "traction.h"
+// #include "traction.h"
 
 #include "charging.h"
 #include "footpad_sensor.h"
@@ -85,7 +85,7 @@ typedef struct {
     InputTilt input_tilt;
 
     PID pid;
-    Traction traction;
+    // Traction traction;
     Warnings warnings;
     HapticBuzz haptic_buzz;
 
@@ -244,7 +244,7 @@ static void configure(data *d) {
     input_tilt_configure(&d->input_tilt, &d->config.tune.input_tilt, d->loop_time);
 
     pid_configure(&d->pid, &d->config.tune.pid, d->loop_time);
-    traction_configure(&d->traction, &d->config.tune.traction, d->loop_time);
+    // traction_configure(&d->traction, &d->config.tune.traction, d->loop_time);
     warnings_configure(&d->warnings, &d->config.warnings);
     // haptic_buzz_configure(&d->haptic_buzz, &d->config.warnings);
 
@@ -287,7 +287,7 @@ static void init_vars(data *d) {
     imu_data_init(&d->imu);
     motor_data_init(&d->motor);
     // remote_data_init(&d->remote);
-    traction_init(&d->traction);
+    // traction_init(&d->traction);
     // d->use_strong_brake = false;
 
     warnings_init(&d->warnings);
@@ -682,7 +682,7 @@ static void stig_thd(void *arg) {
         motor_data_update(&d->motor, d->config.hardware.esc.frequency, &d->imu);
         remote_data_update(&d->remote, &d->config.hardware.remote);
         footpad_sensor_update(&d->footpad_sensor, &d->config.faults);
-        traction_update(&d->traction, &d->config.tune.traction, &d->imu, &d->motor);
+        // traction_update(&d->traction, &d->config.tune.traction, &d->imu, &d->motor);
 
         // motor_update_post_traction(&d->motor, &d->traction);
 
@@ -735,14 +735,11 @@ static void stig_thd(void *arg) {
             );
             d->setpoint = d->setpoint_target_interpolated;
 
-            float confidence = 1.0f - d->traction.traction_soft_release;
-
             modifiers_update(
                 &d->modifiers,
                 &d->config.tune,
                 &d->motor,
-                &d->imu,
-                confidence
+                &d->imu
             );
 
             input_tilt_update(
@@ -751,13 +748,13 @@ static void stig_thd(void *arg) {
                 &d->remote
             );
 
-            d->setpoint += d->modifiers.interpolated;
+            d->setpoint += d->modifiers.filter.value;
             d->setpoint += d->input_tilt.interpolated;
 
-            // d->balance_filter.kp_mult = 1.0f - fabsf(d->modifiers.atr.interpolated * d->config.tune.atr.tightness);
+            // d->balance_filter.kp_mult = 1.0f - fabsf(d->modifiers.filter.value * d->config.tune.atr.tightness);
             d->balance_filter.kp_mult = 1.0f;
 
-            pid_update(&d->pid, &d->imu, &d->motor, &d->config.tune.pid, d->setpoint, confidence);
+            pid_update(&d->pid, &d->imu, &d->motor, &d->config.tune.pid, d->setpoint);
 
             bool warning_ghost = d->current_time - d->fault_ghost_timer > 0.2f;
             bool warning_debug = false;
@@ -774,7 +771,7 @@ static void stig_thd(void *arg) {
                 d->warnings.type_last = d->warnings.type;
             }
 
-            float torque_requested = d->pid.pid_value * d->traction.multiplier;
+            float torque_requested = d->pid.pid_value * d->motor.traction.multiplier;
             // torque_requested = clamp_sym(torque_requested, d->config.tune.torque_limit)  // XXX
             // torque_requested += d->haptic_buzz.buzz_output;
 

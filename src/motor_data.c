@@ -25,14 +25,22 @@
 
 void motor_data_init(MotorData *m) {
     m->erpm = 0.0f;
+    m->erpm_tmp = 0.0f;
     m->speed = 0.0f;
     m->speed_last = 0.0f;
-    m->wheel_accel = 0.0f;
-    m->accel_smooth = 0.0f;
-    m->current_smooth = 0.0f;
-    m->duty_cycle = 0.0f;
-    m->slope = 0.0f;
     m->board_speed = 0.0f;
+
+    m->wheel_accel = 0.0f;
+    m->wheel_accel_tmp = 0.0f;
+    m->accel_smooth = 0.0f;
+
+    m->current = 0.0f;
+    m->current_tmp = 0.0f;
+    m->current_smooth = 0.0f;
+
+    m->duty_cycle = 0.0f;
+
+    traction_init(&m->traction);
 }
 
 void motor_data_configure(
@@ -42,7 +50,8 @@ void motor_data_configure(
     const CfgRider *rider,
     float dt
 ) {
-    m->data_filter_alpha = half_time_to_alpha(cfg->traction.filter, dt);
+    // m->data_filter_alpha = half_time_to_alpha(cfg->traction.filter, dt);
+    m->data_filter_alpha = half_time_to_alpha_iir2(cfg->traction.filter, dt);
     m->mod_filter_alpha = half_time_to_alpha(0.5f, dt);  // used only for curent_smooth
     m->board_speed_alpha = half_time_to_alpha(cfg->modifiers.board_speed_filter, dt);
 
@@ -60,19 +69,14 @@ void motor_data_configure(
     m->erpm_gyro_ratio = 60.0f * pole_pairs / 360.0f;
     m->speed_erpm_ratio = TAU * wheel_radius / (pole_pairs * 60.0f);
 
-    // const float flux_linkage = 0.030f;  // [Wb]
+    // float flux_linkage = 0.030f;  // [Wb]
     // m->c_torque = 1.5f * flux_linkage * pole_pairs;
     m->c_torque = hw->motor.torque_constant;
     slope_configure(&m->slope_data, hw, rider);
 
-    m->dt = dt;
-}
+    traction_configure(&m->traction, &cfg->traction, dt);
 
-static float get_erpm_confidence(const MotorData *m, const IMUData *imu) {
-    float accel_confidence = bell_curve(1.0f * (m->wheel_accel - imu->board_accel));
-    // const float speed_confidence = bell_curve(0.5f * (m->speed - m->board_speed));
-    // return accel_confidence * speed_confidence;
-    return accel_confidence;
+    m->dt = dt;
 }
 
 void motor_data_update(MotorData *m, uint16_t frequency, const IMUData *imu) {
@@ -83,17 +87,29 @@ void motor_data_update(MotorData *m, uint16_t frequency, const IMUData *imu) {
     if (m->use_erpm_correction) {
         erpm_corrected -= erpm_correction;
     }
-    // const float erpm_corrected = erpm_raw - erpm_correction;
-    const float speed_corrected = erpm_corrected * m->speed_erpm_ratio;
+    // float erpm_corrected = erpm_raw - erpm_correction;
+    float speed_corrected = erpm_corrected * m->speed_erpm_ratio;
 
-    filter_ema(&m->erpm, erpm_corrected, m->data_filter_alpha);
+    // filter_ema(&m->erpm, erpm_corrected, m->data_filter_alpha);
+    filter_iir2(&m->erpm, &m->erpm_tmp, erpm_corrected, m->data_filter_alpha);
 
-    filter_ema(&m->speed, speed_corrected, m->data_filter_alpha);
+    m->speed = m->erpm * m->speed_erpm_ratio;
     m->speed_abs = fabsf(m->speed);
     m->speed_sign = sign(m->speed);
 
-    float erpm_confidence = get_erpm_confidence(m, imu);
-    float alpha = m->board_speed_alpha * erpm_confidence;
+
+
+    // Wheel acceleration in [g]
+    float accel_raw = mps2_to_g((speed_corrected - m->speed_last) * frequency);
+    // filter_ema(&m->wheel_accel, accel_raw, m->data_filter_alpha);
+    filter_iir2(&m->wheel_accel, &m->wheel_accel_tmp, accel_raw, m->data_filter_alpha);
+
+    float accel_diff = m->wheel_accel - imu->board_accel;
+    traction_update(&m->traction, accel_diff, imu->accel_mag);
+    // m->confidence_raw = bell_curve(1.0f * accel_diff);
+    // float erpm_confidence = get_speed_confidence(m, imu);
+    // m->confidence = erpm_confidence;
+    float alpha = m->board_speed_alpha * m->traction.confidence;
     float speed_imu = m->board_speed + g_to_mps2(imu->board_accel) * m->dt;
     m->board_speed = speed_imu + alpha * (m->speed - speed_imu);
 
@@ -102,11 +118,6 @@ void motor_data_update(MotorData *m, uint16_t frequency, const IMUData *imu) {
 
 
 
-    // Wheel acceleration in [g]
-    float accel_raw = mps2_to_g((speed_corrected - m->speed_last) * frequency);
-    // const float accel_raw_clamped = clamp_sym(accel_raw, 0.5f);
-
-    filter_ema(&m->wheel_accel, accel_raw, m->data_filter_alpha);
     // TODO incorporate confidence information from traction
     // TODO keep wheel and board accelerations separate and switch later
     // TODO rename accel_smooth
@@ -125,7 +136,8 @@ void motor_data_update(MotorData *m, uint16_t frequency, const IMUData *imu) {
 
     // m->current = VESC_IF->mc_get_tot_current_directional_filtered();
     float current_raw = VESC_IF->mc_get_tot_current_directional();
-    filter_ema(&m->current, current_raw, m->data_filter_alpha);
+    // filter_ema(&m->current, current_raw, m->data_filter_alpha);
+    filter_iir2(&m->current, &m->current_tmp, current_raw, m->data_filter_alpha);
     filter_ema(&m->current_smooth, current_raw, m->mod_filter_alpha);
     m->torque = m->current * m->c_torque;
     // m->torque_smooth = m->current_smooth * m->c_torque;
@@ -135,8 +147,8 @@ void motor_data_update(MotorData *m, uint16_t frequency, const IMUData *imu) {
     float duty_cycle_raw = fabsf(VESC_IF->mc_get_duty_cycle_now());
     filter_ema(&m->duty_cycle, duty_cycle_raw, 0.05f);
 
-    m->slope = slope_estimate(&m->slope_data, m->torque, m->board_speed, m->accel_smooth);
+    slope_update(&m->slope_data, m->torque, m->board_speed, m->accel_smooth);
 
     m->speed_last = speed_corrected;
-    m->debug = erpm_confidence;
+    m->debug = m->traction.confidence;
 }

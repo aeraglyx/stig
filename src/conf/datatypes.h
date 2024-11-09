@@ -230,13 +230,14 @@ typedef struct {
 } CfgPid;
 
 typedef struct {
-    float drop_strength;
-    float drop_threshold;
-    float filter;
-    float wheelslip_strength;
-    float wheelslip_threshold;
+    float slip_sensitivity;
+    float drop_sensitivity;
+    float conf_sensitivity;
+
     float soft_release_winddown;
     float mod_winddown;
+
+    float filter;
 } CfgTraction;
 
 typedef struct {

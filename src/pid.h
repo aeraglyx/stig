@@ -45,4 +45,4 @@ void pid_configure(PID *pid, const CfgPid *cfg, float dt);
 
 void pid_reset(PID *pid, const CfgPid *cfg, float alpha);
 
-void pid_update(PID *pid, const IMUData *imu, const MotorData *mot, const CfgPid *cfg, float setpoint, float confidence);
+void pid_update(PID *pid, const IMUData *imu, const MotorData *mot, const CfgPid *cfg, float setpoint);

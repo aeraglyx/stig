@@ -24,15 +24,14 @@
 #include <math.h>
 
 void modifiers_configure(Modifiers *mod, const CfgTune *cfg, float dt) {
+    gaussian_configure(&mod->filter, cfg->modifiers.filter);
+
     mod->winddown_alpha = half_time_to_alpha(cfg->traction.mod_winddown, dt);
-    mod->tilt_alpha = half_time_to_alpha_iir2(cfg->modifiers.filter, dt);
-    mod->tilt_step = cfg->modifiers.speed_limit * dt;
     mod->fusion_alpha = half_time_to_alpha(cfg->torque_tilt.filter, dt);
 }
 
 void modifiers_reset(Modifiers *mod, float alpha) {
-    filter_ema(&mod->interpolated, 0.0f, alpha);
-    filter_ema(&mod->tmp, 0.0f, alpha);
+    gaussian_reset(&mod->filter, 0.0f, 0.0f);
     filter_ema(&mod->accel_offset_smooth, 0.0f, alpha);
 }
 
@@ -98,7 +97,6 @@ static float speed_tilt(const CfgSpeedTilt *cfg, float speed) {
 //     float speed_boost = powf(cfg->strength_boost, mot->fast_boi);
 //     float start_speed = fmaxf(cfg->start_erpm, 10) * 0.001f;
 //     float direction = clamp_sym(mot->board_speed / start_speed, 1.0f);
-
 //     float target = fabsf(yaw_rate) * cfg->strength * 0.00125;
 //     target *= speed_boost;
 //     target *= direction;
@@ -109,27 +107,24 @@ void modifiers_update(
     Modifiers *mod,
     const CfgTune *cfg,
     const MotorData *motor,
-    const IMUData *imu,
-    float confidence
+    const IMUData *imu
 ) {
     // TODO we only need one thing from IMUData
 
-    float target = 0.0f;
+    mod->target = 0.0f;
 
-    target += atr_tilt(&cfg->atr, motor);
-    target += torque_tilt(&cfg->torque_tilt, motor, imu->gyro[2], mod);
-    target += speed_tilt(&cfg->speed_tilt, motor->board_speed);
-    // TODO turn tilt
+    mod->target += atr_tilt(&cfg->atr, motor);
+    mod->target += torque_tilt(&cfg->torque_tilt, motor, imu->gyro[2], mod);
+    mod->target += speed_tilt(&cfg->speed_tilt, motor->board_speed);
 
-    // target = clamp_sym(target, cfg->modifiers.angle_limit);
-    mod->target = target;
+    float confidence = motor->traction.confidence_soft;
 
-    float interpolated_last = mod->interpolated;
+    gaussian_update(&mod->filter, mod->target, 0.00125f * confidence);
 
-    float alpha = mod->tilt_alpha * confidence;
-    // filter_ema_clamp(&mod->interpolated, target, alpha, mod->tilt_step);
-    filter_iir2_clamp(&mod->interpolated, &mod->tmp, target, alpha, mod->tilt_step);
-    modifiers_reset(mod, mod->winddown_alpha * (1.0f - confidence));
-
-    mod->speed = (mod->interpolated - interpolated_last) * 800.0f;  // TODO freq
+    // modifiers_reset(mod, mod->winddown_alpha * (1.0f - confidence));
+    float traction_mult = 1.0f - mod->winddown_alpha * (1.0f - confidence);
+    mod->filter.value *= traction_mult;
+    mod->filter.speed *= traction_mult;
+    mod->filter.accel *= traction_mult;
+    mod->accel_offset_smooth *= traction_mult;
 }

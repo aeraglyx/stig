@@ -28,16 +28,15 @@
 #include "motor_data.h"
 #include "imu_data.h"
 // #include "remote_data.h"
+#include "utils.h"
 
 #include "conf/datatypes.h"
 
 #include <stdint.h>
 
 typedef struct {
+    GaussianFilter filter;
     float target;
-    float tmp;
-    float interpolated;
-    float speed;
 
     float tilt_step;
     float tilt_alpha;
@@ -55,6 +54,5 @@ void modifiers_update(
     Modifiers *mod,
     const CfgTune *cfg,
     const MotorData *motor,
-    const IMUData *imu,
-    float confidence
+    const IMUData *imu
 );

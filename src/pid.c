@@ -80,14 +80,14 @@ static void d_update(PID *pid, const CfgPid *cfg, float gyro_y, int8_t direction
 // }
 
 void pid_update(
-    PID *pid, const IMUData *imu, const MotorData *mot, const CfgPid *cfg, float setpoint, float confidence
+    PID *pid, const IMUData *imu, const MotorData *mot, const CfgPid *cfg, float setpoint
 ) {
     float speed_factor = clamp(fabsf(mot->board_speed), 0.0f, 1.0f);
     float pitch_offset = setpoint - imu->pitch_balance;
     int8_t direction = sign(mot->board_speed);
 
     p_update(pid, cfg, pitch_offset, direction, speed_factor);
-    i_update(pid, cfg, pitch_offset, confidence);
+    i_update(pid, cfg, pitch_offset, mot->traction.confidence_soft);
     d_update(pid, cfg, imu->gyro[1], direction, speed_factor);
     // TODO FEED FORWARD
     
