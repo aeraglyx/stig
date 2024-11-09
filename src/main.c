@@ -358,6 +358,11 @@ static float get_setpoint_adjustment_step_size(const data *d) {
     }
 }
 
+static bool board_may_have_ghosted(StopCondition condition) {
+    return condition == STOP_GHOST || condition == STOP_ROLL || condition == STOP_PITCH;
+}
+
+// TODO no need to pass full data
 static bool is_sensor_engaged(const data *d) {
     if (d->footpad_sensor.state == FS_BOTH) {
         return true;
@@ -369,10 +374,11 @@ static bool is_sensor_engaged(const data *d) {
 
     // Half Engaged:
 
-    if (d->state.stop_condition == STOP_GHOST) {
+    if (board_may_have_ghosted(d->state.stop_condition)) {
         return false;
     }
 
+    // posi always enabled
     return true;
 
     // if (d->config.faults.is_posi_enabled) {
