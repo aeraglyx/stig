@@ -604,16 +604,16 @@ static bool startup_conditions_met(data *d) {
 }
 
 static void brake(data *d) {
-    float brake_timeout_length = 1.0f;  // Brake Timeout hard-coded to 1s
-    if (fabsf(d->motor.erpm) > ERPM_MOVING_THRESHOLD || d->brake_timeout == 0.0f) {
-        d->brake_timeout = d->current_time + brake_timeout_length;
-    }
-
-    if (d->brake_timeout != 0.0f && d->current_time > d->brake_timeout) {
-        return;
+    if (fabsf(d->motor.erpm) > ERPM_MOVING_THRESHOLD) {
+        d->brake_timeout = d->current_time + 1.0f;
     }
 
     VESC_IF->timeout_reset();
+
+    if (d->current_time > d->brake_timeout) {
+        VESC_IF->mc_set_current(0.0f);
+        return;
+    }
 
     if (d->motor.speed_abs > 0.25f) {
         d->use_strong_brake = false;
