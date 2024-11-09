@@ -977,7 +977,7 @@ static void cmd_handtest(data *d, unsigned char *cfg) {
 }
 
 static void send_realtime_data(data *d) {
-    static const int bufsize = 79 + 8;
+    static const int bufsize = 87;
     uint8_t buffer[bufsize];
     int32_t ind = 0;
 
@@ -1012,20 +1012,17 @@ static void send_realtime_data(data *d) {
 
     buffer_append_float32_auto(buffer, d->footpad_sensor.adc1, &ind);
     buffer_append_float32_auto(buffer, d->footpad_sensor.adc2, &ind);
-    buffer_append_float32_auto(buffer, d->remote.throttle, &ind);
 
-    buffer_append_float32_auto(buffer, d->imu.board_accel, &ind);
-    buffer_append_float32_auto(buffer, d->motor.wheel_accel, &ind);
+    buffer_append_float32_auto(buffer, 0.0f, &ind);
 
     if (d->state.state == STATE_RUNNING) {
         // Setpoints
         buffer_append_float32_auto(buffer, d->setpoint, &ind);
 
+        // Modifiers
         buffer_append_float32_auto(buffer, d->modifiers.target, &ind);
-        buffer_append_float32_auto(buffer, d->modifiers.interpolated, &ind);
-        buffer_append_float32_auto(buffer, d->modifiers.speed, &ind);
-        buffer_append_float32_auto(buffer, d->traction.traction_soft_release, &ind);
-        buffer_append_float32_auto(buffer, d->motor.slope, &ind);
+        buffer_append_float32_auto(buffer, d->modifiers.filter.value, &ind);
+        buffer_append_float32_auto(buffer, d->modifiers.filter.speed, &ind);
 
         // PID
         buffer_append_float32_auto(buffer, d->pid.proportional, &ind);
@@ -1033,9 +1030,15 @@ static void send_realtime_data(data *d) {
         buffer_append_float32_auto(buffer, d->pid.derivative, &ind);
 
         // Debug
+        buffer_append_float32_auto(buffer, d->motor.traction.confidence_soft, &ind);
+        buffer_append_float32_auto(buffer, d->motor.traction.multiplier, &ind);
+        buffer_append_float32_auto(buffer, d->motor.slope_data.slope, &ind);
+
+        // Speed & Accel.
         buffer_append_float32_auto(buffer, d->motor.speed, &ind);
         buffer_append_float32_auto(buffer, d->motor.board_speed, &ind);
-        buffer_append_float32_auto(buffer, d->motor.debug, &ind);  // free
+        buffer_append_float32_auto(buffer, d->motor.wheel_accel, &ind);
+        buffer_append_float32_auto(buffer, d->imu.board_accel, &ind);
     }
 
     if (d->state.charging) {

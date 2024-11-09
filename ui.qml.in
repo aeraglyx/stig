@@ -454,27 +454,28 @@ Item {
 
                 state.adc1Voltage = dv.getFloat32(ind); ind += 4;
                 state.adc2Voltage = dv.getFloat32(ind); ind += 4;
-                debugRemoteInput.value = Math.round(dv.getFloat32(ind) * 100); ind += 4;
 
-                debugTest1.rValue = dv.getFloat32(ind); ind += 4;
-                debugTest2.rValue = dv.getFloat32(ind); ind += 4;
+                debugTest.rValue = dv.getFloat32(ind); ind += 4;
 
                 if (hasRuntime) {
                     pitch.setpointValue = dv.getFloat32(ind); ind += 4;
 
-                    debugAtrSetpoint.rValue = dv.getFloat32(ind); ind += 4;
-                    debugTorqueTiltSetpoint.rValue = dv.getFloat32(ind); ind += 4;
-                    debugTurnTiltSetpoint.rValue = dv.getFloat32(ind); ind += 4;
-                    debugSpeedTiltSetpoint.rValue = dv.getFloat32(ind); ind += 4;
-                    debugRemoteTiltSetpoint.rValue = dv.getFloat32(ind); ind += 4;
+                    debugModifiersTarget.rValue = dv.getFloat32(ind); ind += 4;
+                    debugModifiersValue.rValue = dv.getFloat32(ind); ind += 4;
+                    debugModifiersSpeed.rValue = dv.getFloat32(ind); ind += 4;
 
                     debugPidProportional.rValue = dv.getFloat32(ind); ind += 4;
                     debugPidIntegral.rValue = dv.getFloat32(ind); ind += 4;
                     debugPidDerivative.rValue = dv.getFloat32(ind); ind += 4;
 
-                    debugRequestedCurrent.rValue = dv.getFloat32(ind); ind += 4;
-                    debugFilteredCurrent.rValue = dv.getFloat32(ind); ind += 4;
-                    debugAtrAccDiff.rValue = dv.getFloat32(ind); ind += 4;
+                    debugTractionConfidence.rValue = dv.getFloat32(ind); ind += 4;
+                    debugTractionMultiplier.rValue = dv.getFloat32(ind); ind += 4;
+                    debugAtrSlope.rValue = dv.getFloat32(ind); ind += 4;
+
+                    debugWheelSpeed.rValue = dv.getFloat32(ind); ind += 4;
+                    debugBoardSpeed.rValue = dv.getFloat32(ind); ind += 4;
+                    debugWheelAccel.rValue = dv.getFloat32(ind); ind += 4;
+                    debugBoardAccel.rValue = dv.getFloat32(ind); ind += 4;
                 }
 
                 if (hasCharging) {
