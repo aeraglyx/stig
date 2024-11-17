@@ -292,16 +292,6 @@ static void init_vars(data *d) {
 
     warnings_init(&d->warnings);
     haptic_buzz_init(&d->haptic_buzz);
-
-    d->setpoint = d->imu.pitch_balance;
-    d->setpoint_target_interpolated = d->imu.pitch_balance;
-    d->setpoint_target = 0.0f;
-
-    d->brake_timeout = 0.0f;
-
-    d->startup_pitch_tolerance = d->config.startup.pitch_tolerance;
-
-    // d->current_requested = 0.0f;
 }
 
 static void reset_vars(data *d) {
@@ -320,8 +310,11 @@ static void reset_vars(data *d) {
     d->brake_timeout = 0.0f;
 
     d->startup_pitch_tolerance = d->config.startup.pitch_tolerance;
+}
 
-    // state_engage(&d->state);
+static void engage(data *d) {
+    reset_vars(d);
+    state_engage(&d->state);
 }
 
 /**
@@ -364,6 +357,10 @@ static bool board_may_have_ghosted(StopCondition condition) {
 
 // TODO no need to pass full data
 static bool is_sensor_engaged(const data *d) {
+    if (d->state.charging) {
+        return false;
+    }
+
     if (d->footpad_sensor.state == FS_BOTH) {
         return true;
     }
@@ -692,8 +689,10 @@ static void stig_thd(void *arg) {
             brake(d);
 
             if (VESC_IF->imu_startup_done()) {
-                state_engage(&d->state);
+                // TODO only change state when it's not DISABLED
                 d->state.state = STATE_READY;
+                // d->state.sat = SAT_CENTERING;
+                // d->state.stop_condition = STOP_NONE;
 
                 // TODO
                 // // if within 5V of LV tiltback threshold, issue 1 beep for each volt below that
@@ -788,8 +787,7 @@ static void stig_thd(void *arg) {
             // check_odometer(d);
 
             if (startup_conditions_met(d)) {
-                reset_vars(d);
-                state_engage(&d->state);
+                engage(d);
                 break;
             }
 
