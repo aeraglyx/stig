@@ -32,6 +32,7 @@
 
 #include "pid.h"
 #include "haptic_buzz.h"
+#include "motor_control.h"
 // #include "traction.h"
 
 #include "charging.h"
@@ -88,6 +89,7 @@ typedef struct {
     // Traction traction;
     Warnings warnings;
     HapticBuzz haptic_buzz;
+    MotorControl motor_control;
 
     // Beeper
     int beep_num_left;
@@ -124,7 +126,6 @@ typedef struct {
     float fault_switch_half_timer;
     float fault_ghost_timer;
 
-    float brake_timeout;
     float wheelslip_timer;
 
     // Feature: Reverse Stop
@@ -133,19 +134,12 @@ typedef struct {
     float reverse_total_distance;
     float reverse_timer;
 
-    bool use_strong_brake;
-
-    // float current_requested;
-
     // Odometer
     // float odo_timer;
     // int odometer_dirty;
     // uint64_t odometer;
 
 } data;
-
-static void brake(data *d);
-// static void set_current(float current);
 
 const VESC_PIN beeper_pin = VESC_PIN_PPM;
 
@@ -236,6 +230,7 @@ static void configure(data *d) {
 
     imu_data_configure(&d->imu, &d->config.tune.traction, d->config.hardware.esc.imu_x_offset, d->loop_time);
     motor_data_configure(&d->motor, &d->config.tune, &d->config.hardware, &d->config.rider, d->loop_time);
+    motor_control_configure(&d->motor_control, &d->config);
     // remote_data_configure(&d->remote, &d->config.tune.input_tilt, d->loop_time);
     lcm_configure(&d->lcm, &d->config.leds);
 
@@ -307,8 +302,6 @@ static void reset_vars(data *d) {
     filter_ema(&d->setpoint_target_interpolated, d->imu.pitch_balance, alpha);
     filter_ema(&d->setpoint_target, 0.0f, alpha);
     
-    d->brake_timeout = 0.0f;
-
     d->startup_pitch_tolerance = d->config.startup.pitch_tolerance;
 }
 
@@ -600,46 +593,6 @@ static bool startup_conditions_met(data *d) {
     return false;
 }
 
-static void brake(data *d) {
-    if (fabsf(d->motor.erpm) > ERPM_MOVING_THRESHOLD) {
-        d->brake_timeout = d->current_time + 1.0f;
-    }
-
-    VESC_IF->timeout_reset();
-
-    if (d->current_time > d->brake_timeout) {
-        VESC_IF->mc_set_current(0.0f);
-        return;
-    }
-
-    if (d->motor.speed_abs > 0.25f) {
-        d->use_strong_brake = false;
-    } else if (d->motor.speed_abs < 0.05f) {
-        d->use_strong_brake = true;
-    }
-
-    if (d->use_strong_brake) {
-        VESC_IF->mc_set_duty(0);
-    } else {
-        VESC_IF->mc_set_brake_current(d->config.brake_current);
-    }
-}
-
-static void set_current(float current, const MotorData *mot) {
-    float current_limit = mot->braking ? mot->current_min : mot->current_max;
-    float current_limited = clamp_sym(current, current_limit);
-
-    VESC_IF->timeout_reset();
-    VESC_IF->mc_set_current_off_delay(0.025f);
-    VESC_IF->mc_set_current(current_limited);
-}
-
-// static void limit_current(float *current, const MotorData *mot) {
-//     float current_limit = mot->braking ? mot->current_min : mot->current_max;
-//     *current = clamp_sym(*current, current_limit);
-//     // TODO soft max?
-// }
-
 static void imu_ref_callback(float *acc, float *gyro, float *mag, float dt) {
     unused(mag);
 
@@ -686,8 +639,6 @@ static void stig_thd(void *arg) {
         // Control Loop State Logic
         switch (d->state.state) {
         case (STATE_STARTUP):
-            brake(d);
-
             if (VESC_IF->imu_startup_done()) {
                 // TODO only change state when it's not DISABLED
                 d->state.state = STATE_READY;
@@ -770,10 +721,7 @@ static void stig_thd(void *arg) {
             }
 
             float torque_requested = d->pid.pid_value * d->motor.traction.multiplier;
-            // torque_requested = clamp_sym(torque_requested, d->config.tune.torque_limit)  // XXX
-
-            float current_requested = torque_requested / d->motor.c_torque;
-            set_current(current_requested, &d->motor);
+            motor_control_request_torque(&d->motor_control, torque_requested);
             break;
 
         case (STATE_READY):
@@ -791,7 +739,6 @@ static void stig_thd(void *arg) {
                 break;
             }
 
-            brake(d);
             break;
 
         case (STATE_DISABLED):
@@ -805,6 +752,8 @@ static void stig_thd(void *arg) {
             d->warnings.type,
             d->state.state
         );
+
+        motor_control_apply(&d->motor_control, &d->motor, d->current_time);
 
         // d->computation_time = VESC_IF->system_time() - d->current_time;
         // const float loop_time_correction = d->computation_time + d->loop_overshoot_filtered;
@@ -899,6 +848,7 @@ static void data_init(data *d) {
 
     // d->odometer = VESC_IF->mc_get_odometer();
 
+    motor_control_init(&d->motor_control);
     lcm_init(&d->lcm, &d->config.hardware.leds);
     charging_init(&d->charging);
 }
