@@ -16,10 +16,10 @@
 // You should have received a copy of the GNU General Public License along with
 // this program. If not, see <http://www.gnu.org/licenses/>.
 
-#include "vesc_c_if.h"
-
 #include "haptic_buzz.h"
 #include "utils.h"
+
+#include "vesc_c_if.h"
 
 #include <math.h>
 
@@ -80,6 +80,7 @@ void haptic_buzz_update(
     HapticBuzz *data,
     const CfgHaptics *cfg,
     const MotorData *mot,
+    MotorTone *tone,
     WarningType warning_type,
     RunState run_state
 ) {
@@ -87,13 +88,13 @@ void haptic_buzz_update(
     bool beep_target = get_beep_target(buzz_type, cfg->speed);
 
     if (data->is_playing && !beep_target) {
-        VESC_IF->foc_play_tone(0, 1, 0.0f);
-        // VESC_IF->foc_play_tone(1, 1, 0.0f);
+        // VESC_IF->foc_play_tone(0, 1, 0.0f);
+        motor_control_stop_tone(tone);
         data->is_playing = false;
     } else if (!data->is_playing && beep_target) {
         float amplitude = get_amplitude(cfg, mot->fast_boi);
-        VESC_IF->foc_play_tone(0, cfg->frequency, amplitude);
-        // VESC_IF->foc_play_tone(1, 420, 0.420f);
+        // VESC_IF->foc_play_tone(0, cfg->frequency, amplitude);
+        motor_control_play_tone(tone, cfg->frequency, amplitude);
         data->is_playing = true;
     }
 }

@@ -29,6 +29,10 @@ void motor_control_init(MotorControl *mc) {
 
     mc->brake_timeout = 0.0f;
     mc->use_strong_brake = false;
+
+    mc->tone.amplitude = 0.0f;
+    mc->tone.frequency = 0;
+    mc->tone.t = 0.0f;
 }
 
 void motor_control_configure(MotorControl *mc, const StigConfig *cfg) {
@@ -39,6 +43,16 @@ void motor_control_configure(MotorControl *mc, const StigConfig *cfg) {
 void motor_control_request_torque(MotorControl *mc, float torque) {
     mc->is_torque_requested = true;
     mc->requested_torque = torque;
+}
+
+void motor_control_play_tone(MotorTone *tone, uint16_t frequency, float amplitude) {
+    tone->frequency = frequency;
+    tone->amplitude = amplitude;
+}
+
+void motor_control_stop_tone(MotorTone *tone) {
+    tone->amplitude = 0.0f;
+    tone->t = 0.0f;
 }
 
 static void set_current(float torque, const MotorData *motor) {
@@ -68,6 +82,17 @@ static void set_brake(MotorControl *mc, const MotorData *motor, float time) {
     }
 }
 
+static float tone_output(MotorTone *tone, float dt) {
+    if (tone->amplitude == 0.0f) {
+        return 0.0f;
+    }
+
+    tone->t += tone->frequency * dt;
+    tone->t = tone->t - (int) tone->t;
+    float wave = sin_scaled(tone->t);
+    return wave * tone->amplitude;
+}
+
 void motor_control_apply(MotorControl *mc, const MotorData *motor, float time) {
     // TODO use strong brake after a ghost
     // TODO parking brake mode
@@ -81,6 +106,7 @@ void motor_control_apply(MotorControl *mc, const MotorData *motor, float time) {
     VESC_IF->timeout_reset();
 
     if (mc->is_torque_requested) {
+        mc->requested_torque += tone_output(&mc->tone, motor->dt);
         set_current(mc->requested_torque, motor);
     } else {
         set_brake(mc, motor, time);

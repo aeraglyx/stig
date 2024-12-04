@@ -51,6 +51,18 @@ float bell_curve(float x) {
     // return 1.0f / (1.0f + 0.66f * x2 + 0.31f * x4 + 0.03f * x8);
 }
 
+float sin_scaled(float t) {
+    // based on Bhaskara I's sine approximation
+    // valid for 0 <= t <= 1, outputs -1 to 1
+    const bool second_half = t > 0.5f;
+    const float x = (second_half) ? t - 0.5f : t;
+    float sin = 20.0f / (16.0f * x * x - 8.0f * x + 5.0f) - 4.0f;
+    if (second_half) {
+        sin *= -1.0f;
+    }
+    return sin;
+}
+
 
 float g_to_mps2(float x) {
     return 9.806650f * x;

@@ -18,10 +18,12 @@
 
 #pragma once
 
-#include "conf/datatypes.h"
 #include "motor_data.h"
+#include "motor_control.h"
 #include "state.h"
 #include "warnings.h"
+
+#include "conf/datatypes.h"
 
 typedef struct {
     bool is_playing;
@@ -42,6 +44,7 @@ void haptic_buzz_update(
     HapticBuzz *data,
     const CfgHaptics *cfg,
     const MotorData *mot,
+    MotorTone *tone,
     WarningType warning_type,
     RunState run_state
 );

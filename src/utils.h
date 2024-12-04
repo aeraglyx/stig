@@ -110,6 +110,7 @@ uint32_t rnd(uint32_t seed);
 float asin_approx(float x);
 float sec_approx(float x);
 float bell_curve(float x);
+float sin_scaled(float t);
 
 float g_to_mps2(float x);
 float mps2_to_g(float x);

@@ -26,14 +26,21 @@
 #include "state.h"
 
 typedef struct {
+    uint16_t frequency;
+    float amplitude;
+    float t;
+} MotorTone;
+
+typedef struct {
     bool is_torque_requested;
     float requested_torque;
 
     float brake_timeout;
     bool use_strong_brake;
-
     float brake_current;
     // ParkingBrakeMode parking_brake_mode;
+
+    MotorTone tone;
 } MotorControl;
 
 void motor_control_init(MotorControl *mc);
@@ -41,5 +48,9 @@ void motor_control_init(MotorControl *mc);
 void motor_control_configure(MotorControl *mc, const StigConfig *cfg);
 
 void motor_control_request_torque(MotorControl *mc, float torque);
+
+void motor_control_play_tone(MotorTone *tone, uint16_t frequency, float amplitude);
+
+void motor_control_stop_tone(MotorTone *tone);
 
 void motor_control_apply(MotorControl *mc, const MotorData *motor, float time);

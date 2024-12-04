@@ -749,6 +749,7 @@ static void stig_thd(void *arg) {
             &d->haptic_buzz,
             &d->config.haptics,
             &d->motor,
+            &d->motor_control.tone,
             d->warnings.type,
             d->state.state
         );
