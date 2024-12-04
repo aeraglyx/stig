@@ -1,6 +1,6 @@
-# ATR
+# ATR "v2"
 
-This package tries to model ATR after real world vehicle dynamics, which should make tunes more consistent for different riders and setups. To showcase its simplicity, the next section looks at how a beginner rider could tune the proposed ATR.
+This package tries to model ATR after real world vehicle dynamics, which should make tunes more consistent for different riders and setups. To showcase its simplicity, the next section looks at how a beginner could tune this version of ATR.
 
 
 ## Tuning the Easy Way
@@ -9,7 +9,8 @@ This package tries to model ATR after real world vehicle dynamics, which should 
 - Check that Wheel Diameter (Motor Cfg > Additional Info) is correct (~ 280-300 mm)
 - Find your motor in the following table and set Specs > Motor Torque Constant accordingly
 
-| Motor | Torque Constant |
+<!-- TODO hide the table by default -->
+<!-- | Motor | Torque Constant |
 | ----- | --------------- |
 | Phub188 | 0.52 |
 | SuperFlux Mk1 | 0.54 |
@@ -20,9 +21,16 @@ This package tries to model ATR after real world vehicle dynamics, which should 
 | Hypercore | 0.61 |
 | Hypercore N42 | 0.63 |
 | Hypercore N48 | 0.64 |
-| Hypercore N52 | 0.64 |
+| Hypercore N52 | 0.64 | -->
 
-*Table derived from values listed [here](https://pev.dev/t/common-motor-foc-ranges-resistance-inductance-flux-linkage/1771), original data by Dado Mista.*
+| Motor | Torque Constant |
+| ----- | --------------- |
+| Phub188 | 0.52 |
+| SuperFlux Mk1 / Mk2 HS / Mk2 HT | 0.54 / 0.57 / 0.66 |
+| CannonCore V1 / V2 | 0.83 / 0.68 |
+| Hypercore Stock / N42 / N48 / N42 | 0.61 / 0.63 / 0.64 / 0.64 |
+
+*Derived from values listed [here](https://pev.dev/t/common-motor-foc-ranges-resistance-inductance-flux-linkage/1771), original data by Dado Mista.*
 
 Assuming you have a typical setup, that's it - you should now have a usable ATR tune. Adjust strengths and speeds to your liking, strength of 1 means parallel to the ground (typical values 0.0 - 0.5).
 
@@ -40,13 +48,13 @@ Assuming you have a typical setup, that's it - you should now have a usable ATR 
 - Locate Motor Flux Linkage in Motor Cfg > FOC > General
 - With units in mind, multiply it by 22.5 and set that as your torque constant in the package
     - Example: If your flux linkage is 30 mWb, you would get 0.001 * 30 * 22.5 = 0.675 Nm/A
-- The proper calculation is $C_t = \frac{3}{2} \cdot \lambda \cdot P$, where $\lambda$ is the flux linkage [Wb] and $P$ the number of pole pairs.
+    - The proper calculation is $C_t = \frac{3}{2} \cdot \lambda \cdot P$, where $\lambda$ is the flux linkage [Wb] and $P$ the number of pole pairs.
 - Cross reference the table above as a sanity check
 - In the future, this step could hopefully be skipped by accessing the flux linkage directly
 
 ---
 
-For the next few steps find a large, smooth and **flat** area. We'll need to tune 3 coefficients with the goal of minimizing magnitude of the slope reading during flat ground riding. Luckily, it's straight forward to isolate their effects:
+For the next few steps find a large, smooth and **flat** area. We'll need to tune 3 coefficients with the goal of minimizing magnitude of the slope reading during flat ground riding. Luckily, it's straight forward to isolate the individual components:
 
 **Tire Rolling Resistance**
 - Ride at a constant low speed (around 1 m/s or 1000 ERPM)
@@ -137,6 +145,7 @@ Where $T$ is the torque (current times torque constant), $v$ the velocity and $a
     - For some reason, I needed ~0.7 for both my ADVs, which is somewhat unexpected. I'd love to get a larger sample size. The idealized value is 1.0, but since there is rotational inertia in the system, it should be slightly higher than that. Might be related to [this](https://pev.dev/t/subtracting-boards-angular-velocity-from-erpm-to-improve-atr/1737), not sure. To be investigated.
     - I don't know how to properly split the acceleration resistance into board and rider components. It should be mainly related to rotational inertia of the rotating parts, so probably a portion of the board's mass, but by leaning forward, the rider also has some rotational inertia (and produces extra aerodynamic drag). For simplicity, it currently uses the total mass.
 - Rolling resistance happens to represent slope offset in radians, so every 0.01 change in $C_r$ should offset the estimated slope by roughly 0.6°.
+- TODO: Increase wheel radius based on speed as the tire expands?
 
 
 ## Acknowledgements
