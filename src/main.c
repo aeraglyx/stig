@@ -222,6 +222,7 @@ void beep_on(data *d, bool force) {
 }
 
 static void configure(data *d) {
+    // TODO not the whole state_init
     state_init(&d->state, d->config.disabled);
 
     d->loop_time = 1.0f / d->config.hardware.esc.frequency;
@@ -279,6 +280,7 @@ static void configure(data *d) {
 }
 
 static void init_vars(data *d) {
+    // TODO move to the other init?
     imu_data_init(&d->imu);
     motor_data_init(&d->motor);
     // remote_data_init(&d->remote);
@@ -469,7 +471,7 @@ static bool check_faults(data *d) {
     //     }
     // }
 
-    // Feature: Ghost Safeguard
+    // Feature: Ghost Buster
     // TODO exclude wheelslip - use confidence
     bool riding_backwards = d->motor.board_speed < - d->config.faults.ghost_speed;
     bool sensor_half_active = d->footpad_sensor.state == FS_LEFT || d->footpad_sensor.state == FS_RIGHT;
@@ -632,9 +634,6 @@ static void stig_thd(void *arg) {
         motor_data_update(&d->motor, d->config.hardware.esc.frequency, &d->imu);
         remote_data_update(&d->remote, &d->config.hardware.remote);
         footpad_sensor_update(&d->footpad_sensor, &d->config.faults);
-        // traction_update(&d->traction, &d->config.tune.traction, &d->imu, &d->motor);
-
-        // motor_update_post_traction(&d->motor, &d->traction);
 
         // Control Loop State Logic
         switch (d->state.state) {
@@ -722,6 +721,7 @@ static void stig_thd(void *arg) {
 
             float torque_requested = d->pid.pid_value * d->motor.traction.multiplier;
             motor_control_request_torque(&d->motor_control, torque_requested);
+
             break;
 
         case (STATE_READY):

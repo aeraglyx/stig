@@ -19,15 +19,8 @@
 
 #pragma once
 
-// #include "atr.h"
-// #include "torque_tilt.h"
-// #include "turn_tilt.h"
-// #include "speed_tilt.h"
-// #include "input_tilt.h"
-
 #include "motor_data.h"
 #include "imu_data.h"
-// #include "remote_data.h"
 #include "utils.h"
 
 #include "conf/datatypes.h"
