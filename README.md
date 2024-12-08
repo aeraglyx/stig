@@ -46,17 +46,13 @@ Many parameters are not compatible with Refloat, so it is best to start with the
 
 ## Warnings
 
-⚠️ **Requires 6.05+ firmware!**
-
-⚠️ **There are no Safety Tiltbacks!** Instead the only warning system in place is a version of "Haptic Feedback", so make sure it's configured properly.
-
-Heel lift is no longer possible, posi FTW.
-
-Although many parameter names are the same, some have been changed under the hood and can't use Refloat's equivalent values. See the section above for more details.
-
-Just like Refloat, Mahony KP is configured in the package, so App Cfg > IMU > Mahony KP should be closer to 0.4, not 2. Similarly, acceleration Z filtering has been moved from App Cfg to the Package Cfg. So AppCfg > IMU > Accel Z Filter should be 0.
-
-Read the descriptions of any settings you are unsure of (some might be outdated, sorry).
+- ⚠️ **Requires 6.05+ firmware!**
+- ⚠️ **There are no Safety Tiltbacks!** Instead the only warning system in place is a version of "Haptic Feedback", so make sure it's configured properly.
+- Some features (like traction control) might work better with Speed Tracker Position Source set to Observer. However, some people had issues with this on 6.05, so not sure.
+- Heel lift is no longer possible, posi FTW.
+- Although many parameter names are the same, some have been changed under the hood and can't use Refloat's equivalent values. See the section above for more details.
+- Just like Refloat, Mahony KP is configured in the package, so App Cfg > IMU > Mahony KP should be closer to 0.4, not 2. Similarly, acceleration Z filtering has been moved from App Cfg to the Package Cfg. So AppCfg > IMU > Accel Z Filter should be 0.
+- Read the descriptions of any settings you are unsure of (some might be outdated, sorry).
 
 ## Known Issues
 - 3rd party apps (Floaty, Float Control) not supported
