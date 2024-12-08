@@ -1,6 +1,6 @@
 # ATR "v2"
 
-This package tries to model ATR after real world vehicle dynamics, which should make tunes more consistent for different riders and setups. To showcase its simplicity, the next section looks at how a beginner could tune this version of ATR.
+This package tries to model ATR after real world vehicle dynamics, which should make tunes more consistent for different riders and setups. The next section looks at how a beginner could tune this version of ATR.
 
 
 ## Tuning the Easy Way
@@ -31,7 +31,7 @@ This package tries to model ATR after real world vehicle dynamics, which should 
 
 *Derived from values listed in this [pev.dev post](https://pev.dev/t/common-motor-foc-ranges-resistance-inductance-flux-linkage/1771), original data by Dado Mista.*
 
-Assuming you have a typical setup, that's it - you should now have a usable ATR tune. Adjust strengths and speeds to your liking, strength of 1 means parallel to the ground (typical values 0.0 - 0.5).
+- Assuming you have a typical setup, that's it - you should now have a usable ATR tune. Adjust strengths and speeds to your liking, strength of 1 means parallel to the ground (typical values 0.0 - 0.5).
 
 
 ## Advanced Fine Tuning
@@ -47,7 +47,7 @@ Assuming you have a typical setup, that's it - you should now have a usable ATR 
 - Locate Motor Flux Linkage in Motor Cfg > FOC > General
 - With units in mind, multiply it by 22.5 and set that as your torque constant in the package
     - Example: If your flux linkage is 30 mWb, you would get 0.001 * 30 * 22.5 = 0.675 Nm/A
-    - The proper calculation is $C_t = \frac{3}{2} \cdot \lambda \cdot P$, where $\lambda$ is the flux linkage [Wb] and $P$ the number of pole pairs.
+    - The proper calculation is $C_t = \frac{3}{2} \cdot \lambda \cdot P$, where $\lambda$ is the flux linkage [Wb] and $P$ the number of pole pairs. Thanks to Elwin on Discord for confirming that this is enough.
 - Cross reference the table above as a sanity check
 - In the future, this step could hopefully be skipped by accessing the flux linkage directly
 
@@ -135,14 +135,14 @@ $$
 \begin{bmatrix} T \\ sign(v) \\ v \cdot |v| \\ a_g \end{bmatrix}
 $$ -->
 
-Where $T$ is the torque (current times torque constant), $v$ the velocity and $a_g$ the acceleration in [g].
+Where $T$ is the torque (current times torque constant), $v$ the velocity in [m/s] and $a_g$ the acceleration in [g].
 
 
 ## Notes
 
 - What's the point of this? I wanted to achieve 2 things:
-    - Simpler, more accurate and predictable ATR
-    - ATR depends on riders weight, so if we properly relate all the parameters to it and find good defaults for the rest, a newcomer could really easily achieve a good ATR tune by changing only one known value.
+    - More accurate and physically based ATR
+    - ATR depends on riders weight, so if we properly relate all the parameters to it and find good defaults for the rest, a newcomer could really easily achieve a good ATR tune by changing only a few known values.
 - Regarding acceleration resistance:
     - For some reason, I needed ~0.7 for both my ADVs, which is somewhat unexpected. I'd love to get a larger sample size. The idealized value is 1.0, but since there is rotational inertia in the system, it should be slightly higher than that. Might be related to the [ERPM correction](https://pev.dev/t/subtracting-boards-angular-velocity-from-erpm-to-improve-atr/1737), or possibly a bug.
     - I don't know how to properly split the acceleration resistance into board and rider components. It should be mainly related to rotational inertia of the rotating parts, so probably a portion of the board's mass, but by leaning forward, the rider also has some rotational inertia (and produces extra aerodynamic drag). For simplicity, it currently uses the total mass.
