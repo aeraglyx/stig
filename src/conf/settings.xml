@@ -247,7 +247,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.1</stepDouble>
-            <valDouble>0.5</valDouble>
+            <valDouble>1.0</valDouble>
             <vTxDoubleScale>10</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
@@ -1392,7 +1392,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>1</stepDouble>
-            <valDouble>15</valDouble>
+            <valDouble>20</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> °/s</suffix>
             <vTx>7</vTx>
@@ -3303,7 +3303,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0.0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.005</stepDouble>
-            <valDouble>0.035</valDouble>
+            <valDouble>0.040</valDouble>
             <vTxDoubleScale>1000</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
@@ -3325,7 +3325,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0.5</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.05</stepDouble>
-            <valDouble>0.75</valDouble>
+            <valDouble>0.70</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
@@ -3359,7 +3359,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>1</stepDouble>
-            <valDouble>58</valDouble>
+            <valDouble>60</valDouble>
             <vTxDoubleScale>10</vTxDoubleScale>
             <suffix> kg</suffix>
             <vTx>7</vTx>
