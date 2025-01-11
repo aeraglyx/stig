@@ -19,8 +19,6 @@
 
 #include "modifiers.h"
 
-#include "utils.h"
-
 #include <math.h>
 
 void modifiers_configure(Modifiers *mod, const CfgTune *cfg, float dt) {
@@ -107,7 +105,8 @@ void modifiers_update(
     Modifiers *mod,
     const CfgTune *cfg,
     const MotorData *motor,
-    const IMUData *imu
+    const IMUData *imu,
+    float dt
 ) {
     // TODO we only need one thing from IMUData
 
@@ -118,8 +117,7 @@ void modifiers_update(
     mod->target += speed_tilt(&cfg->speed_tilt, motor->board_speed);
 
     float confidence = motor->traction.confidence_soft;
-
-    gaussian_update(&mod->filter, mod->target, 0.00125f * confidence);
+    gaussian_update(&mod->filter, mod->target, dt * confidence);
 
     // modifiers_reset(mod, mod->winddown_alpha * (1.0f - confidence));
     float traction_mult = 1.0f - mod->winddown_alpha * (1.0f - confidence);

@@ -25,14 +25,10 @@
 
 #include "conf/datatypes.h"
 
-#include <stdint.h>
-
 typedef struct {
-    GaussianFilter filter;
     float target;
+    GaussianFilter filter;
 
-    float tilt_step;
-    float tilt_alpha;
     float winddown_alpha;
 
     float fusion_alpha;
@@ -47,5 +43,6 @@ void modifiers_update(
     Modifiers *mod,
     const CfgTune *cfg,
     const MotorData *motor,
-    const IMUData *imu
+    const IMUData *imu,
+    float dt
 );

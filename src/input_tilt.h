@@ -1,5 +1,6 @@
 // Copyright 2022 Dado Mista
 // Copyright 2024 Lukas Hrazky
+// Copyright 2024 Vladislav Macicek
 //
 // This file is part of the Stig VESC package.
 //
@@ -18,19 +19,22 @@
 
 #pragma once
 
-#include "conf/datatypes.h"
-#include "motor_data.h"
 #include "remote_data.h"
+#include "utils.h"
+
+#include "conf/datatypes.h"
 
 typedef struct {
-    float interpolated;
-    float tmp;
-    float tilt_alpha;
-    float tilt_step;
+    GaussianFilter filter;
 } InputTilt;
+
+void input_tilt_configure(InputTilt *data, const CfgInputTilt *cfg);
 
 void input_tilt_reset(InputTilt *data);
 
-void input_tilt_configure(InputTilt *data, const CfgInputTilt *cfg, float dt);
-
-void input_tilt_update(InputTilt *data, const CfgInputTilt *cfg, const RemoteData *remote);
+void input_tilt_update(
+    InputTilt *data,
+    const CfgInputTilt *cfg,
+    const RemoteData *remote,
+    float dt
+);

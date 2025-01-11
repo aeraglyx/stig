@@ -237,7 +237,7 @@ static void configure(data *d) {
 
     // Tune modifiers
     modifiers_configure(&d->modifiers, &d->config.tune, d->loop_time);
-    input_tilt_configure(&d->input_tilt, &d->config.tune.input_tilt, d->loop_time);
+    input_tilt_configure(&d->input_tilt, &d->config.tune.input_tilt);
 
     pid_configure(&d->pid, &d->config.tune.pid, d->loop_time);
     // traction_configure(&d->traction, &d->config.tune.traction, d->loop_time);
@@ -499,7 +499,7 @@ static bool check_faults(data *d) {
     }
 
     // Check pitch angle
-    if (fabsf(d->imu.pitch - d->input_tilt.interpolated) > d->config.faults.pitch_threshold) {
+    if (fabsf(d->imu.pitch - d->input_tilt.filter.value) > d->config.faults.pitch_threshold) {
         float pitch_time = d->current_time - d->fault_angle_pitch_timer;
         float pitch_delay = d->config.faults.pitch_delay;
 
@@ -688,17 +688,19 @@ static void stig_thd(void *arg) {
                 &d->modifiers,
                 &d->config.tune,
                 &d->motor,
-                &d->imu
+                &d->imu,
+                d->loop_time
             );
 
             input_tilt_update(
                 &d->input_tilt,
                 &d->config.tune.input_tilt,
-                &d->remote
+                &d->remote,
+                d->loop_time
             );
 
             d->setpoint += d->modifiers.filter.value;
-            d->setpoint += d->input_tilt.interpolated;
+            d->setpoint += d->input_tilt.filter.value;
 
             // d->balance_filter.kp_mult = 1.0f - fabsf(d->modifiers.filter.value * d->config.tune.atr.tightness);
             d->balance_filter.kp_mult = 1.0f;
