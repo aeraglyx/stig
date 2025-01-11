@@ -99,7 +99,7 @@ typedef struct {
     bool beeper_enabled;
 
     // Config values
-    float loop_time;
+    float dt;
 
     float current_time;
     float last_time;
@@ -225,29 +225,29 @@ static void configure(data *d) {
     // TODO not the whole state_init
     state_init(&d->state, d->config.disabled);
 
-    d->loop_time = 1.0f / d->config.hardware.esc.frequency;
+    d->dt = 1.0f / d->config.hardware.esc.frequency;
 
     balance_filter_configure(&d->balance_filter, &d->config.tune.balance_filter);
 
-    imu_data_configure(&d->imu, &d->config.tune.traction, d->config.hardware.esc.imu_x_offset, d->loop_time);
-    motor_data_configure(&d->motor, &d->config.tune, &d->config.hardware, &d->config.rider, d->loop_time);
+    imu_data_configure(&d->imu, &d->config.tune.traction, d->config.hardware.esc.imu_x_offset, d->dt);
+    motor_data_configure(&d->motor, &d->config.tune, &d->config.hardware, &d->config.rider, d->dt);
     motor_control_configure(&d->motor_control, &d->config);
-    // remote_data_configure(&d->remote, &d->config.tune.input_tilt, d->loop_time);
+    // remote_data_configure(&d->remote, &d->config.tune.input_tilt, d->dt);
     lcm_configure(&d->lcm, &d->config.leds);
 
     // Tune modifiers
-    modifiers_configure(&d->modifiers, &d->config.tune, d->loop_time);
+    modifiers_configure(&d->modifiers, &d->config.tune, d->dt);
     input_tilt_configure(&d->input_tilt, &d->config.tune.input_tilt);
 
-    pid_configure(&d->pid, &d->config.tune.pid, d->loop_time);
-    // traction_configure(&d->traction, &d->config.tune.traction, d->loop_time);
+    pid_configure(&d->pid, &d->config.tune.pid, d->dt);
+    // traction_configure(&d->traction, &d->config.tune.traction, d->dt);
     warnings_configure(&d->warnings, &d->config.warnings);
     // haptic_buzz_configure(&d->haptic_buzz, &d->config.warnings);
 
     d->disengage_timer = d->current_time;
 
-    d->startup_step_size = d->config.startup.speed * d->loop_time;
-    d->tiltback_return_step_size = d->config.warnings.tiltback_return_speed * d->loop_time;
+    d->startup_step_size = d->config.startup.speed * d->dt;
+    d->tiltback_return_step_size = d->config.warnings.tiltback_return_speed * d->dt;
 
     // Feature: Dirty Landings
     d->startup_pitch_trickmargin = d->config.startup.dirtylandings_enabled ? 10 : 0;
@@ -268,7 +268,7 @@ static void configure(data *d) {
 
     // Feature: Reverse Stop
     d->reverse_tolerance = 0.06f;  // in meters
-    d->reverse_stop_step_size = 100.0 * d->loop_time;
+    d->reverse_stop_step_size = 100.0 * d->dt;
 
     d->beeper_enabled = d->config.hardware.esc.is_beeper_enabled;
 
@@ -517,7 +517,7 @@ static bool check_faults(data *d) {
 static void calculate_setpoint_target(data *d) {
     if (d->state.sat == SAT_REVERSESTOP) {
         // accumalete distance:
-        d->reverse_total_distance += d->motor.speed * d->loop_time;
+        d->reverse_total_distance += d->motor.speed * d->dt;
         if (fabsf(d->reverse_total_distance) > d->reverse_tolerance) {
             // tilt down by 10 degrees after 0.06 m
             d->setpoint_target = 10.0f * (fabsf(d->reverse_total_distance) - d->reverse_tolerance) / 0.06f;
@@ -604,11 +604,11 @@ static void imu_ref_callback(float *acc, float *gyro, float *mag, float dt) {
 
 static void time_vars_update(data *d) {
     d->current_time = VESC_IF->system_time();
-    float loop_time_measured = d->current_time - d->last_time;
+    float dt_measured = d->current_time - d->last_time;
     d->last_time = d->current_time;
 
     // TODO measure loop overshoot only when running
-    float loop_overshoot = loop_time_measured - d->loop_time;
+    float loop_overshoot = dt_measured - d->dt;
 
     // TODO use 2nd order IIR
     filter_ema(&d->loop_overshoot_filtered, loop_overshoot, 0.002f);
@@ -619,7 +619,7 @@ static void stig_thd(void *arg) {
 
     configure(d);  // XXX configure before init
     init_vars(d);
-    d->last_time = VESC_IF->system_time() - d->loop_time;
+    d->last_time = VESC_IF->system_time() - d->dt;
 
     // VESC_IF->plot_init("Time", "Y");
     // VESC_IF->plot_add_graph("something");
@@ -689,14 +689,14 @@ static void stig_thd(void *arg) {
                 &d->config.tune,
                 &d->motor,
                 &d->imu,
-                d->loop_time
+                d->dt
             );
 
             input_tilt_update(
                 &d->input_tilt,
                 &d->config.tune.input_tilt,
                 &d->remote,
-                d->loop_time
+                d->dt
             );
 
             d->setpoint += d->modifiers.filter.value;
@@ -759,11 +759,11 @@ static void stig_thd(void *arg) {
         motor_control_apply(&d->motor_control, &d->motor, d->current_time);
 
         // d->computation_time = VESC_IF->system_time() - d->current_time;
-        // const float loop_time_correction = d->computation_time + d->loop_overshoot_filtered;
-        // VESC_IF->sleep_us(1e6 * max(d->loop_time - loop_time_correction, 0));
+        // const float dt_correction = d->computation_time + d->loop_overshoot_filtered;
+        // VESC_IF->sleep_us(1e6 * max(d->dt - dt_correction, 0));
 
-        VESC_IF->sleep_us(1e6 * fmaxf(d->loop_time - d->loop_overshoot_filtered, 0.0f));
-        // VESC_IF->sleep_us(1e6 * d->loop_time);
+        VESC_IF->sleep_us(1e6 * fmaxf(d->dt - d->loop_overshoot_filtered, 0.0f));
+        // VESC_IF->sleep_us(1e6 * d->dt);
     }
 }
 
