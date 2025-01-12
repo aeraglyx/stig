@@ -496,9 +496,9 @@ p, li { white-space: pre-wrap; }
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
             <maxInt>4000</maxInt>
-            <minInt>50</minInt>
+            <minInt>100</minInt>
             <showDisplay>0</showDisplay>
-            <stepInt>16</stepInt>
+            <stepInt>100</stepInt>
             <valInt>800</valInt>
             <suffix> Hz</suffix>
             <vTx>3</vTx>
