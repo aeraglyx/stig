@@ -705,7 +705,14 @@ static void stig_thd(void *arg) {
             // d->balance_filter.kp_mult = 1.0f - fabsf(d->modifiers.filter.value * d->config.tune.atr.tightness);
             d->balance_filter.kp_mult = 1.0f;
 
-            pid_update(&d->pid, &d->imu, &d->motor, &d->config.tune.pid, d->setpoint);
+            pid_update(
+                &d->pid,
+                &d->imu,
+                &d->motor,
+                &d->config.tune.pid,
+                d->setpoint,
+                d->modifiers.filter.speed
+            );
 
             bool warning_ghost = d->current_time - d->fault_ghost_timer > 0.1f;
             bool warning_debug = false;
@@ -926,7 +933,7 @@ static void cmd_handtest(data *d, unsigned char *cfg) {
 }
 
 static void send_realtime_data(data *d) {
-    static const int bufsize = 87;
+    static const int bufsize = 87 + 4;
     uint8_t buffer[bufsize];
     int32_t ind = 0;
 
@@ -977,6 +984,7 @@ static void send_realtime_data(data *d) {
         buffer_append_float32_auto(buffer, d->pid.proportional, &ind);
         buffer_append_float32_auto(buffer, d->pid.integral, &ind);
         buffer_append_float32_auto(buffer, d->pid.derivative, &ind);
+        buffer_append_float32_auto(buffer, d->pid.feed_forward, &ind);
 
         // Debug
         buffer_append_float32_auto(buffer, d->motor.traction.confidence, &ind);

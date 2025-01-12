@@ -467,6 +467,7 @@ Item {
                     debugPidProportional.rValue = dv.getFloat32(ind); ind += 4;
                     debugPidIntegral.rValue = dv.getFloat32(ind); ind += 4;
                     debugPidDerivative.rValue = dv.getFloat32(ind); ind += 4;
+                    debugPidFeedForward.rValue = dv.getFloat32(ind); ind += 4;
 
                     debugTractionConfidence.rValue = dv.getFloat32(ind); ind += 4;
                     debugTractionMultiplier.rValue = dv.getFloat32(ind); ind += 4;
@@ -3611,6 +3612,7 @@ Item {
                             ValueBar {id: debugPidProportional; label: "P Term"; unitString: " Nm"; softLimit: 20}
                             ValueBar {id: debugPidIntegral; label: "I Term"; unitString: " Nm"; softLimit: 20}
                             ValueBar {id: debugPidDerivative; label: "D Term"; unitString: " Nm"; softLimit: 20}
+                            ValueBar {id: debugPidFeedForward; label: "F Term"; unitString: " Nm"; softLimit: 20}
 
                             Spacer {}
                             FactorBar {id: debugTractionMultiplier; label: "Traction Mult.";}

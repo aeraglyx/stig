@@ -74,13 +74,17 @@ static void d_update(PID *pid, const CfgPid *cfg, float gyro_y, int8_t direction
     pid->derivative = kd_input * pid->kd_scale;
 }
 
-// static void f_update(PID *pid, const CfgPid *cfg, float gyro_y, int8_t direction, float speed_factor) {
-//     float speed = 
-//     pid->feed_forward = speed * pid->kf_scale;
-// }
+static void f_update(PID *pid, const CfgPid *cfg, float setpoint_speed) {
+    pid->feed_forward = setpoint_speed * cfg->kf;
+}
 
 void pid_update(
-    PID *pid, const IMUData *imu, const MotorData *mot, const CfgPid *cfg, float setpoint
+    PID *pid,
+    const IMUData *imu,
+    const MotorData *mot,
+    const CfgPid *cfg,
+    float setpoint,
+    float setpoint_speed
 ) {
     float speed_factor = clamp(fabsf(mot->board_speed), 0.0f, 1.0f);
     float pitch_offset = setpoint - imu->pitch_balance;
@@ -89,13 +93,9 @@ void pid_update(
     p_update(pid, cfg, pitch_offset, direction, speed_factor);
     i_update(pid, cfg, pitch_offset, mot->traction.confidence);
     d_update(pid, cfg, imu->gyro[1], direction, speed_factor);
-    // TODO FEED FORWARD
+    f_update(pid, cfg, setpoint_speed);
     
-    // float windup_input = pid->proportional
-    // float current_limit = mot->braking ? mot->current_min : mot->current_max;
-    // new_pid_value = clamp_sym(new_pid_value, current_limit);
-
-    float pid_sum = pid->proportional + pid->integral + pid->derivative;
+    float pid_sum = pid->proportional + pid->integral + pid->derivative + pid->feed_forward;
 
     // CURRENT LIMITING
     // TODO remove redundant limiting

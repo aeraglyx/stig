@@ -223,6 +223,7 @@ typedef struct {
     float kd_filter;
     float ki;
     float ki_limit;
+    float kf;
     float kp_brake;
     float kd_brake;
     float soft_start;
