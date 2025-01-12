@@ -29,8 +29,6 @@ typedef struct {
     float target;
     GaussianFilter filter;
 
-    float winddown_alpha;
-
     float fusion_alpha;
     float accel_offset_smooth;
 } Modifiers;

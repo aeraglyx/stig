@@ -23,8 +23,6 @@
 
 void modifiers_configure(Modifiers *mod, const CfgTune *cfg, float dt) {
     gaussian_configure(&mod->filter, cfg->modifiers.filter);
-
-    mod->winddown_alpha = half_time_to_alpha(cfg->traction.mod_winddown, dt);
     mod->fusion_alpha = half_time_to_alpha(cfg->torque_tilt.filter, dt);
 }
 
@@ -110,19 +108,15 @@ void modifiers_update(
 ) {
     // TODO we only need one thing from IMUData
 
-    mod->target = 0.0f;
+    float target_new = 0.0f;
+    target_new += atr_tilt(&cfg->atr, motor);
+    target_new += torque_tilt(&cfg->torque_tilt, motor, imu->gyro[2], mod);
+    target_new += speed_tilt(&cfg->speed_tilt, motor->board_speed);
 
-    mod->target += atr_tilt(&cfg->atr, motor);
-    mod->target += torque_tilt(&cfg->torque_tilt, motor, imu->gyro[2], mod);
-    mod->target += speed_tilt(&cfg->speed_tilt, motor->board_speed);
+    float confidence = motor->traction.confidence;
+    float half_time = cfg->traction.modifier_winddown;
+    float alpha = half_time_to_alpha_fast(half_time * (1.0f - confidence), dt);
+    filter_ema(&mod->target, target_new * confidence, alpha);
 
-    float confidence = motor->traction.confidence_soft;
-    gaussian_update(&mod->filter, mod->target, dt * confidence);
-
-    // modifiers_reset(mod, mod->winddown_alpha * (1.0f - confidence));
-    float traction_mult = 1.0f - mod->winddown_alpha * (1.0f - confidence);
-    mod->filter.value *= traction_mult;
-    mod->filter.speed *= traction_mult;
-    mod->filter.accel *= traction_mult;
-    mod->accel_offset_smooth *= traction_mult;
+    gaussian_update(&mod->filter, mod->target, dt);
 }

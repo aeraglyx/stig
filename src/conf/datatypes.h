@@ -232,10 +232,7 @@ typedef struct {
     float slip_sensitivity;
     float drop_sensitivity;
     float conf_sensitivity;
-
-    float soft_release_winddown;
-    float mod_winddown;
-
+    float modifier_winddown;
     float filter;
 } CfgTraction;
 

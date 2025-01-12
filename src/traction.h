@@ -18,21 +18,18 @@
 #pragma once
 
 #include "conf/datatypes.h"
-#include "imu_data.h"
 
 typedef struct {
     float multiplier;
     float confidence;
-    float confidence_soft;
 
     float slip_sensitivity;
     float drop_sensitivity;
     float conf_sensitivity;
-    float winddown_alpha;
 } Traction;
 
 void traction_init(Traction *data);
 
-void traction_configure(Traction *data, const CfgTraction *cfg, float dt);
+void traction_configure(Traction *data, const CfgTraction *cfg);
 
 void traction_update(Traction *data, float accel_diff, float accel_mag);

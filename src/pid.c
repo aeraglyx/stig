@@ -87,7 +87,7 @@ void pid_update(
     int8_t direction = sign(mot->board_speed);
 
     p_update(pid, cfg, pitch_offset, direction, speed_factor);
-    i_update(pid, cfg, pitch_offset, mot->traction.confidence_soft);
+    i_update(pid, cfg, pitch_offset, mot->traction.confidence);
     d_update(pid, cfg, imu->gyro[1], direction, speed_factor);
     // TODO FEED FORWARD
     

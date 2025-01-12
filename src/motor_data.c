@@ -74,7 +74,7 @@ void motor_data_configure(
     m->c_torque = hw->motor.torque_constant;
     slope_configure(&m->slope_data, hw, rider);
 
-    traction_configure(&m->traction, &cfg->traction, dt);
+    traction_configure(&m->traction, &cfg->traction);
 
     m->dt = dt;
 }

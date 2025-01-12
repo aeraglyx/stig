@@ -979,7 +979,7 @@ static void send_realtime_data(data *d) {
         buffer_append_float32_auto(buffer, d->pid.derivative, &ind);
 
         // Debug
-        buffer_append_float32_auto(buffer, d->motor.traction.confidence_soft, &ind);
+        buffer_append_float32_auto(buffer, d->motor.traction.confidence, &ind);
         buffer_append_float32_auto(buffer, d->motor.traction.multiplier, &ind);
         buffer_append_float32_auto(buffer, d->motor.slope_data.slope, &ind);
 
