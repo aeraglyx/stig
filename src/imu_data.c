@@ -49,10 +49,38 @@ void imu_data_init(IMUData *data) {
 }
 
 void imu_data_configure(IMUData *data, const CfgTraction *cfg, float x_offset, float dt) {
-    // data->alpha = half_time_to_alpha(cfg->filter, dt);
     data->alpha = half_time_to_alpha_iir2(cfg->filter, dt);
     data->x_offset = x_offset;
     data->frequency = 1.0f / dt;
+}
+
+void acceleration_correction(IMUData *data, float *ax, float *ay, float *az) {
+    // Acceleration is affected by centripetal force and angular acceleration.
+    // For reference, IMU 0.2 m away from the axle would yield:
+    //     0.06 g at 100 °/s from centripetal force (but it's quadratic)
+    //     0.18 g at 500 °/s2 from angular acceleration
+
+    // Briefly tested on an ADV, other controllers / orientations might not work
+    // But is it even worth correcting for like 0.1 g here and there?
+
+    float gy_sq = data->gy * data->gy;
+    float gz_sq = data->gz * data->gz;
+    float ang_vel_sq = gy_sq + gz_sq;
+
+    // TODO div by dt instead?
+    float ang_acc_y = (data->gy - data->gy_last) * data->frequency;
+    float ang_acc_z = (data->gz - data->gz_last) * data->frequency;
+
+    float ax_correction = data->x_offset * ang_vel_sq;
+    float ay_correction = data->x_offset * ang_acc_z;
+    float az_correction = data->x_offset * ang_acc_y;
+    
+    *ax -= mps2_to_g(ax_correction);
+    *ay += mps2_to_g(ay_correction);
+    *az -= mps2_to_g(az_correction);
+
+    data->gy_last = data->gy;
+    data->gz_last = data->gz;
 }
 
 static float magnitude(float x, float y, float z) {
@@ -63,6 +91,7 @@ void imu_data_update(IMUData *data, BalanceFilterData *balance_filter) {
     // data->pitch = rad2deg(VESC_IF->imu_get_pitch());
     // data->roll = rad2deg(VESC_IF->imu_get_roll());
 
+    // TODO do I need this filtering?
     filter_iir2(&data->pitch, &data->pitch_tmp, rad2deg(VESC_IF->imu_get_pitch()), data->alpha);
     filter_iir2(&data->roll, &data->roll_tmp, rad2deg(VESC_IF->imu_get_roll()), data->alpha);
 
@@ -72,46 +101,21 @@ void imu_data_update(IMUData *data, BalanceFilterData *balance_filter) {
     // TODO separate things only needed when running
     data->pitch_balance = rad2deg(balance_filter_get_pitch(balance_filter));
 
-    // pre-filter accelerometer and gyroscope
-    // filter_ema(&data->ax, data->accel[0], data->alpha);
-    // filter_ema(&data->ay, data->accel[1], data->alpha);
-    // filter_ema(&data->az, data->accel[2], data->alpha);
     filter_iir2(&data->ax, &data->ax_tmp, data->accel[0], data->alpha);
     filter_iir2(&data->ay, &data->ay_tmp, data->accel[1], data->alpha);
     filter_iir2(&data->az, &data->az_tmp, data->accel[2], data->alpha);
 
-    // filter_ema(&data->gy, deg2rad(data->gyro[1]), data->alpha);
-    // filter_ema(&data->gz, deg2rad(data->gyro[2]), data->alpha);
     filter_iir2(&data->gy, &data->gy_tmp, deg2rad(data->gyro[1]), data->alpha);
     filter_iir2(&data->gz, &data->gz_tmp, deg2rad(data->gyro[2]), data->alpha);
 
-    // Acceleration is affected by centripetal force and angular acceleration.
-    // For reference, IMU 0.2 m away from the axle would yield:
-    //     0.06 g at 100 °/s from centripetal force (but it's quadratic)
-    //     0.18 g at 500 °/s2 from angular acceleration
+    // TODO move corrected acceleration to IMUData for comparison
+    float ax = data->ax;
+    float ay = data->ay;
+    float az = data->az;
 
-    // Briefly tested on an ADV, other controllers / orientations might not work
-    // But is it even worth correcting for like 0.1 g here and there?
-
-    // TODO refactor imu correction to its own function
-
-    float gy_sq = data->gy * data->gy;
-    float gz_sq = data->gz * data->gz;
-    float ang_vel_sq = gy_sq + gz_sq;
-
-    float ang_acc_y = (data->gy - data->gy_last) * data->frequency;
-    float ang_acc_z = (data->gz - data->gz_last) * data->frequency;
-
-    float ax_correction = data->x_offset * ang_vel_sq;
-    float ay_correction = data->x_offset * ang_acc_z;
-    float az_correction = data->x_offset * ang_acc_y;
-    
-    float ax = data->ax - mps2_to_g(ax_correction);
-    float ay = data->ay + mps2_to_g(ay_correction);
-    float az = data->az - mps2_to_g(az_correction);
-
-    data->gy_last = data->gy;
-    data->gz_last = data->gz;
+    if (data->x_offset != 0.0f) {
+        acceleration_correction(data, &ax, &ay, &az);
+    }
 
     data->accel_mag = magnitude(ax, ay, az);
     // data->accel_mag = magnitude(ax, ay, fmaxf(az, 0.0f));
