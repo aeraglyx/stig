@@ -23,55 +23,61 @@
 #include <stdint.h>
 
 void pid_configure(PID *pid, const CfgPid *cfg, float dt) {
-    pid->kd_alpha = half_time_to_alpha(cfg->kd_filter, dt);
+    pid->d_alpha = half_time_to_alpha(cfg->kd_filter, dt);
     pid->ki = cfg->ki * dt;
     pid->soft_start_step_size = dt / max(cfg->soft_start, dt);
 }
 
-void pid_reset(PID *pid, const CfgPid *cfg, float alpha) {
+void pid_reset(PID *pid, float alpha) {
     pid->pid_value = 0.0f;
 
     pid->proportional = 0.0f;
     filter_ema(&pid->integral, 0.0f, alpha);
     pid->derivative = 0.0f;
 
-    pid->kd_filtered = 0.0f;
+    pid->d_filtered_input = 0.0f;
 
-    filter_ema(&pid->kp_scale, cfg->kp, alpha);
-    filter_ema(&pid->kd_scale, cfg->kd, alpha);
+    filter_ema(&pid->kp_scale, 1.0f, alpha);
+    filter_ema(&pid->kd_scale, 1.0f, alpha);
 
     pid->soft_start_factor = 0.0f;
 }
 
 static void p_update(PID *pid, const CfgPid *cfg, float pitch_offset, int8_t direction, float speed_factor) {
-    float kp = cfg->kp;
+    // TODO only when kp_brake_scale != 1?
+    // TODO refactor scaling into a function?
+    float kp_brake_scale = 1.0f;
     if (sign(pitch_offset) != direction) {
-        // TODO only when kp_brake_scale != 0 ?
-        float kp_brake_scale = 1.0f + (cfg->kp_brake - 1.0f) * speed_factor;
-        kp *= kp_brake_scale;
+        kp_brake_scale = 1.0f + (cfg->kp_brake - 1.0f) * speed_factor;
     }
-    filter_ema(&pid->kp_scale, kp, 0.01f);
-    pid->proportional = pitch_offset * pid->kp_scale;
+    filter_ema(&pid->kp_scale, kp_brake_scale, 0.01f);
+
+    pid->proportional = pitch_offset * cfg->kp * pid->kp_scale;
+
+    float pitch_offset_sq = pitch_offset * fabsf(pitch_offset);
+    pid->proportional += pitch_offset_sq * cfg->kp_expo * pid->kp_scale;
 }
 
 static void i_update(PID *pid, const CfgPid *cfg, float pitch_offset, float confidence) {
     // TODO slowly winddown i term in wheelslip
+    // TODO use dt
     pid->integral += pitch_offset * pid->ki * confidence;
+
     if (cfg->ki_limit > 0.0f && fabsf(pid->integral) > cfg->ki_limit) {
         pid->integral = cfg->ki_limit * sign(pid->integral);
     }
 }
 
 static void d_update(PID *pid, const CfgPid *cfg, float gyro_y, int8_t direction, float speed_factor) {
-    filter_ema(&pid->kd_filtered, -gyro_y, pid->kd_alpha); 
-    float kd_input = pid->kd_filtered;
-    float kd = cfg->kd;
-    if (sign(kd_input) != direction) {
-        float kd_brake_scale = 1.0f + (cfg->kd_brake - 1.0f) * speed_factor;
-        kd *= kd_brake_scale;
+    filter_ema(&pid->d_filtered_input, -gyro_y, pid->d_alpha); 
+
+    float kd_brake_scale = 1.0f;
+    if (sign(pid->d_filtered_input) != direction) {
+        kd_brake_scale = 1.0f + (cfg->kd_brake - 1.0f) * speed_factor;
     }
-    filter_ema(&pid->kd_scale, kd, 0.01f);
-    pid->derivative = kd_input * pid->kd_scale;
+    filter_ema(&pid->kd_scale, kd_brake_scale, 0.01f);
+
+    pid->derivative = pid->d_filtered_input * cfg->kd * pid->kd_scale;
 }
 
 static void f_update(PID *pid, const CfgPid *cfg, float setpoint_speed) {

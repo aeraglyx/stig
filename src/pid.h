@@ -18,9 +18,10 @@
 
 #pragma once
 
-#include "conf/datatypes.h"
 #include "motor_data.h"
 #include "imu_data.h"
+
+#include "conf/datatypes.h"
 
 typedef struct {
     float pid_value;
@@ -30,8 +31,8 @@ typedef struct {
     float derivative;
     float feed_forward;
 
-    float kd_alpha;
-    float kd_filtered;
+    float d_alpha;
+    float d_filtered_input;
 
     float kp_scale;
     float kd_scale;
@@ -44,7 +45,7 @@ typedef struct {
 
 void pid_configure(PID *pid, const CfgPid *cfg, float dt);
 
-void pid_reset(PID *pid, const CfgPid *cfg, float alpha);
+void pid_reset(PID *pid, float alpha);
 
 void pid_update(
     PID *pid,

@@ -298,7 +298,7 @@ static void reset_vars(data *d) {
 
     modifiers_reset(&d->modifiers, alpha);
     input_tilt_reset(&d->input_tilt);
-    pid_reset(&d->pid, &d->config.tune.pid, alpha);
+    pid_reset(&d->pid, alpha);
 
     filter_ema(&d->setpoint, d->imu.pitch_balance, alpha);
     filter_ema(&d->setpoint_target_interpolated, d->imu.pitch_balance, alpha);
