@@ -112,6 +112,9 @@ float sec_approx(float x);
 float bell_curve(float x);
 float sin_scaled(float t);
 
+float magnitude_3d(float x, float y, float z);
+float magnitude_4d(float w, float x, float y, float z);
+
 float g_to_mps2(float x);
 float mps2_to_g(float x);
 

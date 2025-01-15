@@ -83,10 +83,6 @@ void acceleration_correction(IMUData *data, float *ax, float *ay, float *az) {
     data->gz_last = data->gz;
 }
 
-static float magnitude(float x, float y, float z) {
-    return sqrtf(x * x + y * y + z * z);
-}
-
 void imu_data_update(IMUData *data, BalanceFilterData *balance_filter) {
     // data->pitch = rad2deg(VESC_IF->imu_get_pitch());
     // data->roll = rad2deg(VESC_IF->imu_get_roll());
@@ -117,8 +113,8 @@ void imu_data_update(IMUData *data, BalanceFilterData *balance_filter) {
         acceleration_correction(data, &ax, &ay, &az);
     }
 
-    data->accel_mag = magnitude(ax, ay, az);
-    // data->accel_mag = magnitude(ax, ay, fmaxf(az, 0.0f));
+    data->accel_mag = magnitude_3d(ax, ay, az);
+    // data->accel_mag = magnitude_3d(ax, ay, fmaxf(az, 0.0f));
     // for drop, negative Z accel is permitted (pushing down)
 
     // float pitch_rad = VESC_IF->imu_get_pitch();

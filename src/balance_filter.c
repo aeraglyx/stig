@@ -36,10 +36,6 @@
 
 #include <math.h>
 
-static inline float inv_sqrt(float x) {
-    return 1.0 / sqrtf(x);
-}
-
 static float calculate_acc_confidence(float new_acc_mag, BalanceFilterData *data) {
     // G.K. Egan (C) computes confidence in accelerometers when
     // aircraft is being accelerated over and above that due to gravity
@@ -86,7 +82,7 @@ void balance_filter_update(BalanceFilterData *data, float *gyro_xyz, float *acce
     filter_iir2(&data->az_filtered, &data->az_filtered_tmp, az, alpha);
     az = data->az_filtered;
 
-    float accel_norm = sqrtf(ax * ax + ay * ay + az * az);
+    float accel_norm = magnitude_3d(ax, ay, az);
 
     // Compute feedback only if accelerometer abs(vector) is not too small to avoid a division
     // by a small number
@@ -97,7 +93,7 @@ void balance_filter_update(BalanceFilterData *data, float *gyro_xyz, float *acce
         float two_kp_yaw = 2.0 * data->kp_yaw * accel_confidence;
 
         // Normalize accelerometer measurement
-        float recip_norm = inv_sqrt(ax * ax + ay * ay + az * az);
+        float recip_norm = 1.0f / accel_norm;
         ax *= recip_norm;
         ay *= recip_norm;
         az *= recip_norm;
@@ -131,9 +127,7 @@ void balance_filter_update(BalanceFilterData *data, float *gyro_xyz, float *acce
     data->q3 += (qa * gz + qb * gy - qc * gx);
 
     // Normalize quaternion
-    float recip_norm = inv_sqrt(
-        data->q0 * data->q0 + data->q1 * data->q1 + data->q2 * data->q2 + data->q3 * data->q3
-    );
+    float recip_norm = 1.0f / magnitude_4d(data->q0, data->q1, data->q2, data->q3);
     data->q0 *= recip_norm;
     data->q1 *= recip_norm;
     data->q2 *= recip_norm;

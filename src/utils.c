@@ -63,6 +63,13 @@ float sin_scaled(float t) {
     return sin;
 }
 
+float magnitude_3d(float x, float y, float z) {
+    return sqrtf(x * x + y * y + z * z);
+}
+
+float magnitude_4d(float w, float x, float y, float z) {
+    return sqrtf(w * w + x * x + y * y + z * z);
+}
 
 float g_to_mps2(float x) {
     return 9.806650f * x;
