@@ -187,7 +187,7 @@ typedef struct {
 typedef struct {
     float pitch_tolerance;
     float roll_tolerance;
-    float speed;
+    float filter;
     bool simplestart_enabled;
     bool pushstart_enabled;
     bool dirtylandings_enabled;

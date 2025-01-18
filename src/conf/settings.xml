@@ -1286,28 +1286,28 @@ p, li { white-space: pre-wrap; }
             <suffix> °</suffix>
             <vTx>7</vTx>
         </startup.roll_tolerance>
-        <startup.speed>
-            <longName>Startup Centering Speed</longName>
+        <startup.filter>
+            <longName>Startup Filter</longName>
             <type>1</type>
             <transmittable>1</transmittable>
             <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Rate at which the board will level itself on startup.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_STARTUP_SPEED</cDefine>
-            <editorDecimalsDouble>1</editorDecimalsDouble>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Half time of startup filtering.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_STARTUP_FILTER</cDefine>
+            <editorDecimalsDouble>2</editorDecimalsDouble>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
-            <maxDouble>100</maxDouble>
-            <minDouble>0</minDouble>
+            <maxDouble>1.0</maxDouble>
+            <minDouble>0.05</minDouble>
             <showDisplay>0</showDisplay>
-            <stepDouble>5</stepDouble>
-            <valDouble>60</valDouble>
+            <stepDouble>0.01</stepDouble>
+            <valDouble>0.10</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> °/s</suffix>
+            <suffix> s</suffix>
             <vTx>7</vTx>
-        </startup.speed>
+        </startup.filter>
         <startup.simplestart_enabled>
             <longName>Enable Simple Start</longName>
             <type>5</type>
@@ -3485,7 +3485,7 @@ p, li { white-space: pre-wrap; }
         <ser>hardware.remote.invert_throttle</ser>
         <ser>startup.pitch_tolerance</ser>
         <ser>startup.roll_tolerance</ser>
-        <ser>startup.speed</ser>
+        <ser>startup.filter</ser>
         <ser>startup.simplestart_enabled</ser>
         <ser>startup.pushstart_enabled</ser>
         <ser>startup.dirtylandings_enabled</ser>
@@ -3715,7 +3715,7 @@ p, li { white-space: pre-wrap; }
                     <param>startup.pitch_tolerance</param>
                     <param>startup.roll_tolerance</param>
                     <param>::sep::Centering</param>
-                    <param>startup.speed</param>
+                    <param>startup.filter</param>
                     <param>::sep::Start Options</param>
                     <param>startup.simplestart_enabled</param>
                     <param>startup.pushstart_enabled</param>

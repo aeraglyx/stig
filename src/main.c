@@ -109,12 +109,8 @@ typedef struct {
     float startup_pitch_trickmargin;
     float startup_pitch_tolerance;
 
-    float startup_step_size;
-    float tiltback_return_step_size;
-
+    GaussianFilter setpoint_filter;
     float setpoint;
-    float setpoint_target;
-    float setpoint_target_interpolated;
 
     float disengage_timer;
     float nag_timer;
@@ -238,6 +234,7 @@ static void configure(data *d) {
     // Tune modifiers
     modifiers_configure(&d->modifiers, &d->config.tune, d->dt);
     input_tilt_configure(&d->input_tilt, &d->config.tune.input_tilt);
+    gaussian_configure(&d->setpoint_filter, d->config.startup.filter);
 
     pid_configure(&d->pid, &d->config.tune.pid, d->dt);
     // traction_configure(&d->traction, &d->config.tune.traction, d->dt);
@@ -245,9 +242,6 @@ static void configure(data *d) {
     // haptic_buzz_configure(&d->haptic_buzz, &d->config.warnings);
 
     d->disengage_timer = d->current_time;
-
-    d->startup_step_size = d->config.startup.speed * d->dt;
-    d->tiltback_return_step_size = d->config.warnings.tiltback_return_speed * d->dt;
 
     // Feature: Dirty Landings
     d->startup_pitch_trickmargin = d->config.startup.dirtylandings_enabled ? 10 : 0;
@@ -299,10 +293,7 @@ static void reset_vars(data *d) {
     modifiers_reset(&d->modifiers, alpha);
     input_tilt_reset(&d->input_tilt);
     pid_reset(&d->pid, alpha);
-
-    filter_ema(&d->setpoint, d->imu.pitch_balance, alpha);
-    filter_ema(&d->setpoint_target_interpolated, d->imu.pitch_balance, alpha);
-    filter_ema(&d->setpoint_target, 0.0f, alpha);
+    gaussian_reset(&d->setpoint_filter, d->imu.pitch_balance, clamp_sym(d->imu.gyro[1], 50.0f));
     
     d->startup_pitch_tolerance = d->config.startup.pitch_tolerance;
 }
@@ -332,19 +323,6 @@ static void engage(data *d) {
 //         }
 //     }
 // }
-
-static float get_setpoint_adjustment_step_size(const data *d) {
-    switch (d->state.sat) {
-    case (SAT_NONE):
-        return d->tiltback_return_step_size;
-    case (SAT_CENTERING):
-        return d->startup_step_size;
-    case (SAT_REVERSESTOP):
-        return d->reverse_stop_step_size;
-    default:
-        return 0.0f;
-    }
-}
 
 static bool board_may_have_ghosted(StopCondition condition) {
     return condition == STOP_GHOST || condition == STOP_ROLL || condition == STOP_PITCH;
@@ -514,65 +492,6 @@ static bool check_faults(data *d) {
     return false;
 }
 
-static void calculate_setpoint_target(data *d) {
-    if (d->state.sat == SAT_REVERSESTOP) {
-        // accumalete distance:
-        d->reverse_total_distance += d->motor.speed * d->dt;
-        if (fabsf(d->reverse_total_distance) > d->reverse_tolerance) {
-            // tilt down by 10 degrees after 0.06 m
-            d->setpoint_target = 10.0f * (fabsf(d->reverse_total_distance) - d->reverse_tolerance) / 0.06f;
-        } else {
-            if (fabsf(d->reverse_total_distance) <= d->reverse_tolerance / 2.0f) {
-                if (d->motor.speed >= 0.0f) {
-                    d->state.sat = SAT_NONE;
-                    d->reverse_total_distance = 0.0f;
-                    d->setpoint_target = 0.0f;
-                    d->pid.integral = 0.0f;
-                }
-            }
-        }
-    } else if (
-        fabsf(d->motor.wheel_accel) > 1.0f &&  // not normal, either wheelslip or wheel getting stuck
-        sign(d->motor.wheel_accel) == d->motor.speed_sign &&
-        d->motor.duty_cycle > 0.3f &&
-        d->motor.speed_abs > 2.0f)  // acceleration can jump a lot at very low speeds
-    {
-        d->state.wheelslip = true;
-        d->state.sat = SAT_NONE;
-        d->wheelslip_timer = d->current_time;
-    } else if (d->state.wheelslip) {
-        // Remain in wheelslip state for at least 500ms to avoid any overreactions
-        if (d->motor.duty_cycle > d->motor.duty_max - 0.1f) {
-            d->wheelslip_timer = d->current_time;
-        } else if (d->current_time - d->wheelslip_timer > 0.2f) {
-            if (d->motor.duty_cycle < 0.7f) {
-                // Leave wheelslip state only if duty < 70%
-                d->state.wheelslip = false;
-            }
-        }
-        if (d->config.faults.is_reversestop_enabled && (d->motor.speed < 0)) {
-            // the 500ms wheelslip time can cause us to blow past the reverse stop condition!
-            d->state.sat = SAT_REVERSESTOP;
-            d->reverse_timer = d->current_time;
-            d->reverse_total_distance = 0;
-        }
-    } else if (d->state.sat != SAT_CENTERING || d->setpoint_target_interpolated == d->setpoint_target) {
-        // Normal running
-        if (d->config.faults.is_reversestop_enabled && d->motor.speed < -0.2f) {
-            d->state.sat = SAT_REVERSESTOP;
-            d->reverse_timer = d->current_time;
-            d->reverse_total_distance = 0;
-        } else {
-            d->state.sat = SAT_NONE;
-        }
-        d->setpoint_target = 0;
-    }
-
-    if (d->state.wheelslip && d->motor.duty_cycle > d->motor.duty_max - 0.1f) {
-        d->setpoint_target = 0;
-    }
-}
-
 static bool startup_conditions_met(data *d) {
     if (!is_sensor_engaged(d)) {
         return false;
@@ -675,14 +594,7 @@ static void stig_thd(void *arg) {
 
             d->disengage_timer = d->current_time;
 
-            // Calculate setpoint and interpolation
-            calculate_setpoint_target(d);
-            rate_limitf(
-                &d->setpoint_target_interpolated,
-                d->setpoint_target,
-                get_setpoint_adjustment_step_size(d)
-            );
-            d->setpoint = d->setpoint_target_interpolated;
+            gaussian_update(&d->setpoint_filter, 0.0f, d->dt);
 
             modifiers_update(
                 &d->modifiers,
@@ -699,6 +611,7 @@ static void stig_thd(void *arg) {
                 d->dt
             );
 
+            d->setpoint = d->setpoint_filter.value;
             d->setpoint += d->modifiers.filter.value;
             d->setpoint += d->input_tilt.filter.value;
 
