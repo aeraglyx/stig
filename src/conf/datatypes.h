@@ -286,6 +286,7 @@ typedef struct {
 typedef enum {
     ACCELERATION_SOURCE_ERPM = 0,
     ACCELERATION_SOURCE_IMU,
+    ACCELERATION_SOURCE_FUSION,
 } AccelerationSource;
 
 // TODO move modifiers here

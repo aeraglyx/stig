@@ -60,7 +60,7 @@ static float torque_tilt(const CfgTorqueTilt *cfg, const MotorData *mot, float y
     // TODO test using above/below "setpoint"
     float torque = mot->torque;
     float ratio = mot->slope_data.k_accel / mot->slope_data.k_drive;
-    float torque_based_on_accel = mot->accel_smooth * ratio;
+    float torque_based_on_accel = mot->accel_final * ratio;
 
     float accel_offset = torque_based_on_accel - torque;
     filter_ema(&mod->accel_offset_smooth, accel_offset, mod->fusion_alpha);

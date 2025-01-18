@@ -32,7 +32,8 @@ void motor_data_init(MotorData *m) {
 
     m->wheel_accel = 0.0f;
     m->wheel_accel_tmp = 0.0f;
-    m->accel_smooth = 0.0f;
+    m->board_accel = 0.0f;
+    m->accel_final = 0.0f;
 
     m->current = 0.0f;
     m->current_tmp = 0.0f;
@@ -106,29 +107,30 @@ void motor_data_update(MotorData *m, uint16_t frequency, const IMUData *imu) {
 
     float accel_diff = m->wheel_accel - imu->board_accel;
     traction_update(&m->traction, accel_diff, imu->accel_mag);
-    // m->confidence_raw = bell_curve(1.0f * accel_diff);
-    // float erpm_confidence = get_speed_confidence(m, imu);
-    // m->confidence = erpm_confidence;
+
+    float board_speed_last = m->board_speed;
     float alpha = m->board_speed_alpha * m->traction.confidence;
-    float speed_imu = m->board_speed + g_to_mps2(imu->board_accel) * m->dt;
-    m->board_speed = speed_imu + alpha * (m->speed - speed_imu);
+    float speed_integrated = m->board_speed + g_to_mps2(imu->board_accel) * m->dt;
+    m->board_speed = speed_integrated + alpha * (m->speed - speed_integrated);
+    // TODO make this somehow higher order
+
+    m->board_accel = mps2_to_g((m->board_speed - board_speed_last) * frequency);
 
     // 0 at 0 m/s, asymptotically approaches 1 at high speeds on both sides
     m->fast_boi = 1.0f - bell_curve(0.2f * m->board_speed);
 
 
 
-    // TODO incorporate confidence information from traction
     // TODO keep wheel and board accelerations separate and switch later
-    // TODO rename accel_smooth
     switch (m->acceleration_source) {
         case ACCELERATION_SOURCE_ERPM:
-            m->accel_smooth = m->wheel_accel;
-            // filter_ema(&m->accel_smooth, accel_raw_clamped, m->mod_filter_alpha);
+            m->accel_final = m->wheel_accel;
             break;
         case ACCELERATION_SOURCE_IMU:
-            m->accel_smooth = imu->board_accel;
-            // filter_ema(&m->accel_smooth, imu->board_accel, m->mod_filter_alpha);
+            m->accel_final = imu->board_accel;
+            break;
+        case ACCELERATION_SOURCE_FUSION:
+            m->accel_final = m->board_accel;
             break;
     }
 
@@ -147,7 +149,7 @@ void motor_data_update(MotorData *m, uint16_t frequency, const IMUData *imu) {
     float duty_cycle_raw = fabsf(VESC_IF->mc_get_duty_cycle_now());
     filter_ema(&m->duty_cycle, duty_cycle_raw, 0.05f);
 
-    slope_update(&m->slope_data, m->torque, m->board_speed, m->accel_smooth);
+    slope_update(&m->slope_data, m->torque, m->board_speed, m->accel_final);
 
     m->speed_last = speed_corrected;
     m->debug = m->traction.confidence;

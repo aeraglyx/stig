@@ -49,9 +49,10 @@ typedef struct {
     float duty_cycle;
 
     float wheel_accel, wheel_accel_tmp;
-    float accel_smooth;
+    float accel_final;
     AccelerationSource acceleration_source;
     bool use_erpm_correction;
+    float board_accel;
 
     Traction traction;
     SlopeData slope_data;

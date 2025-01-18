@@ -1489,6 +1489,7 @@ p, li { white-space: pre-wrap; }
             <valInt>1</valInt>
             <enumNames>ERPM</enumNames>
             <enumNames>IMU</enumNames>
+            <enumNames>FUSION</enumNames>
         </tune.modifiers.acceleration_source>
         <tune.modifiers.use_erpm_correction>
             <longName>Use ERPM Correction</longName>
