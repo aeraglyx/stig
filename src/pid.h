@@ -31,8 +31,11 @@ typedef struct {
     float derivative;
     float feed_forward;
 
+    float p_alpha;
     float d_alpha;
-    float d_filtered_input;
+
+    float p_input;
+    float d_input;
 
     float kp_scale;
     float kd_scale;
@@ -45,7 +48,7 @@ typedef struct {
 
 void pid_configure(PID *pid, const CfgPid *cfg, float dt);
 
-void pid_reset(PID *pid, float alpha);
+void pid_reset(PID *pid, const IMUData *imu, float alpha);
 
 void pid_update(
     PID *pid,

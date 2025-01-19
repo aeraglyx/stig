@@ -23,19 +23,21 @@
 #include <stdint.h>
 
 void pid_configure(PID *pid, const CfgPid *cfg, float dt) {
+    pid->p_alpha = half_time_to_alpha(cfg->kp_filter, dt);
     pid->d_alpha = half_time_to_alpha(cfg->kd_filter, dt);
     pid->ki = cfg->ki * dt;
     pid->soft_start_step_size = dt / max(cfg->soft_start, dt);
 }
 
-void pid_reset(PID *pid, float alpha) {
+void pid_reset(PID *pid, const IMUData *imu, float alpha) {
     pid->pid_value = 0.0f;
 
     pid->proportional = 0.0f;
     filter_ema(&pid->integral, 0.0f, alpha);
     pid->derivative = 0.0f;
 
-    pid->d_filtered_input = 0.0f;
+    pid->p_input = imu->pitch_balance;
+    pid->d_input = -imu->gyro[1];
 
     filter_ema(&pid->kp_scale, 1.0f, alpha);
     filter_ema(&pid->kd_scale, 1.0f, alpha);
@@ -52,10 +54,15 @@ static void p_update(PID *pid, const CfgPid *cfg, float pitch_offset, int8_t dir
     }
     filter_ema(&pid->kp_scale, kp_brake_scale, 0.01f);
 
-    pid->proportional = pitch_offset * cfg->kp * pid->kp_scale;
+    pid->proportional = pitch_offset * cfg->kp;
 
-    float pitch_offset_sq = pitch_offset * fabsf(pitch_offset);
-    pid->proportional += pitch_offset_sq * cfg->kp_expo * pid->kp_scale;
+    float pitch_offset_2 = pitch_offset * fabsf(pitch_offset);
+    float pitch_offset_3 = pitch_offset * pitch_offset * pitch_offset;
+
+    pid->proportional += pitch_offset_2 * cfg->kp_2nd_order;
+    pid->proportional += pitch_offset_3 * cfg->kp_3rd_order;
+
+    pid->proportional *= pid->kp_scale;
 }
 
 static void i_update(PID *pid, const CfgPid *cfg, float pitch_offset, float confidence) {
@@ -68,16 +75,22 @@ static void i_update(PID *pid, const CfgPid *cfg, float pitch_offset, float conf
     }
 }
 
-static void d_update(PID *pid, const CfgPid *cfg, float gyro_y, int8_t direction, float speed_factor) {
-    filter_ema(&pid->d_filtered_input, -gyro_y, pid->d_alpha); 
-
+static void d_update(PID *pid, const CfgPid *cfg, float d_input, int8_t direction, float speed_factor) {
     float kd_brake_scale = 1.0f;
-    if (sign(pid->d_filtered_input) != direction) {
+    if (sign(d_input) != direction) {
         kd_brake_scale = 1.0f + (cfg->kd_brake - 1.0f) * speed_factor;
     }
     filter_ema(&pid->kd_scale, kd_brake_scale, 0.01f);
 
-    pid->derivative = pid->d_filtered_input * cfg->kd * pid->kd_scale;
+    pid->derivative = d_input * cfg->kd;
+
+    float d_input_2 = d_input * fabsf(d_input);
+    float d_input_3 = d_input * d_input * d_input;
+
+    pid->derivative += d_input_2 * cfg->kd_2nd_order * 0.01f;
+    pid->derivative += d_input_3 * cfg->kd_3rd_order * 0.0001f;
+
+    pid->derivative *= pid->kd_scale;
 }
 
 static void f_update(PID *pid, const CfgPid *cfg, float setpoint_speed) {
@@ -92,13 +105,16 @@ void pid_update(
     float setpoint,
     float setpoint_speed
 ) {
+    filter_ema(&pid->p_input, imu->pitch_balance, pid->p_alpha); 
+    filter_ema(&pid->d_input, -imu->gyro[1], pid->d_alpha); 
+
     float speed_factor = clamp(fabsf(mot->board_speed), 0.0f, 1.0f);
-    float pitch_offset = setpoint - imu->pitch_balance;
+    float pitch_offset = setpoint - pid->p_input;
     int8_t direction = sign(mot->board_speed);
 
     p_update(pid, cfg, pitch_offset, direction, speed_factor);
     i_update(pid, cfg, pitch_offset, mot->traction.confidence);
-    d_update(pid, cfg, imu->gyro[1], direction, speed_factor);
+    d_update(pid, cfg, pid->d_input, direction, speed_factor);
     f_update(pid, cfg, setpoint_speed);
     
     float pid_sum = pid->proportional + pid->integral + pid->derivative + pid->feed_forward;
@@ -123,5 +139,5 @@ void pid_update(
         new_pid_value *= pid->soft_start_factor;
     }
 
-    filter_ema(&pid->pid_value, new_pid_value, 0.2f);
+    pid->pid_value = new_pid_value;
 }

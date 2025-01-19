@@ -292,7 +292,7 @@ static void reset_vars(data *d) {
 
     modifiers_reset(&d->modifiers, alpha);
     input_tilt_reset(&d->input_tilt);
-    pid_reset(&d->pid, alpha);
+    pid_reset(&d->pid, &d->imu, alpha);
     gaussian_reset(&d->setpoint_filter, d->imu.pitch_balance, clamp_sym(d->imu.gyro[1], 50.0f));
     
     d->startup_pitch_tolerance = d->config.startup.pitch_tolerance;
