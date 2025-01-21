@@ -15,8 +15,9 @@ This is my personal, stripped down version of Refloat. I do not care about backw
 - Modifier Smoothing
     - Using a 3nd order IIR filter for modifiers and input tilt smoothing.
 - Traction Control
-    - Option to reduce torque when a drop or wheelslip is detected.
+    - Option to reduce torque when a wheelslip or drop is detected.
 - Ghost Buster, a rudimentary ghost safeguard 👻
+- Exponential PID terms, Feed Forward term
 - Miscellaneous
     - Use torque [Nm] instead of current [A] for almost everything.
     - Use m/s instead of ERPM for most speed-based things. As a rule of thumb, 1000 ERPM ≈ 1 m/s.
@@ -32,12 +33,12 @@ Make sure you have a backup of your configuration for reverting back. After inst
 - Motor Torque Constant (see [ATR docs](docs/atr.md))
 - LED Type is set to External Module by default (changes require reboot)
 
-## Migrating from Refloat
+## Configuration Differences
 Many parameters are not compatible with Refloat, so it is best to start with the defaults. Here are some notable parameter changes to keep in mind:
 
-- Battery warnings are based on a single cell's voltage, so the thresholds should be around 3.0 and 4.3 and generally don't need to be changed. Instead, you must specify the number of Cells in Series (Cfg > Specs).
-- P and D terms are based on torque instead of current and in general the numbers will be a bit lower than in Refloat.
-- I Term is frequency independent, the typical values are now 0-15 (instead of ~0.005).
+- Battery warnings are based on a single cell's voltage, so the thresholds should be around 3.0 and 4.3, and generally don't need to be changed. Instead, you must specify the number of Cells in Series (Motor Cfg > Additional Info > Setup).
+- PID terms are based on torque instead of current. In general, the numbers for P and D will be a bit lower than in Refloat.
+- I Term is frequency independent so the typical values are 0-20 (instead of ~0.005).
 - Higher tune modifier tiltback speeds are now possible in combination with setpoint filtering.
 - Filters are now expressed in seconds (half time) instead of Hz.
 - ATR strength of 1 now means parallel to the ground and you should need roughly 4x lower numbers (if you had 1.2, try 0.3).
@@ -51,8 +52,8 @@ Many parameters are not compatible with Refloat, so it is best to start with the
 - Some features (like traction control) might work better with Speed Tracker Position Source set to Observer. However, some people had issues with this on 6.05, so not sure.
 - Heel lift is no longer possible, posi FTW.
 - Although many parameter names are the same, some have been changed under the hood and can't use Refloat's equivalent values. See the section above for more details.
-- Just like Refloat, Mahony KP is configured in the package, so App Cfg > IMU > Mahony KP should be closer to 0.4, not 2. Similarly, acceleration Z filtering has been moved from App Cfg to the Package Cfg. So AppCfg > IMU > Accel Z Filter should be 0.
-- Read the descriptions of any settings you are unsure of (some might be outdated, sorry).
+- Just like Refloat, Mahony KP is configured in the package, so App Cfg > IMU > Mahony KP should be closer to 0.2, not 2. Similarly, acceleration Z filtering has been moved from App Cfg to the Package Cfg. So AppCfg > IMU > Accel Z Filter should be 0.
+- Read the descriptions of any settings you are unsure of (some might be outdated or wrong, sorry).
 
 ## Known Issues
 - 3rd party apps (Floaty, Float Control) not supported
