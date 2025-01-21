@@ -895,7 +895,7 @@ static void send_realtime_data(data *d) {
         buffer_append_float32_auto(buffer, d->motor.speed, &ind);
         buffer_append_float32_auto(buffer, d->motor.board_speed, &ind);
         buffer_append_float32_auto(buffer, d->motor.wheel_accel, &ind);
-        buffer_append_float32_auto(buffer, d->imu.board_accel, &ind);
+        buffer_append_float32_auto(buffer, d->motor.board_accel, &ind);
     }
 
     if (d->state.charging) {

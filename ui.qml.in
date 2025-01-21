@@ -3627,14 +3627,14 @@ Item {
                             clip: true
 
                             ValueBar {id: debugModifiersTarget; label: "Target"; unitString: "°"; softLimit: 3}
-                            ValueBar {id: debugModifiersValue; label: "Interpolated"; unitString: "°"; softLimit: 3}
+                            ValueBar {id: debugModifiersValue; label: "Filtered"; unitString: "°"; softLimit: 3}
                             ValueBar {id: debugModifiersSpeed; label: "Speed"; unitString: "°/s"; softLimit: 15}
 
                             Spacer {}
                             ValueBar {id: debugAtrSlope; label: "Road Slope"; unitString: "°"}
                             FactorBar {id: debugTest; label: "Test";}
                             ValueBar {id: debugWheelAccel; label: "Wheel Acc."; unitString: " g"; softLimit: 0.5}
-                            ValueBar {id: debugBoardAccel; label: "IMU Acc."; unitString: " g"; softLimit: 0.5}
+                            ValueBar {id: debugBoardAccel; label: "Board Acc."; unitString: " g"; softLimit: 0.5}
 
                         }
                     }
