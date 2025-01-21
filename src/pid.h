@@ -1,5 +1,6 @@
 // Copyright 2022 Dado Mista
 // Copyright 2024 Lukas Hrazky
+// Copyright 2025 Vladislav Macicek
 //
 // This file is part of the Stig VESC package.
 //
@@ -39,8 +40,6 @@ typedef struct {
 
     float kp_scale;
     float kd_scale;
-
-    float ki;
 
     float soft_start_step_size;
     float soft_start_factor;

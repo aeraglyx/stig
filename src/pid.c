@@ -1,5 +1,6 @@
 // Copyright 2022 Dado Mista
 // Copyright 2024 Lukas Hrazky
+// Copyright 2025 Vladislav Macicek
 //
 // This file is part of the Stig VESC package.
 //
@@ -23,9 +24,8 @@
 #include <stdint.h>
 
 void pid_configure(PID *pid, const CfgPid *cfg, float dt) {
-    pid->p_alpha = half_time_to_alpha(cfg->kp_filter, dt);
-    pid->d_alpha = half_time_to_alpha(cfg->kd_filter, dt);
-    pid->ki = cfg->ki * dt;
+    pid->p_alpha = half_time_to_alpha(cfg->p_filter, dt);
+    pid->d_alpha = half_time_to_alpha(cfg->d_filter, dt);
     pid->soft_start_step_size = dt / max(cfg->soft_start, dt);
 }
 
@@ -56,22 +56,22 @@ static void p_update(PID *pid, const CfgPid *cfg, float pitch_offset, int8_t dir
 
     pid->proportional = pitch_offset * cfg->kp;
 
-    float pitch_offset_2 = pitch_offset * fabsf(pitch_offset);
     float pitch_offset_3 = pitch_offset * pitch_offset * pitch_offset;
-
-    pid->proportional += pitch_offset_2 * cfg->kp_2nd_order;
-    pid->proportional += pitch_offset_3 * cfg->kp_3rd_order;
+    pid->proportional += pitch_offset_3 * cfg->kp_expo;
 
     pid->proportional *= pid->kp_scale;
 }
 
-static void i_update(PID *pid, const CfgPid *cfg, float pitch_offset, float confidence) {
+static void i_update(PID *pid, const CfgPid *cfg, float pitch_offset, float dt, float confidence) {
     // TODO slowly winddown i term in wheelslip
-    // TODO use dt
-    pid->integral += pitch_offset * pid->ki * confidence;
+    // TODO same for ghosting
+    pid->integral += pitch_offset * cfg->ki * dt * confidence;
 
-    if (cfg->ki_limit > 0.0f && fabsf(pid->integral) > cfg->ki_limit) {
-        pid->integral = cfg->ki_limit * sign(pid->integral);
+    float pitch_offset_3 = pitch_offset * pitch_offset * pitch_offset;
+    pid->integral += pitch_offset_3 * cfg->ki_expo * dt * confidence;
+
+    if (cfg->i_limit > 0.0f && fabsf(pid->integral) > cfg->i_limit) {
+        pid->integral = cfg->i_limit * sign(pid->integral);
     }
 }
 
@@ -84,11 +84,8 @@ static void d_update(PID *pid, const CfgPid *cfg, float d_input, int8_t directio
 
     pid->derivative = d_input * cfg->kd;
 
-    float d_input_2 = d_input * fabsf(d_input);
     float d_input_3 = d_input * d_input * d_input;
-
-    pid->derivative += d_input_2 * cfg->kd_2nd_order * 0.01f;
-    pid->derivative += d_input_3 * cfg->kd_3rd_order * 0.0001f;
+    pid->derivative += d_input_3 * cfg->kd_expo * 0.0001f;
 
     pid->derivative *= pid->kd_scale;
 }
@@ -112,18 +109,17 @@ void pid_update(
     float pitch_offset = setpoint - pid->p_input;
     int8_t direction = sign(mot->board_speed);
 
+    // TODO pass dt instead of taking it from MotorData
     p_update(pid, cfg, pitch_offset, direction, speed_factor);
-    i_update(pid, cfg, pitch_offset, mot->traction.confidence);
+    i_update(pid, cfg, pitch_offset, mot->dt, mot->traction.confidence);
     d_update(pid, cfg, pid->d_input, direction, speed_factor);
     f_update(pid, cfg, setpoint_speed);
     
-    float pid_sum = pid->proportional + pid->integral + pid->derivative + pid->feed_forward;
+    pid->pid_value = pid->proportional + pid->integral + pid->derivative + pid->feed_forward;
 
-    // CURRENT LIMITING
-    // TODO remove redundant limiting
-    float current_limit = mot->braking ? mot->current_min : mot->current_max;
-    float new_pid_value = clamp_sym(pid_sum, current_limit);
+    // TODO torque based limit
     // TODO soft max?
+    // float new_pid_value = clamp_sym(pid_sum, cfg->pid_limit);
 
     // float i_overshoot = pid_sum - pid_sum_saturated;
     // pid->integral -= i_overshoot;
@@ -136,8 +132,6 @@ void pid_update(
     if (pid->soft_start_factor < 1.0f) {
         float factor_new = pid->soft_start_factor + pid->soft_start_step_size;
         pid->soft_start_factor = clamp(factor_new, 0.0f, 1.0f);
-        new_pid_value *= pid->soft_start_factor;
+        pid->pid_value *= pid->soft_start_factor;
     }
-
-    pid->pid_value = new_pid_value;
 }

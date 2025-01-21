@@ -219,18 +219,17 @@ typedef struct {
 
 typedef struct {
     float kp;
-    float kp_2nd_order;
-    float kp_3rd_order;
+    float kp_expo;
     float kd;
-    float kd_2nd_order;
-    float kd_3rd_order;
+    float kd_expo;
     float ki;
+    float ki_expo;
     float kf;
-    float ki_limit;
-    float kp_filter;
-    float kd_filter;
     float kp_brake;
     float kd_brake;
+    float i_limit;
+    float p_filter;
+    float d_filter;
     float soft_start;
 } CfgPid;
 

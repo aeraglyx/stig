@@ -26,7 +26,7 @@ p, li { white-space: pre-wrap; }
             <cDefine></cDefine>
         </hw_name>
         <tune.pid.kp>
-            <longName>P Term (Linear)</longName>
+            <longName>P Term</longName>
             <type>1</type>
             <transmittable>1</transmittable>
             <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -47,35 +47,13 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.5</stepDouble>
-            <valDouble>14</valDouble>
+            <valDouble>12.5</valDouble>
             <vTxDoubleScale>10</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
         </tune.pid.kp>
-        <tune.pid.kp_2nd_order>
-            <longName>P Term (2nd Order)</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Same as P Term, but using a quadratic curve.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_PID_KP_2ND_ORDER</cDefine>
-            <editorDecimalsDouble>1</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>20</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>0.5</stepDouble>
-            <valDouble>4.0</valDouble>
-            <vTxDoubleScale>10</vTxDoubleScale>
-            <suffix></suffix>
-            <vTx>7</vTx>
-        </tune.pid.kp_2nd_order>
-        <tune.pid.kp_3rd_order>
-            <longName>P Term (3rd Order)</longName>
+        <tune.pid.kp_expo>
+            <longName>P Term Expo</longName>
             <type>1</type>
             <transmittable>1</transmittable>
             <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -83,7 +61,7 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Same as P Term, but using a cubic curve.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_PID_KP_3RD_ORDER</cDefine>
+            <cDefine>CFG_DFLT_TUNE_PID_KP_EXPO</cDefine>
             <editorDecimalsDouble>1</editorDecimalsDouble>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
@@ -91,13 +69,13 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.5</stepDouble>
-            <valDouble>0.0</valDouble>
+            <valDouble>7.5</valDouble>
             <vTxDoubleScale>10</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
-        </tune.pid.kp_3rd_order>
+        </tune.pid.kp_expo>
         <tune.pid.kd>
-            <longName>D Term (Linear)</longName>
+            <longName>D Term</longName>
             <type>1</type>
             <transmittable>1</transmittable>
             <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -117,39 +95,17 @@ p, li { white-space: pre-wrap; }
             <editorDecimalsDouble>2</editorDecimalsDouble>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
-            <maxDouble>3</maxDouble>
+            <maxDouble>2</maxDouble>
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.05</stepDouble>
-            <valDouble>0.50</valDouble>
+            <valDouble>0.40</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
         </tune.pid.kd>
-        <tune.pid.kd_2nd_order>
-            <longName>D Term (2nd Order)</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Same as D Term, but using a quadratic curve.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_PID_KD_2ND_ORDER</cDefine>
-            <editorDecimalsDouble>2</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>3</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>0.05</stepDouble>
-            <valDouble>0.0</valDouble>
-            <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> x 0.01</suffix>
-            <vTx>7</vTx>
-        </tune.pid.kd_2nd_order>
-        <tune.pid.kd_3rd_order>
-            <longName>D Term (3rd Order)</longName>
+        <tune.pid.kd_expo>
+            <longName>D Term Expo</longName>
             <type>1</type>
             <transmittable>1</transmittable>
             <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -157,21 +113,21 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Same as D Term, but using a cubic curve.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_PID_KD_3RD_ORDER</cDefine>
+            <cDefine>CFG_DFLT_TUNE_PID_KD_EXPO</cDefine>
             <editorDecimalsDouble>2</editorDecimalsDouble>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
-            <maxDouble>3</maxDouble>
+            <maxDouble>2</maxDouble>
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.05</stepDouble>
-            <valDouble>0.0</valDouble>
+            <valDouble>0.40</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> x 0.0001</suffix>
             <vTx>7</vTx>
-        </tune.pid.kd_3rd_order>
-        <tune.pid.kp_filter>
-            <longName>PI Filter</longName>
+        </tune.pid.kd_expo>
+        <tune.pid.p_filter>
+            <longName>P Filter</longName>
             <type>1</type>
             <transmittable>1</transmittable>
             <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -179,7 +135,7 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Half time of D Term filtering, which creates an interesting spongy feeling. Some specific values can induce vibrations.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_PID_KP_FILTER</cDefine>
+            <cDefine>CFG_DFLT_TUNE_PID_P_FILTER</cDefine>
             <editorDecimalsDouble>3</editorDecimalsDouble>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
@@ -191,8 +147,8 @@ p, li { white-space: pre-wrap; }
             <vTxDoubleScale>1000</vTxDoubleScale>
             <suffix> s</suffix>
             <vTx>7</vTx>
-        </tune.pid.kp_filter>
-        <tune.pid.kd_filter>
+        </tune.pid.p_filter>
+        <tune.pid.d_filter>
             <longName>D Filter</longName>
             <type>1</type>
             <transmittable>1</transmittable>
@@ -201,7 +157,7 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Half time of D Term filtering, which creates an interesting spongy feeling. Some specific values can induce vibrations.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_PID_KD_FILTER</cDefine>
+            <cDefine>CFG_DFLT_TUNE_PID_D_FILTER</cDefine>
             <editorDecimalsDouble>3</editorDecimalsDouble>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
@@ -213,7 +169,7 @@ p, li { white-space: pre-wrap; }
             <vTxDoubleScale>1000</vTxDoubleScale>
             <suffix> s</suffix>
             <vTx>7</vTx>
-        </tune.pid.kd_filter>
+        </tune.pid.d_filter>
         <tune.pid.ki>
             <longName>I Term</longName>
             <type>1</type>
@@ -233,13 +189,35 @@ p, li { white-space: pre-wrap; }
             <maxDouble>50</maxDouble>
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
-            <stepDouble>0.5</stepDouble>
-            <valDouble>8.0</valDouble>
+            <stepDouble>1.0</stepDouble>
+            <valDouble>10.0</valDouble>
             <vTxDoubleScale>10</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
         </tune.pid.ki>
-        <tune.pid.ki_limit>
+        <tune.pid.ki_expo>
+            <longName>I Term Expo</longName>
+            <type>1</type>
+            <transmittable>1</transmittable>
+            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Same as I Term, but using a cubic curve.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_TUNE_PID_KI_EXPO</cDefine>
+            <editorDecimalsDouble>1</editorDecimalsDouble>
+            <editorScale>1</editorScale>
+            <editAsPercentage>0</editAsPercentage>
+            <maxDouble>50</maxDouble>
+            <minDouble>0</minDouble>
+            <showDisplay>0</showDisplay>
+            <stepDouble>1.0</stepDouble>
+            <valDouble>0.0</valDouble>
+            <vTxDoubleScale>10</vTxDoubleScale>
+            <suffix></suffix>
+            <vTx>7</vTx>
+        </tune.pid.ki_expo>
+        <tune.pid.i_limit>
             <longName>I Limit</longName>
             <type>1</type>
             <transmittable>1</transmittable>
@@ -255,19 +233,19 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;*Note: 0 = Disabled (Not Recommended)&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600; font-style:italic;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;*Note: Was under the parameter &amp;quot;Deadzone&amp;quot; in previous firmware versions. The values used for that parameter before are now scaled up 10x (i.e. a previous &amp;quot;Deadzone&amp;quot; value of 3, is now an I Term Limit of 30A).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_PID_KI_LIMIT</cDefine>
+            <cDefine>CFG_DFLT_TUNE_PID_I_LIMIT</cDefine>
             <editorDecimalsDouble>1</editorDecimalsDouble>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
             <maxDouble>100</maxDouble>
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
-            <stepDouble>1</stepDouble>
+            <stepDouble>5</stepDouble>
             <valDouble>25</valDouble>
             <vTxDoubleScale>10</vTxDoubleScale>
             <suffix> Nm</suffix>
             <vTx>7</vTx>
-        </tune.pid.ki_limit>
+        </tune.pid.i_limit>
         <tune.pid.kf>
             <longName>F Term</longName>
             <type>1</type>
@@ -276,25 +254,17 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Rate P (Proportional) value&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Determines how strong the board responds to the nose's angular velocity, regardless of setpoint (i.e. pushing nose down will accelerate, pulling nose up will brake).&lt;br /&gt;&lt;br /&gt;Most noticeable in quick/aggressive manuevers, as well as scenarios where Angle P is not effective. For example, coming from hard braking (nose high above setpoint), Rate P will allow the board to begin to accelerate the moment you start pushing the nose down, before the nose is even below setpoint.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;For our use case, while Rate P is a Proportional value, we utilize it practically as the D (Derivative) component for our PID loop, working as a damper for the Angle P component.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Recommended Values: 0.1 - 0.8 &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;(0.7 - 1.2+ is possible, may experience negative side effects)&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-style:italic;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;*Note: Angle P and Rate P work together to shape a large part of the ride feel. If trying to soften the effects of both and you would like to maintain the ride feel, these values should be adjusted together by the same proportion (i.e. If reducing Angle P by half, such as from 20 -&amp;gt; 10, Rate P should be reduced by half as well, such as from 0.6 -&amp;gt; 0.3).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Feed Forward. Add setpoint speed multiplied by this term directly to the PID sum.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
             <cDefine>CFG_DFLT_TUNE_PID_KF</cDefine>
-            <editorDecimalsDouble>2</editorDecimalsDouble>
+            <editorDecimalsDouble>1</editorDecimalsDouble>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
-            <maxDouble>3</maxDouble>
+            <maxDouble>10</maxDouble>
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
-            <stepDouble>0.10</stepDouble>
-            <valDouble>0.00</valDouble>
-            <vTxDoubleScale>100</vTxDoubleScale>
+            <stepDouble>0.1</stepDouble>
+            <valDouble>0.0</valDouble>
+            <vTxDoubleScale>10</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
         </tune.pid.kf>
@@ -3521,18 +3491,17 @@ p, li { white-space: pre-wrap; }
     </Params>
     <SerOrder>
         <ser>tune.pid.kp</ser>
-        <ser>tune.pid.kp_2nd_order</ser>
-        <ser>tune.pid.kp_3rd_order</ser>
+        <ser>tune.pid.kp_expo</ser>
         <ser>tune.pid.kd</ser>
-        <ser>tune.pid.kd_2nd_order</ser>
-        <ser>tune.pid.kd_3rd_order</ser>
+        <ser>tune.pid.kd_expo</ser>
         <ser>tune.pid.ki</ser>
+        <ser>tune.pid.ki_expo</ser>
         <ser>tune.pid.kf</ser>
         <ser>tune.pid.kp_brake</ser>
         <ser>tune.pid.kd_brake</ser>
-        <ser>tune.pid.kp_filter</ser>
-        <ser>tune.pid.kd_filter</ser>
-        <ser>tune.pid.ki_limit</ser>
+        <ser>tune.pid.p_filter</ser>
+        <ser>tune.pid.d_filter</ser>
+        <ser>tune.pid.i_limit</ser>
         <ser>tune.traction.slip_sensitivity</ser>
         <ser>tune.traction.drop_sensitivity</ser>
         <ser>tune.traction.conf_sensitivity</ser>
@@ -3682,12 +3651,11 @@ p, li { white-space: pre-wrap; }
                 <subgroupParams>
                     <param>::sep::PID</param>
                     <param>tune.pid.kp</param>
-                    <param>tune.pid.kp_2nd_order</param>
-                    <param>tune.pid.kp_3rd_order</param>
+                    <param>tune.pid.kp_expo</param>
                     <param>tune.pid.kd</param>
-                    <param>tune.pid.kd_2nd_order</param>
-                    <param>tune.pid.kd_3rd_order</param>
+                    <param>tune.pid.kd_expo</param>
                     <param>tune.pid.ki</param>
+                    <param>tune.pid.ki_expo</param>
                     <param>tune.pid.kf</param>
                     <param>::sep::Balance Filter</param>
                     <param>tune.balance_filter.mahony_kp</param>
@@ -3696,9 +3664,9 @@ p, li { white-space: pre-wrap; }
                     <param>tune.pid.kp_brake</param>
                     <param>tune.pid.kd_brake</param>
                     <param>::sep::Advanced</param>
-                    <param>tune.pid.ki_limit</param>
-                    <param>tune.pid.kp_filter</param>
-                    <param>tune.pid.kd_filter</param>
+                    <param>tune.pid.i_limit</param>
+                    <param>tune.pid.p_filter</param>
+                    <param>tune.pid.d_filter</param>
                     <param>tune.balance_filter.az_filter</param>
                     <param>tune.balance_filter.accel_confidence_decay</param>
                 </subgroupParams>
