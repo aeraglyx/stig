@@ -330,10 +330,6 @@ static bool board_may_have_ghosted(StopCondition condition) {
 
 // TODO no need to pass full data
 static bool is_sensor_engaged(const data *d) {
-    if (d->state.charging) {
-        return false;
-    }
-
     if (d->footpad_sensor.state == FS_BOTH) {
         return true;
     }
@@ -343,24 +339,37 @@ static bool is_sensor_engaged(const data *d) {
     }
 
     // Half Engaged:
-
     if (board_may_have_ghosted(d->state.stop_condition)) {
         return false;
     }
 
-    // posi always enabled
+    // Posi always enabled
     return true;
+}
 
-    // if (d->config.faults.is_posi_enabled) {
-    //     return true;
-    // }
+static bool startup_conditions_met(data *d) {
+    if (!is_sensor_engaged(d)) {
+        return false;
+    }
 
-    // if (d->config.startup.simplestart_enabled) {
-    //     // simple start is disabled for a few seconds after disengaging
-    //     if (d->current_time - d->disengage_timer > 2.0f) {
-    //         return true;
-    //     }
-    // }
+    if (d->state.charging) {
+        return false;
+    }
+
+    // bool is_pitch_valid = fabsf(d->imu.pitch_balance) < d->startup_pitch_tolerance;
+    bool is_pitch_valid = fabsf(d->imu.pitch) < d->startup_pitch_tolerance;
+    bool is_roll_valid = fabsf(d->imu.roll) < d->config.startup.roll_tolerance;
+
+    if (is_pitch_valid && is_roll_valid) {
+        return true;
+    }
+
+    bool is_push_start = d->config.startup.pushstart_enabled && d->motor.speed > 1.0f;
+    if (is_push_start && (fabsf(d->imu.pitch_balance) < 45) && is_roll_valid) {
+        return true;
+    }
+
+    return false;
 }
 
 static bool check_faults(data *d) {
@@ -487,28 +496,6 @@ static bool check_faults(data *d) {
         }
     } else {
         d->fault_angle_pitch_timer = d->current_time;
-    }
-
-    return false;
-}
-
-static bool startup_conditions_met(data *d) {
-    if (!is_sensor_engaged(d)) {
-        return false;
-    }
-
-    bool is_pitch_valid = fabsf(d->imu.pitch_balance) < d->startup_pitch_tolerance;
-    bool is_roll_valid = fabsf(d->imu.roll) < d->config.startup.roll_tolerance;
-
-    if (is_pitch_valid && is_roll_valid) {
-        return true;
-    }
-
-    // TODO only positive speed when ghost safeguard is enabled
-    // bool is_push_start = d->config.startup.pushstart_enabled && d->motor.speed_abs > 1.0f;
-    bool is_push_start = d->config.startup.pushstart_enabled && d->motor.speed > 1.0f;
-    if (is_push_start && (fabsf(d->imu.pitch_balance) < 45) && is_roll_valid) {
-        return true;
     }
 
     return false;
