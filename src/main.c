@@ -33,7 +33,6 @@
 #include "pid.h"
 #include "haptic_buzz.h"
 #include "motor_control.h"
-// #include "traction.h"
 
 #include "charging.h"
 #include "footpad_sensor.h"
@@ -86,7 +85,6 @@ typedef struct {
     InputTilt input_tilt;
 
     PID pid;
-    // Traction traction;
     Warnings warnings;
     HapticBuzz haptic_buzz;
     MotorControl motor_control;
@@ -231,15 +229,12 @@ static void configure(data *d) {
     // remote_data_configure(&d->remote, &d->config.tune.input_tilt, d->dt);
     lcm_configure(&d->lcm, &d->config.leds);
 
-    // Tune modifiers
     modifiers_configure(&d->modifiers, &d->config.tune, d->dt);
     input_tilt_configure(&d->input_tilt, &d->config.tune.input_tilt);
     gaussian_configure(&d->setpoint_filter, d->config.startup.filter);
 
     pid_configure(&d->pid, &d->config.tune.pid, d->dt);
-    // traction_configure(&d->traction, &d->config.tune.traction, d->dt);
     warnings_configure(&d->warnings, &d->config.warnings);
-    // haptic_buzz_configure(&d->haptic_buzz, &d->config.warnings);
 
     d->disengage_timer = d->current_time;
 
@@ -278,8 +273,6 @@ static void init_vars(data *d) {
     imu_data_init(&d->imu);
     motor_data_init(&d->motor);
     // remote_data_init(&d->remote);
-    // traction_init(&d->traction);
-    // d->use_strong_brake = false;
 
     warnings_init(&d->warnings);
     haptic_buzz_init(&d->haptic_buzz);
@@ -287,7 +280,6 @@ static void init_vars(data *d) {
 
 static void reset_vars(data *d) {
     float time_disengaged = d->current_time - d->disengage_timer;
-    // const float alpha = half_time_to_alpha(0.1f, time_disengaged);
     float alpha = clamp(time_disengaged, 0.0f, 1.0f);
 
     modifiers_reset(&d->modifiers, alpha);
@@ -373,8 +365,6 @@ static bool startup_conditions_met(data *d) {
 }
 
 static bool check_faults(data *d) {
-    // CfgFaults cfg = d->config.faults;
-
     bool disable_switch_faults =
         d->config.faults.moving_fault_disabled &&
         d->motor.board_speed > 0.5f &&
@@ -390,14 +380,6 @@ static bool check_faults(data *d) {
                 state_stop(&d->state, STOP_SWITCH_FULL);
                 return true;
             }
-
-            // float switch_half_delay = 0.001f * d->config.faults.switch_half_delay;
-            // bool is_slow = d->motor.speed_abs < d->config.faults.switch_half_speed * 6;
-
-            // } else if (switch_full_time > switch_half_delay && is_slow) {
-            //     state_stop(&d->state, STOP_SWITCH_FULL);
-            //     return true;
-            // }
         }
 
         // Feature: Quick Stop
@@ -440,23 +422,6 @@ static bool check_faults(data *d) {
             d->reverse_timer = d->current_time;
         }
     }
-
-    // Switch partially open and stopped
-    // if (!d->config.faults.is_posi_enabled) {
-    //     bool is_below_switch_half_speed = d->motor.speed_abs < d->config.faults.switch_half_speed;
-
-    //     if (!is_sensor_engaged(d) && is_below_switch_half_speed) {
-    //         float switch_half_time = d->current_time - d->fault_switch_half_timer;
-    //         float switch_half_delay = 0.001f * d->config.faults.switch_half_delay;
-
-    //         if (switch_half_time > switch_half_delay) {
-    //             state_stop(&d->state, STOP_SWITCH_HALF);
-    //             return true;
-    //         }
-    //     } else {
-    //         d->fault_switch_half_timer = d->current_time;
-    //     }
-    // }
 
     // Feature: Ghost Buster
     // TODO exclude wheelslip - use confidence
