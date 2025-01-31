@@ -47,7 +47,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.5</stepDouble>
-            <valDouble>12.5</valDouble>
+            <valDouble>14.0</valDouble>
             <vTxDoubleScale>10</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
@@ -69,7 +69,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.5</stepDouble>
-            <valDouble>7.5</valDouble>
+            <valDouble>4.0</valDouble>
             <vTxDoubleScale>10</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
@@ -121,7 +121,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.05</stepDouble>
-            <valDouble>0.40</valDouble>
+            <valDouble>0.60</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> x 0.0001</suffix>
             <vTx>7</vTx>
@@ -143,7 +143,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0.0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.001</stepDouble>
-            <valDouble>0.012</valDouble>
+            <valDouble>0.010</valDouble>
             <vTxDoubleScale>1000</vTxDoubleScale>
             <suffix> s</suffix>
             <vTx>7</vTx>
@@ -165,7 +165,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0.0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.001</stepDouble>
-            <valDouble>0.002</valDouble>
+            <valDouble>0.001</valDouble>
             <vTxDoubleScale>1000</vTxDoubleScale>
             <suffix> s</suffix>
             <vTx>7</vTx>
@@ -190,7 +190,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>1.0</stepDouble>
-            <valDouble>10.0</valDouble>
+            <valDouble>12.0</valDouble>
             <vTxDoubleScale>10</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
@@ -263,7 +263,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.1</stepDouble>
-            <valDouble>0.0</valDouble>
+            <valDouble>0.5</valDouble>
             <vTxDoubleScale>10</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
@@ -357,7 +357,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.1</stepDouble>
-            <valDouble>1.5</valDouble>
+            <valDouble>2.5</valDouble>
             <vTxDoubleScale>10</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
@@ -379,7 +379,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.1</stepDouble>
-            <valDouble>3.0</valDouble>
+            <valDouble>2.5</valDouble>
             <vTxDoubleScale>10</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
@@ -401,7 +401,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0.0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.005</stepDouble>
-            <valDouble>0.025</valDouble>
+            <valDouble>0.020</valDouble>
             <vTxDoubleScale>1000</vTxDoubleScale>
             <suffix> s</suffix>
             <vTx>7</vTx>
@@ -452,7 +452,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.05</stepDouble>
-            <valDouble>2.15</valDouble>
+            <valDouble>2.25</valDouble>
             <vTxDoubleScale>10000</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
@@ -498,15 +498,15 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Sets how fast the accelerometer confidence will be decreased if the acceleration vector differs from 1.0.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
             <cDefine>CFG_DFLT_TUNE_BF_ACCEL_CONFIDENCE_DECAY</cDefine>
-            <editorDecimalsDouble>3</editorDecimalsDouble>
+            <editorDecimalsDouble>2</editorDecimalsDouble>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
             <maxDouble>10</maxDouble>
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
-            <stepDouble>0.01</stepDouble>
-            <valDouble>0.02</valDouble>
-            <vTxDoubleScale>1000</vTxDoubleScale>
+            <stepDouble>0.05</stepDouble>
+            <valDouble>0.1</valDouble>
+            <vTxDoubleScale>100</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
         </tune.balance_filter.accel_confidence_decay>
@@ -572,7 +572,7 @@ p, li { white-space: pre-wrap; }
             <maxDouble>0.5</maxDouble>
             <minDouble>-0.5</minDouble>
             <showDisplay>0</showDisplay>
-            <stepDouble>0.02</stepDouble>
+            <stepDouble>0.05</stepDouble>
             <valDouble>0.0</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> m</suffix>
@@ -698,7 +698,7 @@ p, li { white-space: pre-wrap; }
             <minInt>0</minInt>
             <showDisplay>0</showDisplay>
             <stepInt>50</stepInt>
-            <valInt>250</valInt>
+            <valInt>200</valInt>
             <suffix> ms</suffix>
             <vTx>3</vTx>
         </faults.pitch_delay>
@@ -718,7 +718,7 @@ p, li { white-space: pre-wrap; }
             <minInt>0</minInt>
             <showDisplay>0</showDisplay>
             <stepInt>50</stepInt>
-            <valInt>250</valInt>
+            <valInt>200</valInt>
             <suffix> ms</suffix>
             <vTx>3</vTx>
         </faults.roll_delay>
@@ -738,7 +738,7 @@ p, li { white-space: pre-wrap; }
             <minInt>0</minInt>
             <showDisplay>0</showDisplay>
             <stepInt>50</stepInt>
-            <valInt>250</valInt>
+            <valInt>300</valInt>
             <suffix> ms</suffix>
             <vTx>3</vTx>
         </faults.switch_half_delay>
@@ -758,7 +758,7 @@ p, li { white-space: pre-wrap; }
             <minInt>0</minInt>
             <showDisplay>0</showDisplay>
             <stepInt>50</stepInt>
-            <valInt>250</valInt>
+            <valInt>300</valInt>
             <suffix> ms</suffix>
             <vTx>3</vTx>
         </faults.switch_full_delay>
@@ -812,7 +812,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;*DISCLAIMER: Requires correct speed calibration and Tail Heavy Board!! The board &lt;/span&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;WILL&lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt; ghost for sure if your normal speeds read as negative or if your board is nose heavy!!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
             <cDefine>CFG_DFLT_FAULTS_MOVING_FAULT_DISABLED</cDefine>
-            <valInt>0</valInt>
+            <valInt>1</valInt>
         </faults.moving_fault_disabled>
         <faults.is_reversestop_enabled>
             <longName>Enable Reverse Stop</longName>
@@ -847,7 +847,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.1</stepDouble>
-            <valDouble>1.2</valDouble>
+            <valDouble>1.5</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> s</suffix>
             <vTx>7</vTx>
@@ -869,7 +869,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.1</stepDouble>
-            <valDouble>0.8</valDouble>
+            <valDouble>1.0</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> m/s</suffix>
             <vTx>7</vTx>
@@ -891,7 +891,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.5</stepDouble>
-            <valDouble>3.0</valDouble>
+            <valDouble>7.0</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> Nm</suffix>
             <vTx>7</vTx>
@@ -913,7 +913,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.5</stepDouble>
-            <valDouble>8.0</valDouble>
+            <valDouble>13.0</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> Nm</suffix>
             <vTx>7</vTx>
@@ -1071,7 +1071,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>-10</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.1</stepDouble>
-            <valDouble>-0.1</valDouble>
+            <valDouble>-0.2</valDouble>
             <vTxDoubleScale>1000</vTxDoubleScale>
             <suffix> °</suffix>
             <vTx>7</vTx>
@@ -1312,7 +1312,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.5</stepDouble>
-            <valDouble>6</valDouble>
+            <valDouble>7</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> °</suffix>
             <vTx>7</vTx>
@@ -1334,7 +1334,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>5</stepDouble>
-            <valDouble>45</valDouble>
+            <valDouble>40</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> °</suffix>
             <vTx>7</vTx>
@@ -1356,7 +1356,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0.05</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.01</stepDouble>
-            <valDouble>0.10</valDouble>
+            <valDouble>0.15</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> s</suffix>
             <vTx>7</vTx>
@@ -1395,7 +1395,7 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Allow landing with an extra 10 degrees pitch tilt within 1 second of disengaging both sensors (not active after heel-lift dismount).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
             <cDefine>CFG_DFLT_DIRTYLANDINGS_ENABLED</cDefine>
-            <valInt>0</valInt>
+            <valInt>1</valInt>
         </startup.dirtylandings_enabled>
         <tune.pid.soft_start>
             <longName>Soft Start</longName>
@@ -1480,7 +1480,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>1</stepDouble>
-            <valDouble>20</valDouble>
+            <valDouble>16</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> °/s</suffix>
             <vTx>7</vTx>
@@ -1524,7 +1524,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0.0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.05</stepDouble>
-            <valDouble>0.25</valDouble>
+            <valDouble>0.40</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> s</suffix>
             <vTx>7</vTx>
@@ -1539,7 +1539,7 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Used for ATR and Torque Tilt. IMU will be smoother but will not adapt to road slope properly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
             <cDefine>CFG_DFLT_TUNE_MODIFIERS_ACCELERATION_SOURCE</cDefine>
-            <valInt>1</valInt>
+            <valInt>2</valInt>
             <enumNames>ERPM</enumNames>
             <enumNames>IMU</enumNames>
             <enumNames>FUSION</enumNames>
@@ -3392,7 +3392,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0.0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.005</stepDouble>
-            <valDouble>0.040</valDouble>
+            <valDouble>0.050</valDouble>
             <vTxDoubleScale>1000</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
@@ -3414,7 +3414,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0.5</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.05</stepDouble>
-            <valDouble>0.70</valDouble>
+            <valDouble>0.65</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
@@ -3470,7 +3470,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.05</stepDouble>
-            <valDouble>1.25</valDouble>
+            <valDouble>1.7</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
