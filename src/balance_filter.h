@@ -1,4 +1,5 @@
 // Copyright 2023 - 2024 Lukas Hrazky
+// Copyright 2025 Vladislav Macicek
 //
 // This file is part of the Stig VESC package.
 //
@@ -42,7 +43,7 @@ typedef struct {
 
 void balance_filter_init(BalanceFilterData *data);
 
-void balance_filter_configure(BalanceFilterData *data, const CfgBalanceFilter *config);
+void balance_filter_configure(BalanceFilterData *data, const CfgBalanceFilter *cfg);
 
 void balance_filter_update(BalanceFilterData *data, float *gyro_xyz, float *accel_xyz, float dt);
 
