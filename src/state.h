@@ -36,11 +36,10 @@ typedef enum {
     STOP_NONE = 0,
     STOP_PITCH = 1,
     STOP_ROLL = 2,
-    STOP_SWITCH_HALF = 3,
-    STOP_SWITCH_FULL = 4,
+    STOP_SENSOR = 3,
+    STOP_GHOST = 4,
     STOP_REVERSE_STOP = 5,
-    STOP_QUICKSTOP = 6,
-    STOP_GHOST = 7
+    STOP_QUICKSTOP = 6
 } StopCondition;
 
 // leaving gaps for more states inbetween the different "classes" of the types

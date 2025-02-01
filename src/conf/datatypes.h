@@ -144,7 +144,6 @@ typedef struct {
 
 typedef struct {
     uint16_t frequency;
-    bool is_beeper_enabled;
     float imu_x_offset;
 } CfgHwEsc;
 
@@ -172,9 +171,6 @@ typedef struct {
     float duty_threshold;
     float lv_threshold;
     float hv_threshold;
-
-    float tiltback_return_speed;
-    // bool is_footbeep_enabled;
 } CfgWarnings;
 
 typedef struct {
@@ -200,10 +196,7 @@ typedef struct {
     float adc2_threshold;
     uint16_t pitch_delay;
     uint16_t roll_delay;
-    uint16_t switch_half_delay;
-    uint16_t switch_full_delay;
-    float switch_half_speed;
-    bool is_posi_enabled;
+    uint16_t sensor_delay;
     bool moving_fault_disabled;
     bool is_reversestop_enabled;
     float ghost_speed;

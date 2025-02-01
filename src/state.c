@@ -34,7 +34,7 @@ void state_stop(State *state, StopCondition stop_condition) {
 
 void state_engage(State *state) {
     state->state = STATE_RUNNING;
-    state->sat = SAT_CENTERING;
+    state->sat = SAT_NONE;
     state->stop_condition = STOP_NONE;
 }
 
@@ -56,10 +56,11 @@ uint8_t state_compat(const State *state) {
             return 6;  // FAULT_ANGLE_PITCH
         case STOP_ROLL:
             return 7;  // FAULT_ANGLE_ROLL
-        case STOP_SWITCH_HALF:
-            return 8;  // FAULT_SWITCH_HALF
-        case STOP_SWITCH_FULL:
+        // XXX STOP_SWITCH_HALF used to return 8
+        case STOP_SENSOR:
             return 9;  // FAULT_SWITCH_FULL
+        case STOP_GHOST:
+            return 12;  // FAULT_REVERSE
         case STOP_REVERSE_STOP:
             return 12;  // FAULT_REVERSE
         case STOP_QUICKSTOP:

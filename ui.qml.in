@@ -818,21 +818,19 @@ Item {
         readonly property int sc_None: 0
         readonly property int sc_Pitch: 1
         readonly property int sc_Roll: 2
-        readonly property int sc_SensorHalf: 3
-        readonly property int sc_SensorFull: 4
+        readonly property int sc_Sensor: 3
+        readonly property int sc_Ghost: 4
         readonly property int sc_ReverseStop: 5
         readonly property int sc_Quickstop: 6
-        readonly property int sc_Ghost: 7
 
         readonly property var stopConditionToString: new Map([
             [sc_None, ""],
             [sc_Pitch, "Pitch"],
             [sc_Roll, "Roll"],
-            [sc_SensorHalf, "Sensor Half"],
-            [sc_SensorFull, "Sensor Full"],
+            [sc_Sensor, "Sensor"],
+            [sc_Ghost, "Ghost"],
             [sc_ReverseStop, "Reverse Stop"],
             [sc_Quickstop, "Quickstop"],
-            [sc_Ghost, "Ghost"],
         ])
 
         property int stopCondition: sc_None

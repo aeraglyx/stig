@@ -89,13 +89,6 @@ typedef struct {
     HapticBuzz haptic_buzz;
     MotorControl motor_control;
 
-    // Beeper
-    int beep_num_left;
-    int beep_duration;
-    int beep_countdown;
-    int beep_reason;
-    bool beeper_enabled;
-
     // Config values
     float dt;
 
@@ -116,8 +109,7 @@ typedef struct {
 
     float fault_angle_pitch_timer;
     float fault_angle_roll_timer;
-    float fault_switch_full_timer;
-    float fault_switch_half_timer;
+    float fault_sensor_timer;
     float fault_ghost_timer;
 
     float wheelslip_timer;
@@ -134,86 +126,6 @@ typedef struct {
     // uint64_t odometer;
 
 } data;
-
-const VESC_PIN beeper_pin = VESC_PIN_PPM;
-
-#define EXT_BEEPER_ON() VESC_IF->io_write(beeper_pin, 1)
-#define EXT_BEEPER_OFF() VESC_IF->io_write(beeper_pin, 0)
-
-void beeper_init() {
-    VESC_IF->io_set_mode(beeper_pin, VESC_PIN_MODE_OUTPUT);
-}
-
-void beeper_update(data *d) {
-    if (d->beeper_enabled && (d->beep_num_left > 0)) {
-        d->beep_countdown--;
-        if (d->beep_countdown <= 0) {
-            d->beep_countdown = d->beep_duration;
-            d->beep_num_left--;
-            if (d->beep_num_left & 0x1) {
-                EXT_BEEPER_ON();
-            } else {
-                EXT_BEEPER_OFF();
-            }
-        }
-    }
-}
-
-void beeper_enable(data *d, bool enable) {
-    d->beeper_enabled = enable;
-    if (!enable) {
-        EXT_BEEPER_OFF();
-    }
-}
-
-void beep_alert(data *d, int num_beeps, bool longbeep) {
-    if (!d->beeper_enabled) {
-        return;
-    }
-    if (d->beep_num_left == 0) {
-        d->beep_num_left = num_beeps * 2 + 1;
-        d->beep_duration = longbeep ? 300 : 80;
-        d->beep_countdown = d->beep_duration;
-    }
-}
-
-// void beep_alert_idle(data *d) {
-//     // alert user after 30 minutes
-//     if (d->current_time - d->disengage_timer > 1800) {
-//         // beep every 60 seconds
-//         if (d->current_time - d->nag_timer > 60) {
-//             d->nag_timer = d->current_time;
-//             const float input_voltage = VESC_IF->mc_get_input_voltage_filtered();
-//             if (input_voltage > d->idle_voltage) {
-//                 // don't beep if the voltage keeps increasing (board is charging)
-//                 d->idle_voltage = input_voltage;
-//             } else {
-//                 d->beep_reason = BEEP_IDLE;
-//                 beep_alert(d, 2, 1);
-//             }
-//         }
-//     } else {
-//         d->nag_timer = d->current_time;
-//         d->idle_voltage = 0;
-//     }
-// }
-
-void beep_off(data *d, bool force) {
-    // don't mess with the beeper if we're in the process of doing a multi-beep
-    if (force || (d->beep_num_left == 0)) {
-        EXT_BEEPER_OFF();
-    }
-}
-
-void beep_on(data *d, bool force) {
-    if (!d->beeper_enabled) {
-        return;
-    }
-    // don't mess with the beeper if we're in the process of doing a multi-beep
-    if (force || (d->beep_num_left == 0)) {
-        EXT_BEEPER_ON();
-    }
-}
 
 static void configure(data *d) {
     // TODO not the whole state_init
@@ -259,13 +171,11 @@ static void configure(data *d) {
     d->reverse_tolerance = 0.06f;  // in meters
     d->reverse_stop_step_size = 100.0 * d->dt;
 
-    d->beeper_enabled = d->config.hardware.esc.is_beeper_enabled;
-
-    if (d->state.state == STATE_DISABLED) {
-        beep_alert(d, 3, false);
-    } else {
-        beep_alert(d, 1, false);
-    }
+    // if (d->state.state == STATE_DISABLED) {
+    //     beep_alert(d, 3, false);
+    // } else {
+    //     beep_alert(d, 1, false);
+    // }
 }
 
 static void init_vars(data *d) {
@@ -365,19 +275,19 @@ static bool startup_conditions_met(data *d) {
 }
 
 static bool check_faults(data *d) {
-    bool disable_switch_faults =
+    bool disable_sensor_faults =
         d->config.faults.moving_fault_disabled &&
         d->motor.board_speed > 0.5f &&
         fabsf(d->imu.pitch) < 40 && fabsf(d->imu.roll) < 75;
 
     // Switch fully open
     if (d->footpad_sensor.state == FS_NONE) {
-        if (!disable_switch_faults) {
-            float switch_full_time = d->current_time - d->fault_switch_full_timer;
-            float switch_full_delay = 0.001f * d->config.faults.switch_full_delay;
+        if (!disable_sensor_faults) {
+            float sensor_time = d->current_time - d->fault_sensor_timer;
+            float sensor_delay = 0.001f * d->config.faults.sensor_delay;
 
-            if (switch_full_time > switch_full_delay) {
-                state_stop(&d->state, STOP_SWITCH_FULL);
+            if (sensor_time > sensor_delay) {
+                state_stop(&d->state, STOP_SENSOR);
                 return true;
             }
         }
@@ -390,14 +300,14 @@ static bool check_faults(data *d) {
             return true;
         }
     } else {
-        d->fault_switch_full_timer = d->current_time;
+        d->fault_sensor_timer = d->current_time;
     }
 
     // Feature: Reverse-Stop
     if (d->state.sat == SAT_REVERSESTOP) {
         //  Taking your foot off entirely while reversing? Ignore delays
         if (d->footpad_sensor.state == FS_NONE) {
-            state_stop(&d->state, STOP_SWITCH_FULL);
+            state_stop(&d->state, STOP_SENSOR);
             return true;
         }
         if (fabsf(d->imu.pitch) > 15) {
@@ -498,7 +408,7 @@ static void stig_thd(void *arg) {
     while (!VESC_IF->should_terminate()) {
         time_vars_update(d);
         
-        beeper_update(d);
+        // beeper_update(d);
         charging_timeout(&d->charging, &d->state);
 
         imu_data_update(&d->imu, &d->balance_filter);
@@ -534,7 +444,7 @@ static void stig_thd(void *arg) {
             // Check for faults
             // TODO put switching into STATE_READY outside check_faults() ?
             if (check_faults(d)) {
-                if (d->state.stop_condition == STOP_SWITCH_FULL) {
+                if (d->state.stop_condition == STOP_SENSOR) {
                     // dirty landings: add extra margin
                     d->startup_pitch_tolerance =
                         d->config.startup.pitch_tolerance + d->startup_pitch_trickmargin;
@@ -668,7 +578,7 @@ static void write_cfg_to_eeprom(data *d) {
         log_error("Failed to write config to EEPROM.");
     }
 
-    beep_alert(d, 1, 0);
+    // beep_alert(d, 1, 0);
 }
 
 static void led_thd(void *arg) {
@@ -1128,11 +1038,6 @@ INIT_FUN(lib_info *info) {
     info->arg = d;
 
     VESC_IF->conf_custom_add_config(get_cfg, set_cfg, get_cfg_xml);
-
-    if ((d->config.hardware.esc.is_beeper_enabled) ||
-        (d->config.hardware.remote.type != INPUTTILT_PPM)) {
-        beeper_init();
-    }
 
     balance_filter_init(&d->balance_filter);
     VESC_IF->imu_set_read_callback(imu_ref_callback);

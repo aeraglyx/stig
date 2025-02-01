@@ -134,7 +134,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Half time of D Term filtering, which creates an interesting spongy feeling. Some specific values can induce vibrations.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Half time of P/I Term filtering. This can help with vibrations at the cost of introducing additional delay.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
             <cDefine>CFG_DFLT_TUNE_PID_P_FILTER</cDefine>
             <editorDecimalsDouble>3</editorDecimalsDouble>
             <editorScale>1</editorScale>
@@ -670,18 +670,6 @@ p, li { white-space: pre-wrap; }
             <suffix> V</suffix>
             <vTx>7</vTx>
         </faults.adc2_threshold>
-        <!-- <warnings.is_footbeep_enabled>
-            <longName>Beep on Sensor Fault</longName>
-            <type>5</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Beep when both sensors turn off above 2000erpm (beeps for as long as the sensor remains off)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_WARNINGS_IS_FOOTBEEP_ENABLED</cDefine>
-            <valInt>1</valInt>
-        </warnings.is_footbeep_enabled> -->
         <faults.pitch_delay>
             <longName>Pitch Fault Delay</longName>
             <type>2</type>
@@ -722,27 +710,7 @@ p, li { white-space: pre-wrap; }
             <suffix> ms</suffix>
             <vTx>3</vTx>
         </faults.roll_delay>
-        <faults.switch_half_delay>
-            <longName>Half Switch Fault Delay</longName>
-            <type>2</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Delay before cutoff, in milliseconds, once a Half Switch Fault is detected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_FAULTS_SWITCH_HALF_DELAY</cDefine>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxInt>10000</maxInt>
-            <minInt>0</minInt>
-            <showDisplay>0</showDisplay>
-            <stepInt>50</stepInt>
-            <valInt>300</valInt>
-            <suffix> ms</suffix>
-            <vTx>3</vTx>
-        </faults.switch_half_delay>
-        <faults.switch_full_delay>
+        <faults.sensor_delay>
             <longName>Full Switch Fault Delay</longName>
             <type>2</type>
             <transmittable>1</transmittable>
@@ -751,7 +719,7 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Delay before cutoff, in milliseconds, once a Full Switch Fault is detected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_FAULTS_SWITCH_FULL_DELAY</cDefine>
+            <cDefine>CFG_DFLT_FAULTS_SENSOR_DELAY</cDefine>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
             <maxInt>10000</maxInt>
@@ -761,45 +729,7 @@ p, li { white-space: pre-wrap; }
             <valInt>300</valInt>
             <suffix> ms</suffix>
             <vTx>3</vTx>
-        </faults.switch_full_delay>
-        <faults.switch_half_speed>
-            <longName>ADC Half State Fault Speed</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;ERPM (absoulte value) below which a Half State on the ADC switches (sensor zones) will be considered a Fault.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;*Note: ERPM = RPM * (Motor Poles / 2)&lt;br /&gt;For an 11&amp;quot; Tire on a Hypercore Motor (30 Poles):&lt;br /&gt;1000 ERPM ≈ 2.2 mph ≈ 3.5 km/h&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_FAULTS_SWITCH_HALF_SPEED</cDefine>
-            <editorDecimalsDouble>2</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>10</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>0.05</stepDouble>
-            <valDouble>0.20</valDouble>
-            <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> m/s</suffix>
-            <vTx>7</vTx>
-        </faults.switch_half_speed>
-        <faults.is_posi_enabled>
-            <longName>Treat Both Sensors as One (Posi)</longName>
-            <type>5</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Treats both sensors as one single-zone sensor (a.k.a. Posi Sensor). Can help guarantee continued sensor engagement, especially at low speed, but disables the Half Switch Fault (Heel Lift dismount) and can present extra ghosting risk if a sensor is stuck.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;*Note: For Advanced Riders only!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_IS_POSI_ENABLED</cDefine>
-            <valInt>1</valInt>
-        </faults.is_posi_enabled>
+        </faults.sensor_delay>
         <faults.moving_fault_disabled>
             <longName>Disable Moving Faults</longName>
             <type>5</type>
@@ -994,7 +924,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;When to start Low Voltage warning. This is per cell, so generally doesn't need to be changed (instead configure number of cells) and should be around 3.0 V. Please respect this warning, stop riding and chanrge the board.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;When to start Low Voltage warning. This is per cell, so generally doesn't need to be changed (instead configure number of cells) and should be around 3.0 V. Please respect this warning, stop riding and charge the board.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
             <cDefine>CFG_DFLT_WARNINGS_LV_THRESHOLD</cDefine>
             <editorDecimalsDouble>2</editorDecimalsDouble>
             <editorScale>1</editorScale>
@@ -1030,28 +960,6 @@ p, li { white-space: pre-wrap; }
             <suffix> V</suffix>
             <vTx>7</vTx>
         </warnings.hv_threshold>
-        <warnings.tiltback_return_speed>
-            <longName>Return To Level Speed</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Speed at which nose is returned back to normal after a pushback condition has been cleared.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_WARNINGS_TILTBACK_RETURN_SPEED</cDefine>
-            <editorDecimalsDouble>1</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>10</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>0.5</stepDouble>
-            <valDouble>1</valDouble>
-            <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> °/s</suffix>
-            <vTx>7</vTx>
-        </warnings.tiltback_return_speed>
         <tune.speed_tilt.constant>
             <longName>Constant Tiltback</longName>
             <type>1</type>
@@ -3419,18 +3327,6 @@ p, li { white-space: pre-wrap; }
             <suffix></suffix>
             <vTx>7</vTx>
         </hardware.motor.acceleration_resistance>
-        <hardware.esc.is_beeper_enabled>
-            <longName>Enable Beeper on Servo/PPM</longName>
-            <type>5</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Enable/disable beeper. Beeper is controlled by Servo/PPM. Active beeper required, 3pin version recommended.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_HW_ESC_IS_BEEPER_ENABLED</cDefine>
-            <valInt>0</valInt>
-        </hardware.esc.is_beeper_enabled>
         <rider.mass>
             <longName>Rider Mass</longName>
             <type>1</type>
@@ -3517,10 +3413,7 @@ p, li { white-space: pre-wrap; }
         <ser>faults.roll_delay</ser>
         <ser>faults.adc1_threshold</ser>
         <ser>faults.adc2_threshold</ser>
-        <ser>faults.switch_half_delay</ser>
-        <ser>faults.switch_full_delay</ser>
-        <ser>faults.switch_half_speed</ser>
-        <ser>faults.is_posi_enabled</ser>
+        <ser>faults.sensor_delay</ser>
         <ser>faults.moving_fault_disabled</ser>
         <ser>faults.is_reversestop_enabled</ser>
         <ser>faults.ghost_speed</ser>
@@ -3532,8 +3425,6 @@ p, li { white-space: pre-wrap; }
         <ser>warnings.duty_threshold</ser>
         <ser>warnings.hv_threshold</ser>
         <ser>warnings.lv_threshold</ser>
-        <ser>warnings.tiltback_return_speed</ser>
-        <!-- <ser>warnings.is_footbeep_enabled</ser> -->
         <ser>tune.input_tilt.angle_limit</ser>
         <ser>tune.input_tilt.speed_limit</ser>
         <ser>tune.input_tilt.filter</ser>
@@ -3630,7 +3521,6 @@ p, li { white-space: pre-wrap; }
         <ser>hardware.motor.acceleration_resistance</ser>
         <ser>hardware.esc.frequency</ser>
         <ser>hardware.esc.imu_x_offset</ser>
-        <ser>hardware.esc.is_beeper_enabled</ser>
         <ser>hardware.leds.type</ser>
         <ser>hardware.leds.pin</ser>
         <ser>hardware.leds.status.count</ser>
@@ -3649,26 +3539,35 @@ p, li { white-space: pre-wrap; }
             <subgroup>
                 <subgroupName>Tune</subgroupName>
                 <subgroupParams>
-                    <param>::sep::PID</param>
+                    <param>::sep::Proportional</param>
                     <param>tune.pid.kp</param>
                     <param>tune.pid.kp_expo</param>
+                    <param>::sep::Derivative</param>
                     <param>tune.pid.kd</param>
                     <param>tune.pid.kd_expo</param>
+                    <param>::sep::Integral</param>
                     <param>tune.pid.ki</param>
                     <param>tune.pid.ki_expo</param>
+                    <param>tune.pid.i_limit</param>
+                    <param>::sep::Feed Forward</param>
                     <param>tune.pid.kf</param>
-                    <param>::sep::Balance Filter</param>
-                    <param>tune.balance_filter.mahony_kp</param>
-                    <param>tune.balance_filter.mahony_kp_roll</param>
                     <param>::sep::Brake Scaling</param>
                     <param>tune.pid.kp_brake</param>
                     <param>tune.pid.kd_brake</param>
+                </subgroupParams>
+            </subgroup>
+            <subgroup>
+                <subgroupName>Balance Filter</subgroupName>
+                <subgroupParams>
+                    <param>::sep::Mahony KP</param>
+                    <param>tune.balance_filter.mahony_kp</param>
+                    <param>tune.balance_filter.mahony_kp_roll</param>
                     <param>::sep::Advanced</param>
-                    <param>tune.pid.i_limit</param>
-                    <param>tune.pid.p_filter</param>
-                    <param>tune.pid.d_filter</param>
                     <param>tune.balance_filter.az_filter</param>
                     <param>tune.balance_filter.accel_confidence_decay</param>
+                    <param>::sep::Secondary Filters</param>
+                    <param>tune.pid.p_filter</param>
+                    <param>tune.pid.d_filter</param>
                 </subgroupParams>
             </subgroup>
             <subgroup>
@@ -3789,10 +3688,7 @@ p, li { white-space: pre-wrap; }
                 <subgroupName>Stop</subgroupName>
                 <subgroupParams>
                     <param>::sep::Switches</param>
-                    <!-- <param>faults.switch_half_delay</param> -->
-                    <param>faults.switch_full_delay</param>
-                    <!-- <param>faults.switch_half_speed</param> -->
-                    <!-- <param>faults.is_posi_enabled</param> -->
+                    <param>faults.sensor_delay</param>
                     <param>faults.moving_fault_disabled</param>
                     <param>::sep::Ghost Buster</param>
                     <param>faults.ghost_speed</param>
@@ -3821,10 +3717,7 @@ p, li { white-space: pre-wrap; }
                     <param>warnings.lv_threshold</param>
                     <param>warnings.hv_threshold</param>
                     <!-- <param>::sep::Temperature</param> -->
-                    <!-- <param>::sep::Footpad Sensor</param>
-                    <param>warnings.is_footbeep_enabled</param> -->
-                    <param>::sep::General Config</param>
-                    <param>warnings.tiltback_return_speed</param>
+                    <!-- <param>::sep::Footpad Sensor</param> -->
                 </subgroupParams>
             </subgroup>
             <subgroup>
@@ -3877,7 +3770,7 @@ p, li { white-space: pre-wrap; }
                 </subgroupParams>
             </subgroup>
             <subgroup>
-                <subgroupName>Specs</subgroupName>
+                <subgroupName>Hardware</subgroupName>
                 <subgroupParams>
                     <param>::sep::Package</param>
                     <param>disabled</param>
@@ -3889,7 +3782,6 @@ p, li { white-space: pre-wrap; }
                     <param>::sep::Controller</param>
                     <param>hardware.esc.frequency</param>
                     <param>hardware.esc.imu_x_offset</param>
-                    <param>hardware.esc.is_beeper_enabled</param>
                     <param>::sep::Foot Sensors</param>
                     <param>faults.adc1_threshold</param>
                     <param>faults.adc2_threshold</param>
