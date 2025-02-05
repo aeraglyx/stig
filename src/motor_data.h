@@ -34,8 +34,10 @@ typedef struct {
     float speed;
     float speed_abs;
     int8_t speed_sign;
-    float fast_boi;
     float speed_last;
+
+    float fast_boi;
+    float slow_boi;
 
     float board_speed;
 

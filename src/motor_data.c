@@ -116,8 +116,10 @@ void motor_data_update(MotorData *m, uint16_t frequency, const IMUData *imu) {
 
     m->board_accel = mps2_to_g((m->board_speed - board_speed_last) * frequency);
 
-    // 0 at 0 m/s, asymptotically approaches 1 at high speeds on both sides
+    // 0 at 0 m/s, slowly approaches 1 at high speeds on both sides
     m->fast_boi = 1.0f - bell_curve(0.2f * m->board_speed);
+    // 1 at 0 m/s, quickly approaches 0 at higher speeds on both sides
+    m->slow_boi = bell_curve(4.0f * m->board_speed);
 
 
 
