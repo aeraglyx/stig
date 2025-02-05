@@ -230,7 +230,6 @@ typedef struct {
     float slip_sensitivity;
     float drop_sensitivity;
     float conf_sensitivity;
-    float modifier_winddown;
     float filter;
 } CfgTraction;
 
@@ -290,6 +289,7 @@ typedef struct {
     // float angle_limit;
     float speed_limit;
     float filter;
+    float slip_response;
     float board_speed_filter;
     AccelerationSource acceleration_source;
     bool use_erpm_correction;

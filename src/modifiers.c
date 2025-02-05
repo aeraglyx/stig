@@ -108,15 +108,17 @@ void modifiers_update(
 ) {
     // TODO we only need one thing from IMUData
 
-    float target_new = 0.0f;
-    target_new += atr_tilt(&cfg->atr, motor);
-    target_new += torque_tilt(&cfg->torque_tilt, motor, imu->gyro[2], mod);
-    target_new += speed_tilt(&cfg->speed_tilt, motor->board_speed);
+    float target_raw = 0.0f;
+    target_raw += atr_tilt(&cfg->atr, motor);
+    target_raw += torque_tilt(&cfg->torque_tilt, motor, imu->gyro[2], mod);
+    target_raw += speed_tilt(&cfg->speed_tilt, motor->board_speed);
 
     float confidence = motor->traction.confidence;
-    float half_time = cfg->traction.modifier_winddown;
-    float alpha = half_time_to_alpha_fast(half_time * (1.0f - confidence), dt);
-    filter_ema(&mod->target, target_new * confidence, alpha);
+    mod->target = target_raw * confidence;
 
-    gaussian_update(&mod->filter, mod->target, dt);
+    float response_standstill = 1.0f - 0.5f * motor->slow_boi;
+    float response_wheelslip = 1.0f + (cfg->modifiers.slip_response - 1.0f) * confidence;
+    float response_multiplier = response_standstill * response_wheelslip;
+
+    gaussian_update(&mod->filter, mod->target, dt * response_multiplier);
 }

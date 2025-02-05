@@ -406,28 +406,6 @@ p, li { white-space: pre-wrap; }
             <suffix> s</suffix>
             <vTx>7</vTx>
         </tune.traction.filter>
-        <tune.traction.modifier_winddown>
-            <longName>Modifier Winddown</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Half time of modifier winddown during a loss of traction. Low values will quicly reduce the setpoint to 0, high values will decay slower.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_TRACTION_MODIFIER_WINDDOWN</cDefine>
-            <editorDecimalsDouble>2</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>1.0</maxDouble>
-            <minDouble>0.0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>0.05</stepDouble>
-            <valDouble>0.30</valDouble>
-            <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> s</suffix>
-            <vTx>7</vTx>
-        </tune.traction.modifier_winddown>
         <tune.balance_filter.mahony_kp>
             <longName>Pitch KP</longName>
             <type>1</type>
@@ -1415,6 +1393,28 @@ p, li { white-space: pre-wrap; }
             <suffix> s</suffix>
             <vTx>7</vTx>
         </tune.modifiers.filter>
+        <tune.modifiers.slip_response>
+            <longName>Response During Slip</longName>
+            <type>1</type>
+            <transmittable>1</transmittable>
+            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Filter response during wheelslip. Lower values will decay very slowly (setpoint will be similar after regaining traction), higher values will get close to 0 more quickly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_TUNE_MODIFIERS_SLIP_RESPONSE</cDefine>
+            <editorDecimalsDouble>1</editorDecimalsDouble>
+            <editorScale>1</editorScale>
+            <editAsPercentage>0</editAsPercentage>
+            <maxDouble>2.0</maxDouble>
+            <minDouble>0.0</minDouble>
+            <showDisplay>0</showDisplay>
+            <stepDouble>0.1</stepDouble>
+            <valDouble>0.5</valDouble>
+            <vTxDoubleScale>100</vTxDoubleScale>
+            <suffix>x</suffix>
+            <vTx>7</vTx>
+        </tune.modifiers.slip_response>
         <tune.modifiers.board_speed_filter>
             <longName>Board Speed Filter</longName>
             <type>1</type>
@@ -3401,7 +3401,6 @@ p, li { white-space: pre-wrap; }
         <ser>tune.traction.slip_sensitivity</ser>
         <ser>tune.traction.drop_sensitivity</ser>
         <ser>tune.traction.conf_sensitivity</ser>
-        <ser>tune.traction.modifier_winddown</ser>
         <ser>tune.traction.filter</ser>
         <ser>tune.balance_filter.mahony_kp</ser>
         <ser>tune.balance_filter.mahony_kp_roll</ser>
@@ -3443,6 +3442,7 @@ p, li { white-space: pre-wrap; }
         <ser>tune.modifiers.speed_limit</ser>
         <ser>tune.modifiers.filter</ser>
         <ser>tune.modifiers.board_speed_filter</ser>
+        <ser>tune.modifiers.slip_response</ser>
         <ser>tune.modifiers.acceleration_source</ser>
         <ser>tune.modifiers.use_erpm_correction</ser>
         <ser>tune.atr.enabled</ser>
@@ -3575,6 +3575,7 @@ p, li { white-space: pre-wrap; }
                 <subgroupParams>
                     <param>::sep::General</param>
                     <param>tune.modifiers.filter</param>
+                    <param>tune.modifiers.slip_response</param>
                     <!-- <param>tune.modifiers.angle_limit</param> -->
                     <param>tune.modifiers.speed_limit</param>
                     <param>::sep::Speed Tilt</param>
@@ -3662,7 +3663,6 @@ p, li { white-space: pre-wrap; }
                     <param>tune.traction.drop_sensitivity</param>
                     <param>::sep::Modifiers</param>
                     <param>tune.traction.conf_sensitivity</param>
-                    <param>tune.traction.modifier_winddown</param>
                     <param>::sep::Advanced</param>
                     <param>tune.traction.filter</param>
                 </subgroupParams>
