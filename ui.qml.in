@@ -3497,7 +3497,7 @@ Item {
                         property string label
                         property real rValue
 
-                        implicitHeight: factorBarText.implicitHeight + setpointBar.height + 0.1 * unit
+                        implicitHeight: factorBarText.implicitHeight + bar.height + 0.1 * unit
                         implicitWidth: parent.width
 
                         TextDebug {
@@ -3511,8 +3511,7 @@ Item {
                         }
 
                         Rectangle {
-                            // TODO rename
-                            id: setpointBar
+                            id: bar
                             width: parent.implicitWidth
                             height: 0.12 * unit
                             anchors.top: factorBarText.bottom
@@ -3544,7 +3543,7 @@ Item {
                         property real softLimit: 4
                         property string unitString
 
-                        implicitHeight: valueBarText.implicitHeight + setpointBar.height + 0.1 * unit
+                        implicitHeight: valueBarText.implicitHeight + bar.height + 0.1 * unit
                         implicitWidth: parent.width
 
                         TextDebug {
@@ -3559,8 +3558,7 @@ Item {
                         }
                         
                         Rectangle {
-                            // TODO rename
-                            id: setpointBar
+                            id: bar
                             width: parent.implicitWidth
                             height: 0.12 * unit
                             anchors.top: valueBarText.bottom
