@@ -27,6 +27,9 @@
 
 typedef struct {
     bool is_playing;
+    bool is_beeping;
+    uint8_t beeps_left;
+    float beep_timer;
 } HapticBuzz;
 
 typedef enum {
@@ -39,6 +42,8 @@ typedef enum {
 void haptic_buzz_init(HapticBuzz *data);
 
 // void haptic_buzz_configure(HapticBuzz *data, const CfgWarnings *cfg);
+
+void beep_alert(HapticBuzz *data, uint8_t num_beeps);
 
 void haptic_buzz_update(
     HapticBuzz *data,

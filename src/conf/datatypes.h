@@ -174,6 +174,7 @@ typedef struct {
 } CfgWarnings;
 
 typedef struct {
+    float beeper_strength;
     float strength;
     float strength_at_speed;
     float frequency;

@@ -171,21 +171,9 @@ static void configure(data *d) {
     d->reverse_tolerance = 0.06f;  // in meters
     d->reverse_stop_step_size = 100.0 * d->dt;
 
-    // if (d->state.state == STATE_DISABLED) {
-    //     beep_alert(d, 3, false);
-    // } else {
-    //     beep_alert(d, 1, false);
-    // }
-}
-
-static void init_vars(data *d) {
-    // TODO move to the other init?
-    imu_data_init(&d->imu);
-    motor_data_init(&d->motor);
-    // remote_data_init(&d->remote);
-
-    warnings_init(&d->warnings);
-    haptic_buzz_init(&d->haptic_buzz);
+    if (d->state.state == STATE_DISABLED) {
+        beep_alert(&d->haptic_buzz, 3);
+    }
 }
 
 static void reset_vars(data *d) {
@@ -398,8 +386,8 @@ static void time_vars_update(data *d) {
 static void stig_thd(void *arg) {
     data *d = (data *) arg;
 
-    configure(d);  // XXX configure before init
-    init_vars(d);
+    configure(d);
+
     d->last_time = VESC_IF->system_time() - d->dt;
 
     // VESC_IF->plot_init("Time", "Y");
@@ -408,7 +396,6 @@ static void stig_thd(void *arg) {
     while (!VESC_IF->should_terminate()) {
         time_vars_update(d);
         
-        // beeper_update(d);
         charging_timeout(&d->charging, &d->state);
 
         imu_data_update(&d->imu, &d->balance_filter);
@@ -422,21 +409,7 @@ static void stig_thd(void *arg) {
             if (VESC_IF->imu_startup_done()) {
                 // TODO only change state when it's not DISABLED
                 d->state.state = STATE_READY;
-                // d->state.sat = SAT_CENTERING;
-                // d->state.stop_condition = STOP_NONE;
-
-                // TODO
-                // // if within 5V of LV tiltback threshold, issue 1 beep for each volt below that
-                // float bat_volts = VESC_IF->mc_get_input_voltage_filtered();
-                // float threshold = d->config.warnings.lv.threshold + 5.0f;
-                // if (bat_volts < threshold) {
-                //     int beeps = (int) fminf(6.0f, threshold - bat_volts);
-                //     beep_alert(d, beeps + 1, true);
-                //     d->beep_reason = BEEP_LOWBATT;
-                // } else {
-                //     // Let the rider know that the board is ready (one long beep)
-                //     beep_alert(d, 1, true);
-                // }
+                beep_alert(&d->haptic_buzz, 1);
             }
             break;
 
@@ -509,8 +482,6 @@ static void stig_thd(void *arg) {
             break;
 
         case (STATE_READY):
-            // beep_alert_idle(d);
-
             if ((d->current_time - d->fault_angle_pitch_timer) > 1.0f) {
                 // 1 second after disengaging - set startup tolerance back to normal (aka tighter)
                 d->startup_pitch_tolerance = d->config.startup.pitch_tolerance;
@@ -636,6 +607,11 @@ static void data_init(data *d) {
     motor_control_init(&d->motor_control);
     lcm_init(&d->lcm, &d->config.hardware.leds);
     charging_init(&d->charging);
+
+    imu_data_init(&d->imu);
+    motor_data_init(&d->motor);
+    warnings_init(&d->warnings);
+    haptic_buzz_init(&d->haptic_buzz);
 }
 
 // See also:
@@ -674,6 +650,7 @@ static void cmd_lock(data *d, unsigned char *cfg) {
         d->config.disabled = cfg[0] ? true : false;
         d->state.state = cfg[0] ? STATE_DISABLED : STATE_STARTUP;
         write_cfg_to_eeprom(d);
+        beep_alert(&d->haptic_buzz, 3);
     }
 }
 
@@ -701,6 +678,7 @@ static void cmd_handtest(data *d, unsigned char *cfg) {
         d->config.tune.speed_tilt.variable = 0.0f;
         d->config.faults.pitch_threshold = 30;
         d->config.faults.roll_threshold = 30;
+        beep_alert(&d->haptic_buzz, 2);
     } else {
         read_cfg_from_eeprom(&d->config);
         configure(d);

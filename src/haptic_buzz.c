@@ -23,8 +23,13 @@
 
 #include <math.h>
 
+static const float BEEPER_TONE_LENGTH = 0.0625f;
+
 void haptic_buzz_init(HapticBuzz *data) {
     data->is_playing = false;
+    data->is_beeping = false;
+    data->beeps_left = 0;
+    data->beep_timer = 0.0f;
 }
 
 // void haptic_buzz_configure(HapticBuzz *data, const CfgWarnings *cfg) {
@@ -71,6 +76,28 @@ static bool get_beep_target(BuzzType buzz_type, float speed) {
     return beep;
 }
 
+void beep_alert(HapticBuzz *data, uint8_t num_beeps) {
+    data->beeps_left = 2 * num_beeps - 1;
+    data->beep_timer = VESC_IF->system_time() + BEEPER_TONE_LENGTH;
+}
+
+static bool get_beeper_target(HapticBuzz *data) {
+    if (data->beeps_left == 0) {
+        return false;
+    }
+
+    bool res = data->beeps_left & 0x1;
+
+    if (VESC_IF->system_time() >= data->beep_timer) {
+        data->beeps_left--;
+        if (data->beeps_left > 0) {
+            data->beep_timer = VESC_IF->system_time() + BEEPER_TONE_LENGTH;
+        }
+    }
+
+    return res;
+}
+
 static float get_amplitude(const CfgHaptics *cfg, float fast_boi) {
     float strength_diff = cfg->strength_at_speed - cfg->strength;
     return cfg->strength + fast_boi * strength_diff;
@@ -85,16 +112,24 @@ void haptic_buzz_update(
     RunState run_state
 ) {
     BuzzType buzz_type = get_buzz_type(warning_type, run_state);
-    bool beep_target = get_beep_target(buzz_type, cfg->speed);
+    bool beep_target_low = get_beep_target(buzz_type, cfg->speed);
 
-    if (data->is_playing && !beep_target) {
-        // VESC_IF->foc_play_tone(0, 1, 0.0f);
+    if (data->is_playing && !beep_target_low) {
         motor_control_stop_tone(tone);
         data->is_playing = false;
-    } else if (!data->is_playing && beep_target) {
+    } else if (!data->is_playing && beep_target_low) {
         float amplitude = get_amplitude(cfg, mot->fast_boi);
-        // VESC_IF->foc_play_tone(0, cfg->frequency, amplitude);
         motor_control_play_tone(tone, cfg->frequency, amplitude);
         data->is_playing = true;
+    }
+
+    bool beep_target_high = get_beeper_target(data);
+
+    if (data->is_beeping && !beep_target_high) {
+        VESC_IF->foc_play_tone(0, 1, 0.0f);
+        data->is_beeping = false;
+    } else if (!data->is_beeping && beep_target_high) {
+        VESC_IF->foc_play_tone(0, 523.25f, cfg->beeper_strength);
+        data->is_beeping = true;
     }
 }

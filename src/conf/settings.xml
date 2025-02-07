@@ -782,6 +782,28 @@ p, li { white-space: pre-wrap; }
             <suffix> m/s</suffix>
             <vTx>7</vTx>
         </faults.ghost_speed>
+        <haptics.beeper_strength>
+            <longName>Beeper Strength</longName>
+            <type>1</type>
+            <transmittable>1</transmittable>
+            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Strength/loudness of beeps.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_HAPTICS_BEEPER_STRENGTH</cDefine>
+            <editorDecimalsDouble>1</editorDecimalsDouble>
+            <editorScale>1</editorScale>
+            <editAsPercentage>0</editAsPercentage>
+            <maxDouble>10</maxDouble>
+            <minDouble>0</minDouble>
+            <showDisplay>0</showDisplay>
+            <stepDouble>0.1</stepDouble>
+            <valDouble>0.5</valDouble>
+            <vTxDoubleScale>100</vTxDoubleScale>
+            <suffix> V</suffix>
+            <vTx>7</vTx>
+        </haptics.beeper_strength>
         <haptics.strength>
             <longName>Strength</longName>
             <type>1</type>
@@ -3417,6 +3439,7 @@ p, li { white-space: pre-wrap; }
         <ser>faults.is_reversestop_enabled</ser>
         <ser>faults.ghost_speed</ser>
         <ser>faults.ghost_delay</ser>
+        <ser>haptics.beeper_strength</ser>
         <ser>haptics.strength</ser>
         <ser>haptics.strength_at_speed</ser>
         <ser>haptics.frequency</ser>
@@ -3705,6 +3728,8 @@ p, li { white-space: pre-wrap; }
             <subgroup>
                 <subgroupName>Warnings</subgroupName>
                 <subgroupParams>
+                    <param>::sep::Beeper</param>
+                    <param>haptics.beeper_strength</param>
                     <param>::sep::Haptic Feedback</param>
                     <param>haptics.strength</param>
                     <param>haptics.strength_at_speed</param>
