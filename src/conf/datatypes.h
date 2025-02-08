@@ -185,7 +185,6 @@ typedef struct {
     float pitch_tolerance;
     float roll_tolerance;
     float filter;
-    bool simplestart_enabled;
     bool pushstart_enabled;
     bool dirtylandings_enabled;
 } CfgStartup;
@@ -209,6 +208,7 @@ typedef struct {
     float mahony_kp_roll;
     float accel_confidence_decay;
     float az_filter;
+    float boost;
 } CfgBalanceFilter;
 
 typedef struct {
@@ -239,12 +239,8 @@ typedef struct {
     float strength_up;
     float strength_down;
     float strength_boost;
-    float tightness;
     float threshold;
     float angle_limit;
-    // float speed;
-    // float speed_max;
-    // float speed_boost;
 } CfgAtr;
 
 typedef struct {
@@ -254,8 +250,6 @@ typedef struct {
     float strength_boost;
     float threshold;
     float angle_limit;
-    // float speed;
-    // float speed_max;
     float turn_boost;
     float method;
     float filter;
@@ -265,8 +259,6 @@ typedef struct {
     float strength;
     float strength_boost;
     float angle_limit;
-    // float speed;
-    // float speed_max;
     float start_angle;
     uint16_t start_erpm;
     float filter;
@@ -275,8 +267,6 @@ typedef struct {
 typedef struct {
     float constant;
     float variable;
-    // float variable_max;
-    // float speed;
 } CfgSpeedTilt;
 
 typedef enum {
@@ -287,7 +277,6 @@ typedef enum {
 
 // TODO move modifiers here
 typedef struct {
-    // float angle_limit;
     float speed_limit;
     float filter;
     float slip_response;

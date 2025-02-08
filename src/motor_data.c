@@ -113,6 +113,7 @@ void motor_data_update(MotorData *m, uint16_t frequency, const IMUData *imu) {
     float speed_integrated = m->board_speed + g_to_mps2(imu->board_accel) * m->dt;
     m->board_speed = speed_integrated + alpha * (m->speed - speed_integrated);
     // TODO make this somehow higher order
+    // TODO slowly wind down?
 
     m->board_accel = mps2_to_g((m->board_speed - board_speed_last) * frequency);
 
@@ -124,6 +125,7 @@ void motor_data_update(MotorData *m, uint16_t frequency, const IMUData *imu) {
 
 
     // TODO keep wheel and board accelerations separate and switch later
+    // TODO remove the enum and use FUSION
     switch (m->acceleration_source) {
         case ACCELERATION_SOURCE_ERPM:
             m->accel_final = m->wheel_accel;

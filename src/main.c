@@ -115,6 +115,7 @@ typedef struct {
     float wheelslip_timer;
 
     // Feature: Reverse Stop
+    // TODO refactor reverse stop
     float reverse_stop_step_size;
     float reverse_tolerance;
     float reverse_total_distance;
@@ -191,6 +192,7 @@ static void reset_vars(data *d) {
 static void engage(data *d) {
     reset_vars(d);
     state_engage(&d->state);
+    // TODO click
 }
 
 /**
@@ -291,6 +293,7 @@ static bool check_faults(data *d) {
         d->fault_sensor_timer = d->current_time;
     }
 
+    // TODO
     // Feature: Reverse-Stop
     if (d->state.sat == SAT_REVERSESTOP) {
         //  Taking your foot off entirely while reversing? Ignore delays
@@ -407,7 +410,7 @@ static void stig_thd(void *arg) {
         switch (d->state.state) {
         case (STATE_STARTUP):
             if (VESC_IF->imu_startup_done()) {
-                // TODO only change state when it's not DISABLED
+                // TODO check if ghosting
                 d->state.state = STATE_READY;
                 beep_alert(&d->haptic_buzz, 1);
             }
@@ -450,8 +453,10 @@ static void stig_thd(void *arg) {
             d->setpoint += d->modifiers.filter.value;
             d->setpoint += d->input_tilt.filter.value;
 
-            // d->balance_filter.kp_mult = 1.0f - fabsf(d->modifiers.filter.value * d->config.tune.atr.tightness);
-            d->balance_filter.kp_mult = 1.0f;
+            float actual_error = d->imu.pitch - d->modifiers.filter.value;
+            d->balance_filter.kp_mult = bell_curve(actual_error * d->config.tune.balance_filter.boost);
+            // d->balance_filter.kp_mult = 1.0f;
+            // d->balance_filter.kp_mult = 1.0f - fabsf(d->modifiers.filter.value * d->config.tune.balance_filter.boost);
 
             pid_update(
                 &d->pid,
@@ -666,13 +671,12 @@ static void cmd_handtest(data *d, unsigned char *cfg) {
     d->state.mode = cfg[0] ? MODE_HANDTEST : MODE_NORMAL;
     if (d->state.mode == MODE_HANDTEST) {
         d->motor.current_max = d->motor.current_min = 7;
+        // TODO set expo gains to 0
         d->config.tune.pid.ki = 0.0f;
         d->config.tune.pid.kp_brake = 1.0f;
         d->config.tune.pid.kd_brake = 1.0f;
-        d->config.tune.torque_tilt.strength = 0.0f;
-        d->config.tune.torque_tilt.strength_regen = 0.0f;
-        d->config.tune.atr.strength_up = 0.0f;
-        d->config.tune.atr.strength_down = 0.0f;
+        d->config.tune.torque_tilt.enabled = false;
+        d->config.tune.atr.enabled = false;
         d->config.tune.turn_tilt.strength = 0.0f;
         d->config.tune.speed_tilt.constant = 0.0f;
         d->config.tune.speed_tilt.variable = 0.0f;

@@ -42,7 +42,6 @@ static float atr_tilt(const CfgAtr *cfg, const MotorData *mot) {
 
     bool uphill = sign(mot->slope_data.slope) == sign(mot->board_speed);
     float strength = uphill ? cfg->strength_up : cfg->strength_down;
-    // float strength_boost = powf(cfg->strength_boost, mot->fast_boi);
     float strength_boost = get_boost(cfg->strength_boost, mot->fast_boi);
 
     float target = dead_zone(mot->slope_data.slope, cfg->threshold);
@@ -66,7 +65,6 @@ static float torque_tilt(const CfgTorqueTilt *cfg, const MotorData *mot, float y
     filter_ema(&mod->accel_offset_smooth, accel_offset, mod->fusion_alpha);
     
     float strength = mot->braking ? cfg->strength_regen : cfg->strength;
-    // float strength_boost = powf(cfg->strength_boost, mot->fast_boi);
     float strength_boost = get_boost(cfg->strength_boost, mot->fast_boi);
     float turn_boost = 1.0f + fabsf(yaw_rate) * cfg->turn_boost * 0.00125f;
 

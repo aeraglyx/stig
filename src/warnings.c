@@ -90,6 +90,7 @@ void warnings_update(
 
     unused(sensor);
 
+    // TODO warning only when eligible for sensor fault
     // // Footpad Sensor
     // bool sensor_disengaged = sensor->state == FS_NONE;
     // bool riding = fabsf(mot->board_speed) > 1.0f;

@@ -510,6 +510,28 @@ p, li { white-space: pre-wrap; }
             <suffix> s</suffix>
             <vTx>7</vTx>
         </tune.balance_filter.az_filter>
+        <tune.balance_filter.boost>
+            <longName>Boost</longName>
+            <type>1</type>
+            <transmittable>1</transmittable>
+            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;EXPERIMENTAL. Reduces Mahony KP when the setpoint differs from true pitch.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_TUNE_BALANCE_FILTER_BOOST</cDefine>
+            <editorDecimalsDouble>2</editorDecimalsDouble>
+            <editorScale>1</editorScale>
+            <editAsPercentage>0</editAsPercentage>
+            <maxDouble>0.5</maxDouble>
+            <minDouble>0</minDouble>
+            <showDisplay>0</showDisplay>
+            <stepDouble>0.01</stepDouble>
+            <valDouble>0.0</valDouble>
+            <vTxDoubleScale>1000</vTxDoubleScale>
+            <suffix></suffix>
+            <vTx>7</vTx>
+        </tune.balance_filter.boost>
         <hardware.esc.frequency>
             <longName>Loop Frequency</longName>
             <type>2</type>
@@ -1006,72 +1028,6 @@ p, li { white-space: pre-wrap; }
             <suffix> °/(m/s)</suffix>
             <vTx>7</vTx>
         </tune.speed_tilt.variable>
-        <!-- <tune.speed_tilt.variable_max>
-            <longName>Variable Tiltback Limit</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Target Angle that Variable Tiltback approaches at the specified rate (Variable Tiltback Rate). Can be negative (nose down) as well. Added in addition to Constant Tiltback and does not affect or prevent alert pushbacks.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_SPEEDTILT_VARIABLE_MAX</cDefine>
-            <editorDecimalsDouble>2</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>20</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>0.1</stepDouble>
-            <valDouble>1.0</valDouble>
-            <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> °</suffix>
-            <vTx>7</vTx>
-        </tune.speed_tilt.variable_max> -->
-        <!-- <tune.speed_tilt.speed>
-            <longName>Responsiveness</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Speed proportional to distance from target. The resulting speed is then limited by Max Response. Lower values will respond slowly, higher values more aggressively.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_SPEEDTILT_SPEED</cDefine>
-            <editorDecimalsDouble>2</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>100</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>1</stepDouble>
-            <valDouble>15</valDouble>
-            <vTxDoubleScale>10</vTxDoubleScale>
-            <suffix> Hz</suffix>
-            <vTx>7</vTx>
-        </tune.speed_tilt.speed>
-        <tune.speed_tilt.speed_max>
-            <longName>Max Response</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Maximum Rate at which nose will tilt to the desired angle during Constant and/or Variable Tiltback.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_SPEEDTILT_SPEED_MAX</cDefine>
-            <editorDecimalsDouble>1</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>100</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>1</stepDouble>
-            <valDouble>15</valDouble>
-            <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> °/s</suffix>
-            <vTx>7</vTx>
-        </tune.speed_tilt.speed_max> -->
         <hardware.remote.type>
             <longName>Remote Type</longName>
             <type>4</type>
@@ -1269,18 +1225,6 @@ p, li { white-space: pre-wrap; }
             <suffix> s</suffix>
             <vTx>7</vTx>
         </startup.filter>
-        <startup.simplestart_enabled>
-            <longName>Enable Simple Start</longName>
-            <type>5</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Allow starting with a single sensor, while still allowing heel-lift dismounts. To avoid accidental re-engagement when heel-lift dismounting, this feature is disabled for a few seconds from the last disengagement.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_SIMPLESTART_ENABLED</cDefine>
-            <valInt>1</valInt>
-        </startup.simplestart_enabled>
         <startup.pushstart_enabled>
             <longName>Enable Push Start</longName>
             <type>5</type>
@@ -1349,28 +1293,6 @@ p, li { white-space: pre-wrap; }
             <suffix> A</suffix>
             <vTx>7</vTx>
         </brake_current>
-        <!-- <tune.modifiers.angle_limit>
-            <longName>Angle Limit</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Maximum angle to which modifiers are permitted to tilt.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_MODIFIERS_ANGLE_LIMIT</cDefine>
-            <editorDecimalsDouble>1</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>30</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>0.5</stepDouble>
-            <valDouble>10</valDouble>
-            <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> °</suffix>
-            <vTx>7</vTx>
-        </tune.modifiers.angle_limit> -->
         <tune.modifiers.speed_limit>
             <longName>Speed Limit</longName>
             <type>1</type>
@@ -1612,50 +1534,6 @@ p, li { white-space: pre-wrap; }
             <suffix> °</suffix>
             <vTx>7</vTx>
         </tune.torque_tilt.angle_limit>
-        <!-- <tune.torque_tilt.speed>
-            <longName>Responsiveness</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Speed proportional to distance from target. The resulting speed is then limited by Max Response. Lower values will respond slowly, higher values more aggressively.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_TORQUETILT_SPEED</cDefine>
-            <editorDecimalsDouble>2</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>100</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>1</stepDouble>
-            <valDouble>15</valDouble>
-            <vTxDoubleScale>10</vTxDoubleScale>
-            <suffix> Hz</suffix>
-            <vTx>7</vTx>
-        </tune.torque_tilt.speed>
-        <tune.torque_tilt.speed_max>
-            <longName>Max Response</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Max Rate at which Torque Tiltback will tilt to the desired angle (tilt will be slower if current increases slowly).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_TORQUETILT_SPEED_MAX</cDefine>
-            <editorDecimalsDouble>1</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>100</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>1</stepDouble>
-            <valDouble>15</valDouble>
-            <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> °/s</suffix>
-            <vTx>7</vTx>
-        </tune.torque_tilt.speed_max> -->
         <tune.torque_tilt.method>
             <longName>Use Measured Acceleration</longName>
             <type>1</type>
@@ -1800,28 +1678,6 @@ p, li { white-space: pre-wrap; }
             <suffix>x</suffix>
             <vTx>7</vTx>
         </tune.atr.strength_boost>
-        <tune.atr.tightness>
-            <longName>Tightness</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;EXPERIMENTAL. Reduces Mahony KP.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_ATR_TIGHTNESS</cDefine>
-            <editorDecimalsDouble>2</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>0.5</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>0.01</stepDouble>
-            <valDouble>0.0</valDouble>
-            <vTxDoubleScale>1000</vTxDoubleScale>
-            <suffix></suffix>
-            <vTx>7</vTx>
-        </tune.atr.tightness>
         <tune.atr.threshold>
             <longName>Slope Threshold</longName>
             <type>1</type>
@@ -1870,50 +1726,6 @@ p, li { white-space: pre-wrap; }
             <suffix> °</suffix>
             <vTx>7</vTx>
         </tune.atr.angle_limit>
-        <!-- <tune.atr.speed>
-            <longName>Responsiveness</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Speed proportional to distance from target. The resulting speed is then limited by Max Response. Lower values will respond slowly, higher values more aggressively.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_ATR_SPEED</cDefine>
-            <editorDecimalsDouble>2</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>100</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>1</stepDouble>
-            <valDouble>15</valDouble>
-            <vTxDoubleScale>10</vTxDoubleScale>
-            <suffix> Hz</suffix>
-            <vTx>7</vTx>
-        </tune.atr.speed>
-        <tune.atr.speed_max>
-            <longName>Max Response</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Max Rate at which ATR will tilt to the desired angle.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_ATR_SPEED_MAX</cDefine>
-            <editorDecimalsDouble>1</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>100</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>1</stepDouble>
-            <valDouble>15</valDouble>
-            <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> °/s</suffix>
-            <vTx>7</vTx>
-        </tune.atr.speed_max> -->
         <tune.turn_tilt.strength>
             <longName>Strength</longName>
             <type>1</type>
@@ -1980,50 +1792,6 @@ p, li { white-space: pre-wrap; }
             <suffix> °</suffix>
             <vTx>7</vTx>
         </tune.turn_tilt.angle_limit>
-        <!-- <tune.turn_tilt.speed>
-            <longName>Responsiveness</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Speed proportional to distance from target. The resulting speed is then limited by Max Response. Lower values will respond slowly, higher values more aggressively.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_TURNTILT_SPEED</cDefine>
-            <editorDecimalsDouble>2</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>100</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>1</stepDouble>
-            <valDouble>15</valDouble>
-            <vTxDoubleScale>10</vTxDoubleScale>
-            <suffix> Hz</suffix>
-            <vTx>7</vTx>
-        </tune.turn_tilt.speed>
-        <tune.turn_tilt.speed_max>
-            <longName>Max Response</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Max Rate at which Turn Tiltback will tilt to the desired angle (tilt will be slower if Yaw Angle increases slowly).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_TUNE_TURNTILT_SPEED_MAX</cDefine>
-            <editorDecimalsDouble>1</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>100</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>1</stepDouble>
-            <valDouble>15</valDouble>
-            <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> °/s</suffix>
-            <vTx>7</vTx>
-        </tune.turn_tilt.speed_max> -->
         <tune.turn_tilt.start_erpm>
             <longName>ERPM Threshold</longName>
             <type>2</type>
@@ -3428,6 +3196,7 @@ p, li { white-space: pre-wrap; }
         <ser>tune.balance_filter.mahony_kp_roll</ser>
         <ser>tune.balance_filter.accel_confidence_decay</ser>
         <ser>tune.balance_filter.az_filter</ser>
+        <ser>tune.balance_filter.boost</ser>
         <ser>faults.pitch_threshold</ser>
         <ser>faults.pitch_delay</ser>
         <ser>faults.roll_threshold</ser>
@@ -3456,33 +3225,26 @@ p, li { white-space: pre-wrap; }
         <ser>startup.pitch_tolerance</ser>
         <ser>startup.roll_tolerance</ser>
         <ser>startup.filter</ser>
-        <ser>startup.simplestart_enabled</ser>
         <ser>startup.pushstart_enabled</ser>
         <ser>startup.dirtylandings_enabled</ser>
         <ser>tune.pid.soft_start</ser>
         <ser>brake_current</ser>
-        <!-- <ser>tune.modifiers.angle_limit</ser> -->
         <ser>tune.modifiers.speed_limit</ser>
         <ser>tune.modifiers.filter</ser>
-        <ser>tune.modifiers.board_speed_filter</ser>
         <ser>tune.modifiers.slip_response</ser>
         <ser>tune.modifiers.acceleration_source</ser>
+        <ser>tune.modifiers.board_speed_filter</ser>
         <ser>tune.modifiers.use_erpm_correction</ser>
         <ser>tune.atr.enabled</ser>
         <ser>tune.atr.strength_up</ser>
         <ser>tune.atr.strength_down</ser>
         <ser>tune.atr.strength_boost</ser>
-        <ser>tune.atr.tightness</ser>
-        <!-- <ser>tune.atr.speed</ser>
-        <ser>tune.atr.speed_max</ser> -->
         <ser>tune.atr.threshold</ser>
         <ser>tune.atr.angle_limit</ser>
         <ser>tune.torque_tilt.enabled</ser>
         <ser>tune.torque_tilt.strength</ser>
         <ser>tune.torque_tilt.strength_regen</ser>
         <ser>tune.torque_tilt.strength_boost</ser>
-        <!-- <ser>tune.torque_tilt.speed</ser>
-        <ser>tune.torque_tilt.speed_max</ser> -->
         <ser>tune.torque_tilt.threshold</ser>
         <ser>tune.torque_tilt.angle_limit</ser>
         <ser>tune.torque_tilt.turn_boost</ser>
@@ -3490,17 +3252,11 @@ p, li { white-space: pre-wrap; }
         <ser>tune.torque_tilt.filter</ser>
         <ser>tune.turn_tilt.strength</ser>
         <ser>tune.turn_tilt.strength_boost</ser>
-        <!-- <ser>tune.turn_tilt.speed</ser>
-        <ser>tune.turn_tilt.speed_max</ser> -->
         <ser>tune.turn_tilt.angle_limit</ser>
         <ser>tune.turn_tilt.start_erpm</ser>
         <ser>tune.turn_tilt.filter</ser>
         <ser>tune.speed_tilt.constant</ser>
         <ser>tune.speed_tilt.variable</ser>
-        <!-- <ser>tune.speed_tilt.variable_max</ser> -->
-        <!-- <ser>tune.speed_tilt.speed</ser> -->
-        <!-- <ser>tune.speed_tilt.speed_max</ser> -->
-        <!-- <ser>tune.speed_tilt.constant_erpm</ser> -->
         <ser>leds.on</ser>
         <ser>leds.headlights_on</ser>
         <ser>leds.headlights_transition</ser>
@@ -3588,6 +3344,7 @@ p, li { white-space: pre-wrap; }
                     <param>::sep::Advanced</param>
                     <param>tune.balance_filter.az_filter</param>
                     <param>tune.balance_filter.accel_confidence_decay</param>
+                    <param>tune.balance_filter.boost</param>
                     <param>::sep::Secondary Filters</param>
                     <param>tune.pid.p_filter</param>
                     <param>tune.pid.d_filter</param>
@@ -3599,7 +3356,6 @@ p, li { white-space: pre-wrap; }
                     <param>::sep::General</param>
                     <param>tune.modifiers.filter</param>
                     <param>tune.modifiers.slip_response</param>
-                    <!-- <param>tune.modifiers.angle_limit</param> -->
                     <param>tune.modifiers.speed_limit</param>
                     <param>::sep::Speed Tilt</param>
                     <param>tune.speed_tilt.constant</param>
@@ -3620,10 +3376,6 @@ p, li { white-space: pre-wrap; }
                     <param>tune.atr.strength_down</param>
                     <param>tune.atr.strength_boost</param>
                     <param>tune.atr.threshold</param>
-                    <!-- <param>tune.atr.tightness</param> -->
-                    <!-- <param>::sep::Nose Angling</param>
-                    <param>tune.atr.speed</param>
-                    <param>tune.atr.speed_max</param> -->
                     <param>tune.atr.angle_limit</param>
                     <param>::sep::Advanced</param>
                     <param>hardware.motor.rolling_resistance</param>
@@ -3642,9 +3394,6 @@ p, li { white-space: pre-wrap; }
                     <param>tune.torque_tilt.strength_boost</param>
                     <param>tune.torque_tilt.threshold</param>
                     <param>tune.torque_tilt.turn_boost</param>
-                    <!-- <param>::sep::Nose Angling</param>
-                    <param>tune.torque_tilt.speed</param>
-                    <param>tune.torque_tilt.speed_max</param> -->
                     <param>tune.torque_tilt.angle_limit</param>
                     <param>::sep::Advanced</param>
                     <param>tune.torque_tilt.method</param>
@@ -3657,9 +3406,6 @@ p, li { white-space: pre-wrap; }
                     <!-- <param>::sep::General</param> -->
                     <param>tune.turn_tilt.strength</param>
                     <param>tune.turn_tilt.strength_boost</param>
-                    <!-- <param>::sep::Nose Angling</param> -->
-                    <!-- <param>tune.turn_tilt.speed</param>
-                    <param>tune.turn_tilt.speed_max</param> -->
                     <param>tune.turn_tilt.angle_limit</param>
                     <param>tune.turn_tilt.start_erpm</param>
                     <param>tune.turn_tilt.filter</param>
@@ -3699,7 +3445,6 @@ p, li { white-space: pre-wrap; }
                     <param>::sep::Centering</param>
                     <param>startup.filter</param>
                     <param>::sep::Start Options</param>
-                    <param>startup.simplestart_enabled</param>
                     <param>startup.pushstart_enabled</param>
                     <param>startup.dirtylandings_enabled</param>
                     <param>tune.pid.soft_start</param>
@@ -3710,7 +3455,7 @@ p, li { white-space: pre-wrap; }
             <subgroup>
                 <subgroupName>Stop</subgroupName>
                 <subgroupParams>
-                    <param>::sep::Switches</param>
+                    <param>::sep::Sensor Faults</param>
                     <param>faults.sensor_delay</param>
                     <param>faults.moving_fault_disabled</param>
                     <param>::sep::Ghost Buster</param>
@@ -3736,13 +3481,9 @@ p, li { white-space: pre-wrap; }
                     <param>haptics.frequency</param>
                     <param>haptics.speed</param>
                     <param>::sep::Thresholds</param>
-                    <!-- <param>::sep::Duty Cycle</param> -->
                     <param>warnings.duty_threshold</param>
-                    <!-- <param>::sep::Voltage</param> -->
                     <param>warnings.lv_threshold</param>
                     <param>warnings.hv_threshold</param>
-                    <!-- <param>::sep::Temperature</param> -->
-                    <!-- <param>::sep::Footpad Sensor</param> -->
                 </subgroupParams>
             </subgroup>
             <subgroup>
