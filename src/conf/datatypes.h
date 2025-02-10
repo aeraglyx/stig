@@ -208,7 +208,8 @@ typedef struct {
     float mahony_kp_roll;
     float accel_confidence_decay;
     float az_filter;
-    float boost;
+    float boost_pitch;
+    float boost_modif;
 } CfgBalanceFilter;
 
 typedef struct {

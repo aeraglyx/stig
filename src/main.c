@@ -453,10 +453,13 @@ static void stig_thd(void *arg) {
             d->setpoint += d->modifiers.filter.value;
             d->setpoint += d->input_tilt.filter.value;
 
-            float actual_error = d->imu.pitch - d->modifiers.filter.value;
-            d->balance_filter.kp_mult = bell_curve(actual_error * d->config.tune.balance_filter.boost);
-            // d->balance_filter.kp_mult = 1.0f;
-            // d->balance_filter.kp_mult = 1.0f - fabsf(d->modifiers.filter.value * d->config.tune.balance_filter.boost);
+            // TODO move to the bf module
+            CfgBalanceFilter *bf_cfg = &d->config.tune.balance_filter;
+            float kp_mult_src_pitch = d->setpoint_filter.value - d->imu.pitch;
+            float kp_mult_src_modif = d->modifiers.filter.value + d->input_tilt.filter.value;
+            float kp_mult_src = kp_mult_src_pitch * bf_cfg->boost_pitch + kp_mult_src_modif * bf_cfg->boost_modif;
+
+            d->balance_filter.kp_mult = 1.0f / (1.0f + fabsf(kp_mult_src));
 
             pid_update(
                 &d->pid,
