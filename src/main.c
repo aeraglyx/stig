@@ -517,7 +517,9 @@ static void stig_thd(void *arg) {
             d->state.state
         );
 
-        motor_control_apply(&d->motor_control, &d->motor, d->current_time);
+        if (d->state.state != STATE_DISABLED) {
+            motor_control_apply(&d->motor_control, &d->motor, d->current_time);
+        }
 
         // d->computation_time = VESC_IF->system_time() - d->current_time;
         // const float dt_correction = d->computation_time + d->loop_overshoot_filtered;
