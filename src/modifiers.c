@@ -98,6 +98,12 @@ static float speed_tilt(const CfgSpeedTilt *cfg, float speed) {
 //     target = clamp_sym(tt->target, cfg->angle_limit);
 // }
 
+static float get_response_mult(float confidence, float slow_boi, const CfgModifiers *cfg) {
+    float response_standstill = get_boost(0.25f, slow_boi);
+    float response_wheelslip = get_boost(cfg->slip_response, 1.0f - confidence);
+    return response_standstill * response_wheelslip;
+}
+
 void modifiers_update(
     Modifiers *mod,
     const CfgTune *cfg,
@@ -115,9 +121,6 @@ void modifiers_update(
     float confidence = motor->traction.confidence;
     mod->target = target_raw * confidence;
 
-    float response_standstill = 1.0f - 0.5f * motor->slow_boi;
-    float response_wheelslip = 1.0f + (cfg->modifiers.slip_response - 1.0f) * confidence;
-    float response_multiplier = response_standstill * response_wheelslip;
-
+    float response_multiplier = get_response_mult(confidence, motor->slow_boi, &cfg->modifiers);
     gaussian_update(&mod->filter, mod->target, dt * response_multiplier);
 }
