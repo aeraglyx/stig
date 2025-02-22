@@ -120,7 +120,7 @@ void motor_data_update(MotorData *m, uint16_t frequency, const IMUData *imu) {
     // 0 at 0 m/s, slowly approaches 1 at high speeds on both sides
     m->fast_boi = 1.0f - bell_curve(0.2f * m->board_speed);
     // 1 at 0 m/s, quickly approaches 0 at higher speeds on both sides
-    m->slow_boi = bell_curve(4.0f * m->board_speed);
+    m->slow_boi = bell_curve(8.0f * m->board_speed);
 
 
 
