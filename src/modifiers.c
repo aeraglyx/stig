@@ -31,8 +31,9 @@ void modifiers_reset(Modifiers *mod, float alpha) {
     filter_ema(&mod->accel_offset_smooth, 0.0f, alpha);
 }
 
-static float get_boost(float boost, float fast_boi) {
-    return 1.0f + fast_boi * (boost - 1.0f);
+static float get_boost(float multiplier, float factor) {
+    // factor=0 -> 1, factor=1 -> multiplier
+    return 1.0f + (multiplier - 1.0f) * factor;
 }
 
 static float atr_tilt(const CfgAtr *cfg, const MotorData *mot) {
